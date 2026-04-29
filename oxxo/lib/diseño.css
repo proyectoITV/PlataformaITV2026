@@ -1,0 +1,32 @@
+/********** 404 page ***********/
+.error-content-area{
+  text-align:center;
+}
+
+ /* 404 title */
+.error-heading{
+ font-size:80px;
+  text-align:center;
+  font-weight:900;
+ }
+ 
+ .error-img{
+  margin-top:-50px;
+      position: absolute;
+  left:25%;
+    top: 0px;
+    z-index: -1;
+  }
+
+.error-content{
+      position: relative;
+top:270px;
+}
+
+.error-button{			 
+	color: #fff!important;
+    padding: 10px 20px;
+    background: #8a0d0d;
+    margin: 20px 0;
+    display: inline-block;}
+	.contant_box_404{ margin-top:-50px;}

@@ -1,0 +1,43 @@
+.imagenytexto{
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.textocentrado-blanco1{
+    position:absolute;
+    top: 410px;
+    left: 100px;
+    text-align: center;
+    color:white;
+}
+
+.textocentrado-blanco2{
+    position:absolute;
+    top: 450px;
+    left: 100px;
+    text-align: center;
+    color:white;
+}
+
+.textocentrado-negro1{
+    position:absolute;
+    top: 10%;
+    left: 30%;
+    text-align: center;
+    color:black;
+}
+
+.textocentrado-negro2{
+    position:absolute;
+    top: 20%;
+    left: 30%;
+    text-align: center;
+    color:black;
+}
+
+.boton1{
+    position: absolute;
+    top: 30%;
+    left: 51%;
+}

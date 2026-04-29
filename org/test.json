@@ -1,0 +1,144 @@
+'name': 'Consejo de Administracion', title: '2772', 'className': 'CONSEJO', 'children': [{
+            'name': 'Consejo de Administracion',
+            title: '2772',
+            'className': 'CONSEJO',
+            'children': [{
+                    'name': 'Consejo de Administracion',
+                    title: '2772',
+                    'className': 'CONSEJO',
+                    'children': [{
+                            'name': 'Consejo de Administracion',
+                            title: '2772',
+                            'className': 'CONSEJO',
+                            'children': [{
+                                    'name': 'Consejo de Administracion',
+                                    title: '2772',
+                                    'className': 'CONSEJO',
+                                    'children': [{ 'name': 'Consejo de Administracion', title: '2772', 'className': 'CONSEJO', 'children': [] },
+                                        { 'name': 'Direccion General', title: '2772', 'className': 'CONSEJO', 'children': [] },
+                                    ]
+                                },
+                                {
+                                    'name': 'Direccion General',
+                                    title: '2772',
+                                    'className': 'CONSEJO',
+                                    'children': [{ 'name': 'Secretaria Particular', title: '2775', 'className': 'CONSEJO' } { 'name': 'Dpto. de Atencion ciudadana', title: '1533', 'className': 'CONSEJO' } { 'name': 'Dpto. de Soporte Tecnico', title: '', 'className': 'CONSEJO' } { 'name': 'Dpto. Control Documental', title: '2239', 'className': 'CONSEJO' } { 'name': 'Dir. Planeacion y Evaluacion', title: '2780', 'className': 'CONSEJO', 'children': [] },
+                                        { 'name': 'Dir. Jurídica y Seguridad Patrimonial', title: '2824', 'className': 'CONSEJO', 'children': [] },
+                                        { 'name': 'Coordinacion de Delegaciones', title: '2773', 'className': 'CONSEJO', 'children': [] },
+                                        { 'name': 'Dir. de Programas de Suelo y Vivienda', title: '2777', 'className': 'CONSEJO', 'children': [] },
+                                        { 'name': 'Direccion de Administracion y Finanzas', title: '2774', 'className': 'CONSEJO', 'children': [] },
+                                        { 'name': 'Dpto. de Informatica', title: '119460', 'className': 'CONSEJO' }
+                                    ]
+                                },
+                            ]
+                        },
+                        {
+                            'name': 'Direccion General',
+                            title: '2772',
+                            'className': 'CONSEJO',
+                            'children': [{ 'name': 'Secretaria Particular', title: '2775', 'className': 'CONSEJO' }, { 'name': 'Dpto. de Atencion ciudadana', title: '1533', 'className': 'CONSEJO' }, { 'name': 'Dpto. de Soporte Tecnico', title: '', 'className': 'CONSEJO' }, { 'name': 'Dpto. Control Documental', title: '2239', 'className': 'CONSEJO' }, { 'name': 'Dir. Planeacion y Evaluacion', title: '2780', 'className': 'CONSEJO', 'children': [{ 'name': 'Dpto. Evaluacion de Proyectos', title: '199', 'className': 'CONSEJO' } { 'name': 'Dpto. Indicadores de Vivienda', title: '2795', 'className': 'CONSEJO' } { 'name': 'Dpto. Sistemas de información Geográfica', title: '2814', 'className': 'CONSEJO' }] },
+                                {
+                                    'name': 'Dir. Jurídica y Seguridad Patrimonial',
+                                    title: '2824',
+                                    'className': 'CONSEJO',
+                                    'children': [{ 'name': 'Subdireccion de Escrituracion', title: '', 'className': 'CONSEJO', 'children': [] },
+                                        { 'name': 'Subdireccion de Asuntos Legales', title: '2779', 'className': 'CONSEJO', 'children': [] },
+                                        { 'name': 'Subdireccion de Regularización', title: '2835', 'className': 'CONSEJO', 'children': [] },
+                                    ]
+                                },
+                                {
+                                    'name': 'Coordinacion de Delegaciones',
+                                    title: '2773',
+                                    'className': 'CONSEJO',
+                                    'children': [{ 'name': 'Dpto. Enlace Operativo con Delegaciones Municipales', title: '2800', 'className': 'CONSEJO' } { 'name': 'Dpto. Apoyo y Seguimiento', title: '', 'className': 'CONSEJO', 'children': [] }, ]
+                                },
+                                {
+                                    'name': 'Dir. de Programas de Suelo y Vivienda',
+                                    title: '2777',
+                                    'className': 'CONSEJO',
+                                    'children': [{ 'name': 'Dpto. de Control y Seguimiento de Programas', title: '2828', 'className': 'CONSEJO' } { 'name': 'Subdireccion de Programas de Suelo', title: '', 'className': 'CONSEJO', 'children': [] },
+                                        { 'name': 'Subdireccion de Programas de Vivienda', title: '2784', 'className': 'CONSEJO', 'children': [] },
+                                    ]
+                                },
+                                { 'name': 'Direccion de Administracion y Finanzas', title: '2774', 'className': 'CONSEJO', 'children': [{ 'name': 'Dpto. de Recursos financieros y gestion de recursos', title: '', 'className': 'CONSEJO' } { 'name': 'Dpto. de Contabilidad', title: '2826', 'className': 'CONSEJO' } { 'name': 'Dpto. de Recursos Humanos y Patrimonio', title: '1596', 'className': 'CONSEJO' } { 'name': 'Dpto. de Recursos Materiales y Servicios Generales', title: '2763', 'className': 'CONSEJO' } { 'name': 'Dpto. de Credito', title: '2825', 'className': 'CONSEJO' } { 'name': 'Dpto. de Adquicisiones', title: '1887', 'className': 'CONSEJO' }] },
+                                { 'name': 'Dpto. de Informatica', title: '119460', 'className': 'CONSEJO' },
+                            ]
+                        },
+                    ]
+                },
+                {
+                    'name': 'Direccion General',
+                    title: '2772',
+                    'className': 'CONSEJO',
+                    'children': [{ 'name': 'Secretaria Particular', title: '2775', 'className': 'CONSEJO' }, { 'name': 'Dpto. de Atencion ciudadana', title: '1533', 'className': 'CONSEJO' }, { 'name': 'Dpto. de Soporte Tecnico', title: '', 'className': 'CONSEJO' }, { 'name': 'Dpto. Control Documental', title: '2239', 'className': 'CONSEJO' }, { 'name': 'Dir. Planeacion y Evaluacion', title: '2780', 'className': 'CONSEJO', 'children': [{ 'name': 'Dpto. Evaluacion de Proyectos', title: '199', 'className': 'CONSEJO' }, { 'name': 'Dpto. Indicadores de Vivienda', title: '2795', 'className': 'CONSEJO' }, { 'name': 'Dpto. Sistemas de información Geográfica', title: '2814', 'className': 'CONSEJO' }, ] },
+                        {
+                            'name': 'Dir. Jurídica y Seguridad Patrimonial',
+                            title: '2824',
+                            'className': 'CONSEJO',
+                            'children': [{ 'name': 'Subdireccion de Escrituracion', title: '', 'className': 'CONSEJO', 'children': [{ 'name': 'Dpto. Vinculacion con el Sistema Registral y Catastral', title: '2009', 'className': 'CONSEJO' } { 'name': 'Dpto. de Control y Captura', title: '', 'className': 'CONSEJO' }] },
+                                { 'name': 'Subdireccion de Asuntos Legales', title: '2779', 'className': 'CONSEJO', 'children': [{ 'name': 'Dpto. de Atencion a Juicios', title: '', 'className': 'CONSEJO' } { 'name': 'Dpto. de lo Jurídico Administrativo', title: '1951', 'className': 'CONSEJO' }] },
+                                { 'name': 'Subdireccion de Regularización', title: '2835', 'className': 'CONSEJO', 'children': [{ 'name': 'Dpto. de Apoyo a asuntos de regularización', title: '1484', 'className': 'CONSEJO' }] },
+                            ]
+                        },
+                        {
+                            'name': 'Coordinacion de Delegaciones',
+                            title: '2773',
+                            'className': 'CONSEJO',
+                            'children': [{ 'name': 'Dpto. Enlace Operativo con Delegaciones Municipales', title: '2800', 'className': 'CONSEJO' }, { 'name': 'Dpto. Apoyo y Seguimiento', title: '', 'className': 'CONSEJO', 'children': [{ 'name': 'Delegacion Abasolo', title: '2831', 'className': 'CONSEJO' } { 'name': 'Delegacion Aldama', title: '2799', 'className': 'CONSEJO' } { 'name': 'Delegacion Altamira', title: '2798', 'className': 'CONSEJO' } { 'name': 'Delegacion Camargo', title: '2836', 'className': 'CONSEJO' } { 'name': 'Delegacion Diaz Ordaz', title: '2792', 'className': 'CONSEJO' } { 'name': 'Delegacion González', title: '2786', 'className': 'CONSEJO' } { 'name': 'Delegacion Jímenez', title: '2816', 'className': 'CONSEJO' } { 'name': 'Delegacion Llera', title: '2793', 'className': 'CONSEJO' } { 'name': 'Delegacion Madero', title: '2811', 'className': 'CONSEJO' } { 'name': 'Delegacion Mante', title: '2787', 'className': 'CONSEJO' } { 'name': 'Delegacion Matamoros', title: '2796', 'className': 'CONSEJO' } { 'name': 'Delegacion Miguel Aleman', title: '2817', 'className': 'CONSEJO' } { 'name': 'Delegacion Nuevo Laredo', title: '', 'className': 'CONSEJO' } { 'name': 'Delegacion Reynosa', title: '2785', 'className': 'CONSEJO' } { 'name': 'Delegacion Rio Bravo', title: '2810', 'className': 'CONSEJO' } { 'name': 'Delegacion San Fernando', title: '2815', 'className': 'CONSEJO' } { 'name': 'Delegacion Soto la Marina', title: '2791', 'className': 'CONSEJO' } { 'name': 'Delegacion Tampico', title: '2794', 'className': 'CONSEJO' } { 'name': 'Delegacion Tula', title: '2812', 'className': 'CONSEJO' } { 'name': 'Delegacion Valle Hermoso', title: '2797', 'className': 'CONSEJO' } { 'name': 'Delegacion Victoria', title: '2783', 'className': 'CONSEJO' } { 'name': 'Delegacion Xicotencantl', title: '2806', 'className': 'CONSEJO' } { 'name': 'Delegacion Villa de Casas', title: '2832', 'className': 'CONSEJO' }] }, ]
+                        },
+                        {
+                            'name': 'Dir. de Programas de Suelo y Vivienda',
+                            title: '2777',
+                            'className': 'CONSEJO',
+                            'children': [{ 'name': 'Dpto. de Control y Seguimiento de Programas', title: '2828', 'className': 'CONSEJO' }, {
+                                    'name': 'Subdireccion de Programas de Suelo',
+                                    title: '',
+                                    'className': 'CONSEJO',
+                                    'children': [{ 'name': 'Dpto. de Estudios y Proyectos', title: '', 'className': 'CONSEJO', 'children': [] }, ]
+                                },
+                                { 'name': 'Subdireccion de Programas de Vivienda', title: '2784', 'className': 'CONSEJO', 'children': [{ 'name': 'Dpto. de Programas de Vivienda', title: '1830', 'className': 'CONSEJO' } { 'name': 'Dpto. de Tecnologias para la Vivienda', title: '2829', 'className': 'CONSEJO' }] },
+                            ]
+                        },
+                        { 'name': 'Direccion de Administracion y Finanzas', title: '2774', 'className': 'CONSEJO', 'children': [{ 'name': 'Dpto. de Recursos financieros y gestion de recursos', title: '', 'className': 'CONSEJO' }, { 'name': 'Dpto. de Contabilidad', title: '2826', 'className': 'CONSEJO' }, { 'name': 'Dpto. de Recursos Humanos y Patrimonio', title: '1596', 'className': 'CONSEJO' }, { 'name': 'Dpto. de Recursos Materiales y Servicios Generales', title: '2763', 'className': 'CONSEJO' }, { 'name': 'Dpto. de Credito', title: '2825', 'className': 'CONSEJO' }, { 'name': 'Dpto. de Adquicisiones', title: '1887', 'className': 'CONSEJO' }, ] },
+                        { 'name': 'Dpto. de Informatica', title: '119460', 'className': 'CONSEJO' },
+                    ]
+                },
+            ]
+        },
+        {
+            'name': 'Direccion General',
+            title: '2772',
+            'className': 'dir',
+            'children': [{ 'name': 'Secretaria Particular', title: '2775', 'className': 'CONSEJO' }, { 'name': 'Dpto. de Atencion ciudadana', title: '1533', 'className': 'CONSEJO' }, { 'name': 'Dpto. de Soporte Tecnico', title: '', 'className': 'CONSEJO' }, { 'name': 'Dpto. Control Documental', title: '2239', 'className': 'CONSEJO' }, { 'name': 'Dir. Planeacion y Evaluacion', title: '2780', 'className': 'CONSEJO', 'children': [{ 'name': 'Dpto. Evaluacion de Proyectos', title: '199', 'className': 'CONSEJO' }, { 'name': 'Dpto. Indicadores de Vivienda', title: '2795', 'className': 'CONSEJO' }, { 'name': 'Dpto. Sistemas de información Geográfica', title: '2814', 'className': 'CONSEJO' }, ] },
+                {
+                    'name': 'Dir. Jurídica y Seguridad Patrimonial',
+                    title: '2824',
+                    'className': 'CONSEJO',
+                    'children': [{ 'name': 'Subdireccion de Escrituracion', title: '', 'className': 'CONSEJO', 'children': [{ 'name': 'Dpto. Vinculacion con el Sistema Registral y Catastral', title: '2009', 'className': 'CONSEJO' }, { 'name': 'Dpto. de Control y Captura', title: '', 'className': 'CONSEJO' }, ] },
+                        { 'name': 'Subdireccion de Asuntos Legales', title: '2779', 'className': 'CONSEJO', 'children': [{ 'name': 'Dpto. de Atencion a Juicios', title: '', 'className': 'CONSEJO' }, { 'name': 'Dpto. de lo Jurídico Administrativo', title: '1951', 'className': 'CONSEJO' }, ] },
+                        { 'name': 'Subdireccion de Regularización', title: '2835', 'className': 'CONSEJO', 'children': [{ 'name': 'Dpto. de Apoyo a asuntos de regularización', title: '1484', 'className': 'CONSEJO' }, ] },
+                    ]
+                },
+                {
+                    'name': 'Coordinacion de Delegaciones',
+                    title: '2773',
+                    'className': 'CONSEJO',
+                    'children': [{ 'name': 'Dpto. Enlace Operativo con Delegaciones Municipales', title: '2800', 'className': 'CONSEJO' }, { 'name': 'Dpto. Apoyo y Seguimiento', title: '', 'className': 'CONSEJO', 'children': [{ 'name': 'Delegacion Abasolo', title: '2831', 'className': 'CONSEJO' }, { 'name': 'Delegacion Aldama', title: '2799', 'className': 'CONSEJO' }, { 'name': 'Delegacion Altamira', title: '2798', 'className': 'CONSEJO' }, { 'name': 'Delegacion Camargo', title: '2836', 'className': 'CONSEJO' }, { 'name': 'Delegacion Diaz Ordaz', title: '2792', 'className': 'CONSEJO' }, { 'name': 'Delegacion González', title: '2786', 'className': 'CONSEJO' }, { 'name': 'Delegacion Jímenez', title: '2816', 'className': 'CONSEJO' }, { 'name': 'Delegacion Llera', title: '2793', 'className': 'CONSEJO' }, { 'name': 'Delegacion Madero', title: '2811', 'className': 'CONSEJO' }, { 'name': 'Delegacion Mante', title: '2787', 'className': 'CONSEJO' }, { 'name': 'Delegacion Matamoros', title: '2796', 'className': 'CONSEJO' }, { 'name': 'Delegacion Miguel Aleman', title: '2817', 'className': 'CONSEJO' }, { 'name': 'Delegacion Nuevo Laredo', title: '', 'className': 'CONSEJO' }, { 'name': 'Delegacion Reynosa', title: '2785', 'className': 'CONSEJO' }, { 'name': 'Delegacion Rio Bravo', title: '2810', 'className': 'CONSEJO' }, { 'name': 'Delegacion San Fernando', title: '2815', 'className': 'CONSEJO' }, { 'name': 'Delegacion Soto la Marina', title: '2791', 'className': 'CONSEJO' }, { 'name': 'Delegacion Tampico', title: '2794', 'className': 'CONSEJO' }, { 'name': 'Delegacion Tula', title: '2812', 'className': 'CONSEJO' }, { 'name': 'Delegacion Valle Hermoso', title: '2797', 'className': 'CONSEJO' }, { 'name': 'Delegacion Victoria', title: '2783', 'className': 'CONSEJO' }, { 'name': 'Delegacion Xicotencantl', title: '2806', 'className': 'CONSEJO' }, { 'name': 'Delegacion Villa de Casas', title: '2832', 'className': 'CONSEJO' }, ] }, ]
+                },
+                {
+                    'name': 'Dir. de Programas de Suelo y Vivienda',
+                    title: '2777',
+                    'className': 'CONSEJO',
+                    'children': [{ 'name': 'Dpto. de Control y Seguimiento de Programas', title: '2828', 'className': 'CONSEJO' }, {
+                            'name': 'Subdireccion de Programas de Suelo',
+                            title: '',
+                            'className': 'CONSEJO',
+                            'children': [{ 'name': 'Dpto. de Estudios y Proyectos', title: '', 'className': 'CONSEJO', 'children': [{ 'name': 'Dpto. de Programas de oferta de suelo', title: '', 'className': 'CONSEJO' }] }, ]
+                        },
+                        { 'name': 'Subdireccion de Programas de Vivienda', title: '2784', 'className': 'CONSEJO', 'children': [{ 'name': 'Dpto. de Programas de Vivienda', title: '1830', 'className': 'CONSEJO' }, { 'name': 'Dpto. de Tecnologias para la Vivienda', title: '2829', 'className': 'CONSEJO' }, ] },
+                    ]
+                },
+                { 'name': 'Direccion de Administracion y Finanzas', title: '2774', 'className': 'CONSEJO', 'children': [{ 'name': 'Dpto. de Recursos financieros y gestion de recursos', title: '', 'className': 'CONSEJO' }, { 'name': 'Dpto. de Contabilidad', title: '2826', 'className': 'CONSEJO' }, { 'name': 'Dpto. de Recursos Humanos y Patrimonio', title: '1596', 'className': 'CONSEJO' }, { 'name': 'Dpto. de Recursos Materiales y Servicios Generales', title: '2763', 'className': 'CONSEJO' }, { 'name': 'Dpto. de Credito', title: '2825', 'className': 'CONSEJO' }, { 'name': 'Dpto. de Adquicisiones', title: '1887', 'className': 'CONSEJO' }, ] },
+                { 'name': 'Dpto. de Informatica', title: '119460', 'className': 'CONSEJO' },
+            ]
+        },
