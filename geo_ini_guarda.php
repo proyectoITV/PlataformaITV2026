@@ -1,0 +1,40 @@
+
+<?php 
+include ("./lib/body_head.php");
+include (".//seguridad.php"); 
+//require("../lib/funciones.php");
+//require("../config.php");
+
+
+
+if (isset($_GET["lat"])){
+ $lat = $_GET["lat"];
+ $lon = $_GET["lon"]; 
+ //$nitavu = $_GET["nitavu"];
+ $descripcion = "inicio";
+ //echo "Lat: ".$miLatitud."<br>";
+ //echo "Lon: ".$miLongitud."<br>";
+
+
+	//geo_guarda($nitavu, $miLatitud, $miLongitud, 'Inicio de Sesion');
+	$sql = "INSERT INTO empleados_geo
+		(nitavu, lat, lon, fecha, hora, descripcion)
+		VALUES
+		('$nitavu', '$lat', '$lon', '$fecha', '$hora','$descripcion')";
+		if ($conexion->query($sql) == TRUE)
+		{
+			//return TRUE;
+			header('location:../index.php');	
+			//echo "ok";
+		}
+		else
+		{
+			//return FALSE;
+			header('location:../index.php');	
+		}
+
+	
+	
+}
+
+?>
