@@ -1,0 +1,6 @@
+#.htacess
+# 
+
+RewriteCond %{HTTP_REFERER} !^$
+RewriteCond %{HTTP_REFERER} !^http://(www\.)?itvoc.dyndns.org:8089\.com/.*$ [NC]
+RewriteRule .* \.(gif|jpg)$ http://www.itvoc.dyndns.org:8089/stop.jpg [R,NC,L]
