@@ -1,0 +1,982 @@
+[
+    {
+      "IdColor": 1,
+      "ColorName": "Rojo Indio",
+      "WebName": "IndianRed",
+      "hex": "#CD5C5C",
+      "rgb": "205, 92, 205"
+    },
+    {
+      "IdColor": 2,
+      "ColorName": "Coral Suave",
+      "WebName": "LightCoral",
+      "hex": "#F08080",
+      "rgb": "240, 128, 128"
+    },
+    {
+      "IdColor": 3,
+      "ColorName": "Salmón",
+      "WebName": "Salmon",
+      "hex": "#FA8072",
+      "rgb": "250, 128, 114"
+    },
+    {
+      "IdColor": 4,
+      "ColorName": "Salmón oscuro",
+      "WebName": "DarkSalmon",
+      "hex": "#E9967A",
+      "rgb": "233, 150, 122"
+    },
+    {
+      "IdColor": 5,
+      "ColorName": "Salmón Suave",
+      "WebName": "LightSalmon",
+      "hex": "#FFA07A",
+      "rgb": "255, 160, 122"
+    },
+    {
+      "IdColor": 6,
+      "ColorName": "Carmesí",
+      "WebName": "Crimson",
+      "hex": "#DC143C",
+      "rgb": "220, 20, 60"
+    },
+    {
+      "IdColor": 7,
+      "ColorName": "Rojo Puro",
+      "WebName": "Red",
+      "hex": "#FF0000",
+      "rgb": "255, 0, 0"
+    },
+    {
+      "IdColor": 8,
+      "ColorName": "Rojo Fuego",
+      "WebName": "FireBrick",
+      "hex": "#B22222",
+      "rgb": "178, 34, 34"
+    },
+    {
+      "IdColor": 9,
+      "ColorName": "Rojo Oscuro",
+      "WebName": "DarkRed",
+      "hex": "#8B0000",
+      "rgb": "139, 0, 0"
+    },
+    {
+      "IdColor": 10,
+      "ColorName": "Rosa",
+      "WebName": "Pink",
+      "hex": "#FFC0CB",
+      "rgb": "255, 192, 203"
+    },
+    {
+      "IdColor": 11,
+      "ColorName": "Rosa Suave",
+      "WebName": "LightPink",
+      "hex": "#FFB6C1",
+      "rgb": "255, 182, 193"
+    },
+    {
+      "IdColor": 12,
+      "ColorName": "Rosa Cálido",
+      "WebName": "HotPink",
+      "hex": "#FF69B4",
+      "rgb": "255, 105, 180"
+    },
+    {
+      "IdColor": 13,
+      "ColorName": "Rosa Profundo",
+      "WebName": "DeepPink",
+      "hex": "#FF1493",
+      "rgb": "255, 20, 147"
+    },
+    {
+      "IdColor": 14,
+      "ColorName": "Medio Violeta Rojo",
+      "WebName": "MediumVioletRed",
+      "hex": "#C71585",
+      "rgb": "199, 21, 133"
+    },
+    {
+      "IdColor": 15,
+      "ColorName": "Rosa Pastel",
+      "WebName": "PaleVioletRed",
+      "hex": "#DB7093",
+      "rgb": "219, 112, 147"
+    },
+    {
+      "IdColor": 16,
+      "ColorName": "Salmón Suave",
+      "WebName": "LightSalmon",
+      "hex": "#FFA07A",
+      "rgb": "255, 160, 122"
+    },
+    {
+      "IdColor": 17,
+      "ColorName": "Naranja Coral",
+      "WebName": "Coral",
+      "hex": "#FF7F50",
+      "rgb": "255, 127, 80"
+    },
+    {
+      "IdColor": 18,
+      "ColorName": "Tomate",
+      "WebName": "Tomato",
+      "hex": "#FF6347",
+      "rgb": "255, 99, 71"
+    },
+    {
+      "IdColor": 19,
+      "ColorName": "Naranja Rojizo",
+      "WebName": "OrangeRed",
+      "hex": "#FF4500",
+      "rgb": "255, 69, 0"
+    },
+    {
+      "IdColor": 20,
+      "ColorName": "Naranja Oscuro",
+      "WebName": "DarkOrange",
+      "hex": "#FF8C00",
+      "rgb": "255, 140, 0"
+    },
+    {
+      "IdColor": 21,
+      "ColorName": "Naranja Puro",
+      "WebName": "Orange",
+      "hex": "#FFA500",
+      "rgb": "255, 165, 0"
+    },
+    {
+      "IdColor": 22,
+      "ColorName": "Amarillo Oro",
+      "WebName": "Gold",
+      "hex": "#FFD700",
+      "rgb": "255, 215, 0"
+    },
+    {
+      "IdColor": 23,
+      "ColorName": "Amarillo Puro",
+      "WebName": "Yellow",
+      "hex": "#FFFF00",
+      "rgb": "255, 255, 0"
+    },
+    {
+      "IdColor": 24,
+      "ColorName": "Amarillo Suave",
+      "WebName": "LightYellow",
+      "hex": "#FFFFE0",
+      "rgb": "255, 255, 224"
+    },
+    {
+      "IdColor": 25,
+      "ColorName": "Amarillo Limón",
+      "WebName": "LemonChiffon",
+      "hex": "#FFFACD",
+      "rgb": "255, 250, 205"
+    },
+    {
+      "IdColor": 26,
+      "ColorName": "Amarillo Manzana Suave",
+      "WebName": "LightGoldenrodYellow",
+      "hex": "#FAFAD2",
+      "rgb": "250, 250, 210"
+    },
+    {
+      "IdColor": 27,
+      "ColorName": "Amarillo Papaya",
+      "WebName": "PapayaWhip",
+      "hex": "#FFEFD5",
+      "rgb": "255, 239, 213"
+    },
+    {
+      "IdColor": 28,
+      "ColorName": "Amarillo Mocasín",
+      "WebName": "Moccasin",
+      "hex": "#FFE4B5",
+      "rgb": "255, 228, 181"
+    },
+    {
+      "IdColor": 29,
+      "ColorName": "Amarillo Melocotón",
+      "WebName": "PeachPuff",
+      "hex": "#FFDAB9",
+      "rgb": "255, 218, 185"
+    },
+    {
+      "IdColor": 30,
+      "ColorName": "Amarillo Oro Pálido",
+      "WebName": "PaleGoldenrod",
+      "hex": "#EEE8AA",
+      "rgb": "238, 232, 170"
+    },
+    {
+      "IdColor": 31,
+      "ColorName": "Amarillo Caqui",
+      "WebName": "Khaki",
+      "hex": "#F0E68C",
+      "rgb": "240, 230, 140"
+    },
+    {
+      "IdColor": 32,
+      "ColorName": "Amarillo Caqui Oscuro",
+      "WebName": "DarkKhaki",
+      "hex": "#BDB76B",
+      "rgb": "189, 183, 107"
+    },
+    {
+      "IdColor": 33,
+      "ColorName": "Espliego",
+      "WebName": "Lavender",
+      "hex": "#E6E6FA",
+      "rgb": "230, 230, 250"
+    },
+    {
+      "IdColor": 34,
+      "ColorName": "Cardo",
+      "WebName": "Thistle",
+      "hex": "#D8BFD8",
+      "rgb": "216, 191, 216"
+    },
+    {
+      "IdColor": 35,
+      "ColorName": "Ciruela",
+      "WebName": "Plum",
+      "hex": "#DDA0DD",
+      "rgb": "221, 160, 221"
+    },
+    {
+      "IdColor": 36,
+      "ColorName": "Violeta",
+      "WebName": "Violet",
+      "hex": "#EE82EE",
+      "rgb": "238, 130, 238"
+    },
+    {
+      "IdColor": 37,
+      "ColorName": "Orquídea",
+      "WebName": "Orchid",
+      "hex": "#DA70D6",
+      "rgb": "218, 112, 214"
+    },
+    {
+      "IdColor": 38,
+      "ColorName": "Fucsia",
+      "WebName": "Fuchsia",
+      "hex": "#FF00FF",
+      "rgb": "255, 0, 255"
+    },
+    {
+      "IdColor": 39,
+      "ColorName": "Magenta",
+      "WebName": "Magenta",
+      "hex": "#FF00FF",
+      "rgb": "255, 0, 255"
+    },
+    {
+      "IdColor": 40,
+      "ColorName": "Orquídea Medio",
+      "WebName": "MediumOrchid",
+      "hex": "#BA55D3",
+      "rgb": "186, 85, 211"
+    },
+    {
+      "IdColor": 41,
+      "ColorName": "Púrpura Medio",
+      "WebName": "MediumPurple",
+      "hex": "#9370DB",
+      "rgb": "147, 112, 219"
+    },
+    {
+      "IdColor": 42,
+      "ColorName": "Amatista",
+      "WebName": "Amethyst",
+      "hex": "#9966CC",
+      "rgb": "153, 102, 204"
+    },
+    {
+      "IdColor": 43,
+      "ColorName": "Azul Violeta",
+      "WebName": "BlueViolet",
+      "hex": "#8A2BE2",
+      "rgb": "138, 43, 226"
+    },
+    {
+      "IdColor": 44,
+      "ColorName": "Violeta Oscuro",
+      "WebName": "DarkViolet",
+      "hex": "#9400D3",
+      "rgb": "148, 0, 211"
+    },
+    {
+      "IdColor": 45,
+      "ColorName": "Orquídea Oscuro",
+      "WebName": "DarkOrchid",
+      "hex": "#9932CC",
+      "rgb": "153, 50, 204"
+    },
+    {
+      "IdColor": 46,
+      "ColorName": "Magenta Oscuro",
+      "WebName": "DarkMagenta",
+      "hex": "#8B008B",
+      "rgb": "139, 0, 139"
+    },
+    {
+      "IdColor": 47,
+      "ColorName": "Púrpura",
+      "WebName": "Purple",
+      "hex": "#800080",
+      "rgb": "128, 0, 128"
+    },
+    {
+      "IdColor": 48,
+      "ColorName": "Índigo",
+      "WebName": "Indigo",
+      "hex": "#4B0082",
+      "rgb": "75, 0, 130"
+    },
+    {
+      "IdColor": 49,
+      "ColorName": "Azul Pizarra",
+      "WebName": "SlateBlue",
+      "hex": "#6A5ACD",
+      "rgb": "106, 90, 205"
+    },
+    {
+      "IdColor": 50,
+      "ColorName": "Azul Pizarra Medio",
+      "WebName": "MediumSlateBlue",
+      "hex": "#7B68EE",
+      "rgb": "123, 104, 238"
+    },
+    {
+      "IdColor": 51,
+      "ColorName": "Azul Pizarra Oscuro",
+      "WebName": "DarkSlateBlue",
+      "hex": "#483D8B",
+      "rgb": "72, 61, 139"
+    },
+    {
+      "IdColor": 52,
+      "ColorName": "Verde Amarillento",
+      "WebName": "GreenYellow",
+      "hex": "#ADFF2F",
+      "rgb": "173, 255, 47"
+    },
+    {
+      "IdColor": 53,
+      "ColorName": "Verde Cartujano",
+      "WebName": "Chartreuse",
+      "hex": "#7FFF00",
+      "rgb": "127, 255, 0"
+    },
+    {
+      "IdColor": 54,
+      "ColorName": "Verde Césped",
+      "WebName": "LawnGreen",
+      "hex": "#7CFC00",
+      "rgb": "124, 253, 0"
+    },
+    {
+      "IdColor": 55,
+      "ColorName": "Lima",
+      "WebName": "Lime",
+      "hex": "#00FF00",
+      "rgb": "0, 255, 0"
+    },
+    {
+      "IdColor": 56,
+      "ColorName": "Verde Lima",
+      "WebName": "LimeGreen",
+      "hex": "#32CD32",
+      "rgb": "50, 205, 50"
+    },
+    {
+      "IdColor": 57,
+      "ColorName": "Verde Pálido",
+      "WebName": "PaleGreen",
+      "hex": "#98FB98",
+      "rgb": "152, 251, 152"
+    },
+    {
+      "IdColor": 58,
+      "ColorName": "Verde Claro",
+      "WebName": "LightGreen",
+      "hex": "#90EE90",
+      "rgb": "144, 238, 144"
+    },
+    {
+      "IdColor": 59,
+      "ColorName": "Verde Primavera Medio",
+      "WebName": "MediumSpringGreen",
+      "hex": "#00FA9A",
+      "rgb": "0, 250, 154"
+    },
+    {
+      "IdColor": 60,
+      "ColorName": "Verde Primavera",
+      "WebName": "SpringGreen",
+      "hex": "#00FF7F",
+      "rgb": "0, 255, 127"
+    },
+    {
+      "IdColor": 61,
+      "ColorName": "Verde Mar Medio",
+      "WebName": "MediumSeaGreen",
+      "hex": "#3CB371",
+      "rgb": "60, 179, 113"
+    },
+    {
+      "IdColor": 62,
+      "ColorName": "Verde Mar",
+      "WebName": "SeaGreen",
+      "hex": "#2E8B57",
+      "rgb": "46, 139, 87"
+    },
+    {
+      "IdColor": 63,
+      "ColorName": "Verde Bosque",
+      "WebName": "ForestGreen",
+      "hex": "#228B22",
+      "rgb": "34, 139, 34"
+    },
+    {
+      "IdColor": 64,
+      "ColorName": "Verde",
+      "WebName": "Green",
+      "hex": "#008000",
+      "rgb": "0, 128, 0"
+    },
+    {
+      "IdColor": 65,
+      "ColorName": "Verde Oscuro",
+      "WebName": "DarkGreen",
+      "hex": "#006400",
+      "rgb": "0, 100, 0"
+    },
+    {
+      "IdColor": 66,
+      "ColorName": "Amarillo Verdoso",
+      "WebName": "YellowGreen",
+      "hex": "#9ACD32",
+      "rgb": "154, 205, 50"
+    },
+    {
+      "IdColor": 67,
+      "ColorName": "Verde Oliva",
+      "WebName": "OliveDrab",
+      "hex": "#6B8E23",
+      "rgb": "107, 142, 35"
+    },
+    {
+      "IdColor": 68,
+      "ColorName": "Oliva",
+      "WebName": "Olive",
+      "hex": "#808000",
+      "rgb": "128, 128, 0"
+    },
+    {
+      "IdColor": 69,
+      "ColorName": "Verde Oliva Oscuro",
+      "WebName": "DarkOliveGreen",
+      "hex": "#556B2F",
+      "rgb": "85, 107, 47"
+    },
+    {
+      "IdColor": 70,
+      "ColorName": "Aguamarina Medio",
+      "WebName": "MediumAquamarine",
+      "hex": "#66CDAA",
+      "rgb": "102, 205, 170"
+    },
+    {
+      "IdColor": 71,
+      "ColorName": "Verde Mar Oscuro",
+      "WebName": "DarkSeaGreen",
+      "hex": "#8FBC8F",
+      "rgb": "143, 188, 143"
+    },
+    {
+      "IdColor": 72,
+      "ColorName": "Verde Mar Claro",
+      "WebName": "LightSeaGreen",
+      "hex": "#20B2AA",
+      "rgb": "32, 178, 170"
+    },
+    {
+      "IdColor": 73,
+      "ColorName": "Cyan Oscuro",
+      "WebName": "DarkCyan",
+      "hex": "#008B8B",
+      "rgb": "0, 139, 139"
+    },
+    {
+      "IdColor": 74,
+      "ColorName": "Carcel",
+      "WebName": "Teal",
+      "hex": "#008080",
+      "rgb": "0, 128, 128"
+    },
+    {
+      "IdColor": 75,
+      "ColorName": "Agua",
+      "WebName": "Aqua",
+      "hex": "#00FFFF",
+      "rgb": "0, 255, 255"
+    },
+    {
+      "IdColor": 76,
+      "ColorName": "Cyan",
+      "WebName": "Cyan",
+      "hex": "#00FFFF",
+      "rgb": "0, 255, 255"
+    },
+    {
+      "IdColor": 77,
+      "ColorName": "Cyan Suave",
+      "WebName": "LightCyan",
+      "hex": "#E0FFFF",
+      "rgb": "224, 255, 255"
+    },
+    {
+      "IdColor": 78,
+      "ColorName": "Turquesa Pastel",
+      "WebName": "PaleTurquoise",
+      "hex": "#AFEEEE",
+      "rgb": "175, 238, 238"
+    },
+    {
+      "IdColor": 79,
+      "ColorName": "Aguamarina",
+      "WebName": "Aquamarine",
+      "hex": "#7FFFD4",
+      "rgb": "127, 255, 212"
+    },
+    {
+      "IdColor": 80,
+      "ColorName": "Turquesa",
+      "WebName": "Turquoise",
+      "hex": "#40E0D0",
+      "rgb": "64, 224, 208"
+    },
+    {
+      "IdColor": 81,
+      "ColorName": "Turquesa Medio",
+      "WebName": "MediumTurquoise",
+      "hex": "#48D1CC",
+      "rgb": "72, 209, 204"
+    },
+    {
+      "IdColor": 82,
+      "ColorName": "Turquesa Oscuro",
+      "WebName": "DarkTurquoise",
+      "hex": "#00CED1",
+      "rgb": "0, 206, 209"
+    },
+    {
+      "IdColor": 83,
+      "ColorName": "Azul Cadete",
+      "WebName": "CadetBlue",
+      "hex": "#5F9EA0",
+      "rgb": "95, 158, 160"
+    },
+    {
+      "IdColor": 84,
+      "ColorName": "Azul Acero",
+      "WebName": "SteelBlue",
+      "hex": "#4682B4",
+      "rgb": "70, 130, 180"
+    },
+    {
+      "IdColor": 85,
+      "ColorName": "Azul Acero Claro",
+      "WebName": "LightSteelBlue",
+      "hex": "#B0C4DE",
+      "rgb": "176, 196, 222"
+    },
+    {
+      "IdColor": 86,
+      "ColorName": "Azul Pálido",
+      "WebName": "PowderBlue",
+      "hex": "#B0E0E6",
+      "rgb": "176, 224, 230"
+    },
+    {
+      "IdColor": 87,
+      "ColorName": "Azul Claro",
+      "WebName": "LightBlue",
+      "hex": "#ADD8E6",
+      "rgb": "173, 216, 230"
+    },
+    {
+      "IdColor": 88,
+      "ColorName": "Azul Cielo",
+      "WebName": "SkyBlue",
+      "hex": "#87CEEB",
+      "rgb": "135, 206, 235"
+    },
+    {
+      "IdColor": 89,
+      "ColorName": "Azul Cielo Claro",
+      "WebName": "LightSkyBlue",
+      "hex": "#87CEFA",
+      "rgb": "135, 206, 250"
+    },
+    {
+      "IdColor": 90,
+      "ColorName": "Azul Cielo Profundo",
+      "WebName": "DeepSkyBlue",
+      "hex": "#00BFFF",
+      "rgb": "0, 191, 255"
+    },
+    {
+      "IdColor": 91,
+      "ColorName": "Azul Capota",
+      "WebName": "DodgerBlue",
+      "hex": "#1E90FF",
+      "rgb": "30, 144, 255"
+    },
+    {
+      "IdColor": 92,
+      "ColorName": "Azul Añil",
+      "WebName": "CornflowerBlue",
+      "hex": "#6495ED",
+      "rgb": "100, 149, 237"
+    },
+    {
+      "IdColor": 93,
+      "ColorName": "Azul Pizarra Medio",
+      "WebName": "MediumSlateBlue",
+      "hex": "#7B68EE",
+      "rgb": "123, 104, 238"
+    },
+    {
+      "IdColor": 94,
+      "ColorName": "Azul Real",
+      "WebName": "RoyalBlue",
+      "hex": "#4169E1",
+      "rgb": "65, 105, 255"
+    },
+    {
+      "IdColor": 95,
+      "ColorName": "Azul",
+      "WebName": "Blue",
+      "hex": "#0000FF",
+      "rgb": "0, 0, 255"
+    },
+    {
+      "IdColor": 96,
+      "ColorName": "Azul Medio",
+      "WebName": "MediumBlue",
+      "hex": "#0000CD",
+      "rgb": "0, 0, 205"
+    },
+    {
+      "IdColor": 97,
+      "ColorName": "Azul Oscuro",
+      "WebName": "DarkBlue",
+      "hex": "#00008B",
+      "rgb": "0, 0, 139"
+    },
+    {
+      "IdColor": 98,
+      "ColorName": "Azul Naval",
+      "WebName": "Navy",
+      "hex": "#000080",
+      "rgb": "0, 0, 128"
+    },
+    {
+      "IdColor": 99,
+      "ColorName": "Azul Media Noche",
+      "WebName": "MidnightBlue",
+      "hex": "#191970",
+      "rgb": "25, 25, 112"
+    },
+    {
+      "IdColor": 100,
+      "ColorName": "Seda de Maiz",
+      "WebName": "Cornsilk",
+      "hex": "#FFF8DC",
+      "rgb": "255, 248, 220"
+    },
+    {
+      "IdColor": 101,
+      "ColorName": "Almendra",
+      "WebName": "BlanchedAlmond",
+      "hex": "#FFEBCD",
+      "rgb": "255, 235, 205"
+    },
+    {
+      "IdColor": 102,
+      "ColorName": "Bizcocho",
+      "WebName": "Bisque",
+      "hex": "#FFE4C4",
+      "rgb": "255, 228, 196"
+    },
+    {
+      "IdColor": 103,
+      "ColorName": "Marrón Navaja",
+      "WebName": "NavajoWhite",
+      "hex": "#FFDEAD",
+      "rgb": "255, 222, 173"
+    },
+    {
+      "IdColor": 104,
+      "ColorName": "Marrón Trigo",
+      "WebName": "Wheat",
+      "hex": "#F5DEB3",
+      "rgb": "245, 222, 179"
+    },
+    {
+      "IdColor": 105,
+      "ColorName": "Madera Fuerte",
+      "WebName": "BurlyWood",
+      "hex": "#DEB887",
+      "rgb": "222, 184, 135"
+    },
+    {
+      "IdColor": 106,
+      "ColorName": "Marrón bronceado",
+      "WebName": "Tan",
+      "hex": "#D2B48C",
+      "rgb": "210, 180, 140"
+    },
+    {
+      "IdColor": 107,
+      "ColorName": "Marrón Atractivo",
+      "WebName": "RosyBrown",
+      "hex": "#BC8F8F",
+      "rgb": "188, 143, 143"
+    },
+    {
+      "IdColor": 108,
+      "ColorName": "Marrón Arenoso",
+      "WebName": "SandyBrown",
+      "hex": "#F4A460",
+      "rgb": "224, 164, 96"
+    },
+    {
+      "IdColor": 109,
+      "ColorName": "Vara de Oro",
+      "WebName": "Goldenrod",
+      "hex": "#DAA520",
+      "rgb": "218, 165, 32"
+    },
+    {
+      "IdColor": 110,
+      "ColorName": "Vara de Oro Oscura",
+      "WebName": "DarkGoldenrod",
+      "hex": "#B8860B",
+      "rgb": "184, 134, 11"
+    },
+    {
+      "IdColor": 111,
+      "ColorName": "Marrón Perú",
+      "WebName": "Peru",
+      "hex": "#CD853F",
+      "rgb": "205, 133, 63"
+    },
+    {
+      "IdColor": 112,
+      "ColorName": "Marrón Chocolate",
+      "WebName": "Chocolate",
+      "hex": "#D2691E",
+      "rgb": "210, 105, 30"
+    },
+    {
+      "IdColor": 113,
+      "ColorName": "Marrón Silla",
+      "WebName": "SaddleBrown",
+      "hex": "#8B4513",
+      "rgb": "139, 69, 19"
+    },
+    {
+      "IdColor": 114,
+      "ColorName": "Marrón Siena",
+      "WebName": "Sienna",
+      "hex": "#A0522D",
+      "rgb": "160, 82, 45"
+    },
+    {
+      "IdColor": 115,
+      "ColorName": "Marrón",
+      "WebName": "Brown",
+      "hex": "#A52A2A",
+      "rgb": "165, 42, 42"
+    },
+    {
+      "IdColor": 116,
+      "ColorName": "Castaño",
+      "WebName": "Maroon",
+      "hex": "#800000",
+      "rgb": "128, 0, 0"
+    },
+    {
+      "IdColor": 117,
+      "ColorName": "Miel Crema",
+      "WebName": "Honeydew",
+      "hex": "#F0FFF0",
+      "rgb": "240, 255, 240"
+    },
+    {
+      "IdColor": 118,
+      "ColorName": "Menta Crema",
+      "WebName": "MintCream",
+      "hex": "#F5FFFA",
+      "rgb": "245, 255, 250"
+    },
+    {
+      "IdColor": 119,
+      "ColorName": "Azul Celeste",
+      "WebName": "Azure",
+      "hex": "#F0FFFF",
+      "rgb": "240, 255, 255"
+    },
+    {
+      "IdColor": 120,
+      "ColorName": "Azul Alicia",
+      "WebName": "AliceBlue",
+      "hex": "#F0F8FF",
+      "rgb": "240, 248, 255"
+    },
+    {
+      "IdColor": 121,
+      "ColorName": "Blanco Fantasma",
+      "WebName": "GhostWhite",
+      "hex": "#F8F8FF",
+      "rgb": "248, 248, 255"
+    },
+    {
+      "IdColor": 122,
+      "ColorName": "Blanco Humo",
+      "WebName": "WhiteSmoke",
+      "hex": "#F5F5F5",
+      "rgb": "245, 245, 245"
+    },
+    {
+      "IdColor": 123,
+      "ColorName": "Concha de Mar",
+      "WebName": "Seashell",
+      "hex": "#FFF5EE",
+      "rgb": "255, 245, 238"
+    },
+    {
+      "IdColor": 124,
+      "ColorName": "Beige",
+      "WebName": "Beige",
+      "hex": "#F5F5DC",
+      "rgb": "245, 245, 220"
+    },
+    {
+      "IdColor": 125,
+      "ColorName": "Blanco Cordón Viejo",
+      "WebName": "OldLace",
+      "hex": "#FDF5E6",
+      "rgb": "253, 245, 230"
+    },
+    {
+      "IdColor": 126,
+      "ColorName": "Blanco Floral",
+      "WebName": "FloralWhite",
+      "hex": "#FFFAF0",
+      "rgb": "255, 250, 240"
+    },
+    {
+      "IdColor": 127,
+      "ColorName": "Blanco Marfil",
+      "WebName": "Ivory",
+      "hex": "#FFFFF0",
+      "rgb": "255, 255, 240"
+    },
+    {
+      "IdColor": 128,
+      "ColorName": "Blanco Antigüo",
+      "WebName": "AntiqueWhite",
+      "hex": "#FAEBD7",
+      "rgb": "250, 235, 215"
+    },
+    {
+      "IdColor": 129,
+      "ColorName": "Blanco Lino",
+      "WebName": "Linen",
+      "hex": "#FAF0E6",
+      "rgb": "250, 240, 230"
+    },
+    {
+      "IdColor": 130,
+      "ColorName": "Lavanda",
+      "WebName": "LavenderBlush",
+      "hex": "#FFF0F5",
+      "rgb": "255, 240, 245"
+    },
+    {
+      "IdColor": 131,
+      "ColorName": "Rosa Palo",
+      "WebName": "MistyRose",
+      "hex": "#FFE4E1",
+      "rgb": "255, 228, 225"
+    },
+    {
+      "IdColor": 132,
+      "ColorName": "Gainsboro",
+      "WebName": "Gainsboro",
+      "hex": "#DCDCDC",
+      "rgb": "220, 220, 220"
+    },
+    {
+      "IdColor": 133,
+      "ColorName": "Gris Claro",
+      "WebName": "LightGrey",
+      "hex": "#D3D3D3",
+      "rgb": "211, 211, 211"
+    },
+    {
+      "IdColor": 134,
+      "ColorName": "Gris Plata",
+      "WebName": "Silver",
+      "hex": "#C0C0C0",
+      "rgb": "192, 192, 192"
+    },
+    {
+      "IdColor": 135,
+      "ColorName": "Gris Oscuro",
+      "WebName": "DarkGray",
+      "hex": "#A9A9A9",
+      "rgb": "169, 169, 169"
+    },
+    {
+      "IdColor": 136,
+      "ColorName": "Gris",
+      "WebName": "Gray",
+      "hex": "#808080",
+      "rgb": "128, 128, 128"
+    },
+    {
+      "IdColor": 137,
+      "ColorName": "Gris Ténue",
+      "WebName": "DimGray",
+      "hex": "#696969",
+      "rgb": "105, 105, 105"
+    },
+    {
+      "IdColor": 138,
+      "ColorName": "Gris Pizarra Claro",
+      "WebName": "LightSlateGray",
+      "hex": "#778899",
+      "rgb": "119, 136, 153"
+    },
+    {
+      "IdColor": 139,
+      "ColorName": "Gris Pizarra",
+      "WebName": "SlateGray",
+      "hex": "#708090",
+      "rgb": "112, 128, 144"
+    },
+    {
+      "IdColor": 140,
+      "ColorName": "Gris Pizarra Oscuro",
+      "WebName": "DarkSlateGray",
+      "hex": "#2F4F4F",
+      "rgb": "47, 79, 79"
+    }
+  ]

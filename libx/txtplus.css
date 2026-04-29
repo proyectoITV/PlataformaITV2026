@@ -1,0 +1,28 @@
+
+
+@font-face {
+	font-family: "Regular";
+	src: url("HelveticaNeueLTStd-Lt.otf") format("truetype")
+}
+
+@font-face {
+	font-family: "Light";
+	src: url("OpenSans-Light.ttf") format("truetype")
+}
+
+@font-face {
+	font-family: "ExtraBold";
+	src: url("HelveticaNeueLTStd-Bd.otf") format("truetype")
+}
+
+html {
+	  transition: all .5s ease-in-out;
+}
+body {
+	font-family: "Regular";
+	margin: 10px;
+	text-align: left;
+	background-color: white;
+	cursor: text;
+}
+

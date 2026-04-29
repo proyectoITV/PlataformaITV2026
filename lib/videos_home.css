@@ -1,0 +1,202 @@
+
+
+#infomensajes{
+width: 500px;
+}
+
+
+#infomensajes_div {
+width: 48%;
+background-color: transparent;
+display: inline-block;
+vertical-align: middle;
+margin-right: 4px;
+color: gray;
+}
+
+
+
+#infomensajes img {
+width: 100%;
+height: inherit;
+transition: all .2s ease-in-out;
+border-radius: 10px;
+}
+
+
+form {
+	text-align: center
+}
+
+h1 {
+	background-color: #003359;
+	color: white;
+	padding: 10px;
+	margin-top: 0px;
+	border-bottom-color: white;
+	border-bottom-width: 1px;
+	border-bottom-style: solid
+}
+
+body {
+	margin: 0;
+	background-color: black;
+	background-image: url("../login/wallpaper.jpg");
+	background-size: 500%;
+}
+
+video {
+
+		background-image: url("../login/wallpaper.jpg");
+	background-size: 100%;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	min-width: 100%;
+	min-height: 100%;
+	width: auto;
+	height: auto;
+	z-index: -100;
+	transform: translateX(-50%) translateY(-50%);
+	background-size: cover;
+	transition: 5s opacity;
+	opacity: 0.9
+}
+
+video:hover {
+	opacity: 1
+}
+
+.stopfade {
+	opacity: .9
+}
+
+#barra table {
+	width: 100%;
+	padding: 0px;
+}
+#logout {
+	color:gray;
+	font-family: "Compacta";
+	font-size: 12pt;
+	width: 100%;
+	text-align: rigth;
+	opacity: 0.7;
+}
+#logout:hover {
+	color: red;
+	opacity: 1;
+
+}
+label {
+	display: none
+}
+
+h5 {
+	background-color: black;
+	color: white;
+	padding: 4px;
+	padding-bottom: 0px;
+}
+
+#barra {
+	background-color: gray;
+	opacity: 0.6;
+	margin-top:-60px;
+}
+
+input[type="text"], input[type="password"] {
+	background-color: transparent;
+	border: 0px;	
+	color: gray;
+}
+#barra:hover {
+	background-color: white;
+	opacity: 1;
+	margin-top:0px;
+	transition: 0.5s all;
+}
+
+#barra form div {
+	width: 20%;
+	display: inline-block
+}
+
+#barra form span {
+	width: 190px;
+	display: inline-block;
+	padding: 4px
+}
+
+.logout_btn {
+	width:20px; height: 20px;
+}
+#barra form span img {
+	width: 180px
+}
+
+.logo_itavu {
+	width: 30%;
+	float: center
+}
+
+#polina {
+	font-weight: 100;
+	background-color: white;
+	opacity: 0.9;
+	color: black;
+	width: 25%;
+	margin: 2rem;
+	float: right;
+	border-radius: 10px;
+	padding: 10px
+}
+
+#polina:hover {
+	opacity: 1
+}
+
+@media only screen and (max-width:800px) {
+
+
+
+
+	#bgvid {
+		display: none
+	}
+
+	#polina {
+		opacity: 1;
+		width: 85%;
+		float: none;
+		position: relative;
+		margin: 10px
+	}
+
+	#llenar {
+	}
+
+}
+
+@media only screen and (max-width:500px) {
+
+#barra {
+	background-color: gray;
+	opacity: 0.6;
+	margin-top:-50px;
+}
+
+	#barra form span {
+		display: none
+	}
+
+	#barra form span img {
+		display: none
+	}
+
+.logout_btn {
+	margin-top: 6px;
+	width:20px; height: 30px;
+}
+
+}

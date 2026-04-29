@@ -1,0 +1,23 @@
+.form-group {
+    display: inline-block;
+    width: 30%;
+    padding: 2px;
+}
+
+@media only screen and (max-width:800px) {
+    .form-group {
+        display: inline-block;
+        width: 42%;
+        padding: 2px;
+    }
+
+}
+
+@media only screen and (max-width:600px) {
+
+    .form-group {
+    display: inline-block;
+    width: 98%;
+    padding: 2px;
+    }
+}

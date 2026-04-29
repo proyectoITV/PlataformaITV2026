@@ -1,0 +1,25 @@
+#icon_ayuda{
+  width: 200px; background-color: red;
+}
+
+
+
+#icon_ayuda_tapa  {
+  top:0px;position: absolute; width:100px; z-index: 1002;  
+  animation : ayuda_tapa_ani 0.1s ease infinite
+}
+#icon_ayuda_base  {
+  top:0px;position: absolute; width:100px; z-index: 1001;
+  animation : ayuda_tapa_base 1s ease infinite
+}
+#icon_ayuda_img  {
+  top: 0px;position: absolute; width:100px; z-index: 1000;
+
+}
+
+#icon_ayuda_tapa {
+ 
+}
+
+@keyframes ayuda_tapa_ani {  from { opacity: 0.3; }  to { opacity: 0; } }
+@keyframes ayuda_tapa_base {  from { opacity: 1; }  to { opacity: 0; } }

@@ -1,0 +1,473 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>ALDAMA.kml</name>
+	<Style id="IconStyle0036">
+		<IconStyle>
+			<scale>0.25</scale>
+			<Icon>
+				<href>C:/Users/ITV-OC-096/AppData/LocalLow/Google/GoogleEarth/Layer0_Symbol_28ddba30_0.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<scale>0.666667</scale>
+		</LabelStyle>
+		<PolyStyle>
+			<color>ff000000</color>
+			<outline>0</outline>
+		</PolyStyle>
+	</Style>
+	<Style id="PolyStyle00">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>7f343434</color>
+		</LineStyle>
+		<PolyStyle>
+			<color>7fe65c00</color>
+		</PolyStyle>
+	</Style>
+	<Style id="PolyStyle01">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>7f343434</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>7f00ff55</color>
+		</PolyStyle>
+	</Style>
+	<Folder id="FeatureLayer0">
+		<name>ALDAMA</name>
+		<open>1</open>
+		<Snippet maxLines="0"></Snippet>
+		<Placemark id="ID_00016">
+			<name>DEL VALLE</name>
+			<open>1</open>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>DEL VALLE</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>16</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>FID_POLY_D</td>
+
+<td>16</td>
+
+</tr>
+
+<tr>
+
+<td>Id</td>
+
+<td>2</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Layer</td>
+
+<td>DEL VALLE</td>
+
+</tr>
+
+<tr>
+
+<td>MUNICIPIO</td>
+
+<td>ALDAMA</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>TIPO_PROP</td>
+
+<td>FRACCIONAMIENTO</td>
+
+</tr>
+
+<tr>
+
+<td>SUPERFICIE</td>
+
+<td></td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>PROGAMA</td>
+
+<td>SUELO LEGAL</td>
+
+</tr>
+
+<tr>
+
+<td>ORIG_FID</td>
+
+<td>16</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle0036</styleUrl>
+			<Point>
+				<coordinates>-98.06161901976074,22.91740357291526,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00015">
+			<name>BALTAZAR LEAL</name>
+			<open>1</open>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>BALTAZAR LEAL</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>15</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>FID_POLY_D</td>
+
+<td>15</td>
+
+</tr>
+
+<tr>
+
+<td>Id</td>
+
+<td>1</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Layer</td>
+
+<td>BALTAZAR LEAL</td>
+
+</tr>
+
+<tr>
+
+<td>MUNICIPIO</td>
+
+<td>ALDAMA</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>TIPO_PROP</td>
+
+<td>BREÑA</td>
+
+</tr>
+
+<tr>
+
+<td>SUPERFICIE</td>
+
+<td>15-26-44.00</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>PROGAMA</td>
+
+<td></td>
+
+</tr>
+
+<tr>
+
+<td>ORIG_FID</td>
+
+<td>15</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle0036</styleUrl>
+			<Point>
+				<coordinates>-98.08797084016257,22.91219637985913,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00000">
+			<name>BALTAZAR LEAL</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>BALTAZAR LEAL</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>Id</td>
+
+<td>1</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>NOM_RES</td>
+
+<td>BALTAZAR LEAL</td>
+
+</tr>
+
+<tr>
+
+<td>MUNICIPIO</td>
+
+<td>ALDAMA</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>TIPO_PROP</td>
+
+<td>BREÑA</td>
+
+</tr>
+
+<tr>
+
+<td>SUPERFICIE</td>
+
+<td>15-26-44.00</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#PolyStyle00</styleUrl>
+			<MultiGeometry>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								-98.08795468749946,22.91335669235615,0 -98.08874399512544,22.91425287699559,0 -98.09114680074397,22.91262931418649,0 -98.0896916325074,22.91090839549455,0 -98.08923261109479,22.9103565427208,0 -98.0874399461575,22.91163179626919,0 -98.08584512440366,22.91030876380364,0 -98.08566025791318,22.91082224643266,0 -98.08509965066064,22.91070165097467,0 -98.08512494131014,22.91282501974559,0 -98.08553502466631,22.91295559174612,0 -98.08626071402227,22.91313204199122,0 -98.08640902851555,22.91314577395298,0 -98.08672084013672,22.91315291889037,0 -98.08676166722792,22.91315514894924,0 -98.08677479838943,22.91315488571399,0 -98.08795468749946,22.91335669235615,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</MultiGeometry>
+		</Placemark>
+		<Placemark id="ID_00001">
+			<name>DEL VALLE</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>DEL VALLE</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>Id</td>
+
+<td>2</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>NOM_RES</td>
+
+<td>DEL VALLE</td>
+
+</tr>
+
+<tr>
+
+<td>MUNICIPIO</td>
+
+<td>ALDAMA</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>TIPO_PROP</td>
+
+<td>FRACCIONAMIENTO</td>
+
+</tr>
+
+<tr>
+
+<td>SUPERFICIE</td>
+
+<td></td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#PolyStyle01</styleUrl>
+			<MultiGeometry>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								-98.06185764024137,22.92034804359652,122.9691000000021 -98.06312197976961,22.92064088724928,122.9691000000021 -98.06434336890422,22.91616693195594,122.9691000000021 -98.06428530079106,22.9161419839001,122.9691000000021 -98.0597214313954,22.91418523047438,122.9691000000021 -98.05979880796703,22.91482613159243,122.9691000000021 -98.0593261690761,22.91466304632554,122.9691000000021 -98.05941690342274,22.91594702135227,122.9691000000021 -98.05968013843882,22.91968624818447,122.9691000000021 -98.06140375558272,22.91970321523514,122.9691000000021 -98.06143015797865,22.91957464823755,122.9691000000021 -98.06201248917128,22.91970780716377,122.9691000000021 -98.06185764024137,22.92034804359652,122.9691000000021 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</MultiGeometry>
+		</Placemark>
+	</Folder>
+</Document>
+</kml>

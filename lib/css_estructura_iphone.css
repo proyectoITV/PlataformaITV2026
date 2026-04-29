@@ -1,0 +1,133 @@
+ 
+ 
+ #pizarra_controles {
+     background-color: black;
+     color: white;
+     bottom: 50px;
+ }
+ 
+ #req_contenedor {
+     width: 100%;
+ }
+ 
+ #aplicaciones_top {
+     overflow-x: scroll;
+     overflow-y: hidden;
+     /*  white-space: nowrap;*/
+     display: inline-block;
+     /*flex-wrap: nowrap;*/
+     display: inline-flex;
+     overflow-x: auto;
+     overflow: auto;
+     -webkit-overflow-scrolling: touch;
+     /*display: grid;
+  grid-template-columns: 10% 10% 10% 10% 10% 10% 10% 10% 10% 10% ;
+  grid-template-rows: 200px 200px 200px 200px 200px  200px 200px 200px 200px 200px;*/
+     background-color: transparent;
+     border-radius: 0px;
+     -moz-box-shadow: 0px 0px 0px #CDCDCD;
+     -webkit-box-shadow: 0px 0px 0px #CDCDCD;
+     box-shadow: 0px 0px 0px #CDCDCD;
+     vertical-align: top;
+     overflow: auto;
+     width: 300px;
+ }
+ 
+ #aplicaciones_top article {
+     display: inline-block;
+     width: 100px;
+     background-color: transparent;
+     background-color: white;
+     margin: 10px;
+     flex: 0 0 auto;
+     opacity: 1;
+     margin-left: 10px;
+     margin-right: 10px;
+ }
+ 
+ 
+ 
+ #aplicaciones_top article a img {
+     width: 100%;
+ }
+ 
+ #aplicaciones_top article a img:hover {
+     opacity: 1;
+     /* -webkit-transform: scale(1.2); */
+     z-index: 500000;
+     float: top;
+     background-color: #E6E6E6;
+     transition: all 0.5s ease-in-out
+ }
+
+#buscarReporte{
+    width: 90%;
+    top: 7%;
+ }
+#graficaReportes{
+    width: 80%;    
+}
+#reporteador_pendientes1{
+    width: 90%;
+}
+#reporteador_pendientes2{
+    width: 90%;
+}
+#reporteador_pendientes3{
+    width: 90%;
+}
+#reporteador_pendientes4{
+    width: 90%;
+}
+#reporteador_pendientes5{
+    width: 90%;
+}
+.btnCerrar{
+    width: 55px;
+    height: 55px;
+    background-color: transparent;
+    border-width: 0px;
+   /* margin-left: 60%;*/
+    cursor: pointer;
+    position: relative;
+    top: 6%;
+    left: 50%;
+    z-index: 1;
+}
+
+#ventanaReporte{
+    position: absolute;
+    background-color: rgb(222, 226, 230);
+    border: solid #FFF 1px;
+    /*width: 70%;
+    height: 25%;
+    top: 10%;
+    left: 50%;*/
+    margin-left: -35%;
+    padding: 10px;
+}
+#boton{
+    background-color: red;
+}
+.centrar_padreReportes{
+    height: 15%;
+    display: flex;
+    justify-content: center;
+    align-items: center
+}
+.centrar_hijoReportes{
+    width: 100%
+}
+
+#ventanaModificar{
+    position: absolute;
+    background-color: rgb(222, 226, 230);
+    border: solid #FFF 1px;
+    border-radius: 10px;
+    /*width: 70%;
+    height: 50%;
+    top: 18%;
+    left: 50%;*/
+    margin-left: -35%;
+    padding: 10px;
+}

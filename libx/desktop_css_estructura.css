@@ -1,0 +1,73 @@
+#desktop_form_login{
+	background-color: transparent;
+	width: 100%;
+	text-align: center;
+
+}
+
+#desktop_form_login form {
+	width: 50%;
+	float: none;
+	top: none;
+	right: none;
+	display: inline-block;
+	margin-top: 100px;
+
+	border-radius: none;
+
+
+}
+
+#desktop_form_login img {
+	display: none;
+}
+
+#desktop_form_login input[type="text"],
+#desktop_form_login input[type="password"],
+#desktop_form_login input[type="number"],
+#desktop_form_login input[type="date"],
+#desktop_form_login input[type="time"]
+
+ {
+	font-size: 20pt;
+}
+
+
+
+#portada_contenido {
+	width: 100%;
+	background-color: transparent;
+}
+
+#aplicaciones {
+	width: 100%;
+}
+#aplicaciones  label {}
+#aplicaciones article {}
+#aplicaciones article a {}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@media only screen and (max-width:800px) {
+
+
+#desktop_form_login form {
+	width: 100%;
+	display: inline-block;
+	margin-top: 0px;
+
+
+}
+
+}

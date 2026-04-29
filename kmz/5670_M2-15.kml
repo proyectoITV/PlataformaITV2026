@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>GUSTAVO DIAZ ORDAZ.kml</name>
+	<Style id="PolyStyle00">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>7f343434</color>
+			<width>0.4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>7f00ff55</color>
+		</PolyStyle>
+	</Style>
+	<Style id="PolyStyle01">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>7f343434</color>
+		</LineStyle>
+		<PolyStyle>
+			<color>7fe65c00</color>
+		</PolyStyle>
+	</Style>
+	<Folder id="FeatureLayer0">
+		<name>GUSTAVO DIAZ ORDAZ</name>
+		<open>1</open>
+		<Snippet maxLines="0"></Snippet>
+		<Placemark id="ID_00000">
+			<name>SAN JOAQUIN DEL MONTE</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>SAN JOAQUIN DEL MONTE</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>Id</td>
+
+<td>16</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>NOM_RES</td>
+
+<td>SAN JOAQUIN DEL MONTE</td>
+
+</tr>
+
+<tr>
+
+<td>MUNICIPIO</td>
+
+<td>GUSTAVO DIAZ ORDAZ</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>TIPO_PROP</td>
+
+<td>FRACCIONAMIENTO</td>
+
+</tr>
+
+<tr>
+
+<td>SUPERFICIE</td>
+
+<td></td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#PolyStyle00</styleUrl>
+			<MultiGeometry>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								-98.59687993874567,26.21763181874186,0 -98.5996252696004,26.21831437521643,0 -98.59979456610716,26.21800417559392,0 -98.59983038397516,26.21491037692247,0 -98.59787256076663,26.21439936939309,0 -98.59687993874567,26.21763181874186,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</MultiGeometry>
+		</Placemark>
+		<Placemark id="ID_00001">
+			<name>SAN MIGUEL NUEVO</name>
+			<Snippet maxLines="0"></Snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>SAN MIGUEL NUEVO</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>Id</td>
+
+<td>17</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>NOM_RES</td>
+
+<td>SAN MIGUEL NUEVO</td>
+
+</tr>
+
+<tr>
+
+<td>MUNICIPIO</td>
+
+<td>GUSTAVO DIAZ ORDAZ</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>TIPO_PROP</td>
+
+<td>BREÑA</td>
+
+</tr>
+
+<tr>
+
+<td>SUPERFICIE</td>
+
+<td>13-06-55.00</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#PolyStyle01</styleUrl>
+			<MultiGeometry>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								-98.59348641182947,26.24652202376282,0 -98.59406779129344,26.24782250609199,0 -98.59482572392734,26.24749443281687,0 -98.59494931267793,26.24705449631095,0 -98.59499928190839,26.24672442431598,0 -98.59507366346594,26.24639442018902,0 -98.59519686868786,26.24606455447782,0 -98.59532022570508,26.24569065983424,0 -98.5954926343564,26.24525086021574,0 -98.5955666315157,26.24503092685639,0 -98.59659481993649,26.24419727620764,0 -98.59701019937873,26.24408837053395,0 -98.59739260697837,26.23937839438383,0 -98.59585267556673,26.23996845597746,0 -98.59522616133255,26.24465572586993,0 -98.59363694280242,26.2453556949796,0 -98.59348641182947,26.24652202376282,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</MultiGeometry>
+		</Placemark>
+	</Folder>
+</Document>
+</kml>

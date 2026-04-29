@@ -1,0 +1,109 @@
+/*HOJA DE ESTILO PERSONALIZADA*/
+#mandantes {
+
+}
+
+#mandante_datos {
+	background-color: white;
+	border: 1px #E4E4E4 solid;
+	border-radius: 5px;
+
+	width: 40%;
+	display: inline-block;
+	margin: 5px;
+}
+
+#mandante_cobro{
+	background-color: white;
+	border: 1px #E4E4E4 solid;
+	border-radius: 5px;
+
+	width: 40%;
+	display: inline-block;
+	margin: 5px;
+}
+
+#mandante_adm2{
+
+}
+
+#mandante_adm1{
+
+}
+
+.btn-identidad-color1 {
+	padding: .375rem .75rem;
+	border-radius: .25rem;
+	background-color: #990000;
+	color: #bc955c;
+	transition: background-color .15s ease-in-out;
+	text-decoration: none;
+  }
+  
+  .btn-bootstrap:hover, .btn-bootstrap:focus {
+	background-color: #990000;
+  }
+  
+  .btn-bootstrap:active {
+	background-color: #990000;
+  }    
+
+  .btn-identidad-color2 {
+	padding: .375rem .75rem;
+	border-radius: .25rem;
+	background-color: #bc955c;
+	color: #fff;
+	transition: background-color .15s ease-in-out;
+	text-decoration: none;
+  }
+  
+  .btn-bootstrap:hover, .btn-bootstrap:focus {
+	background-color: #bc955c;
+  }
+  
+  .btn-bootstrap:active {
+	background-color: #bc955c;
+  }    
+
+  .btn-identidad-color3 {
+	padding: .375rem .75rem;
+	border-radius: .25rem;
+	background-color: #ddc9a3;
+	color: #54565a;
+	transition: background-color .15s ease-in-out;
+	text-decoration: none;
+  }
+  
+  .btn-bootstrap:hover, .btn-bootstrap:focus {
+	background-color: #ddc9a3;
+  }
+  
+  .btn-bootstrap:active {
+	background-color: #ddc9a3;
+  }    
+
+  .btn-identidad-color4 {
+	padding: .375rem .75rem;
+	border-radius: .25rem;
+	background-color: #54565a;
+	color: #fff;
+	transition: background-color .15s ease-in-out;
+	text-decoration: none;
+  }
+  
+  .btn-bootstrap:hover, .btn-bootstrap:focus {
+	background-color: #54565a;
+  }
+  
+  .btn-bootstrap:active {
+	background-color: #54565a;
+  }     
+
+
+/*Reglas para Modo Movil */
+@media only screen and (max-width:500px) {
+
+
+
+
+}

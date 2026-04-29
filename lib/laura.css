@@ -1,0 +1,192 @@
+/*HOJA DE ESTILO PERSONALIZADA*/
+
+#diseño1
+{
+    height: 35%;
+    overflow: auto;
+    width: 80%;
+}   
+
+  .EncabezadoFijo
+{
+ 
+  width: 100%; 
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+ .EncabezadoFijo thead {
+  background-color: rgb(37, 154, 221);
+  color: #FDFDFD;
+}
+ .EncabezadoFijo thead tr {
+  display: block;
+  position: relative;
+}
+.EncabezadoFijo tbody {
+  display: block;
+  overflow: auto;
+  width: 100%;
+  height: 300px;
+}   
+
+
+.accordionProg {
+  background-color: #eee;
+  color: #444;
+  cursor: pointer;
+  padding: 0px;
+  width: 100%;
+  /* text-align: left; */
+  border: none;
+  outline: none;
+  transition: 0.4s;
+  
+}
+
+
+.active, .accordionProg:hover {
+  background-color: #fafafa;
+  color:rgb(2, 2, 2);
+  transition:all 0.5s ease;
+  
+  
+  
+}
+
+.colProg{
+  background-color: rgb(245, 245, 250);
+  color: rgb(0, 0, 0);
+  display: block;
+  position: absolute;
+  writing-mode: horizontal-tb;
+  /*right: -5px;
+  top: 15px;
+   transform: rotate(0deg);
+  -webkit-transform: rotate(0deg);
+  -moz-transform: rotate(0deg);
+  */
+ 
+}
+
+div#lauraxxx{
+  /*  se centra en toda la pag */
+  margin:auto; 
+  width: 960px;
+  height: 600px;
+  background-color: cadetblue;
+}
+
+/*Reglas para Modo Movil */
+@media only screen and (max-width:500px) {
+
+}
+
+.centrarxx{
+   /*  margin: 1rem;
+    padding: 1rem;    
+   
+    text-align: center; */
+    display:block;
+    margin-left: auto;
+    margin-right: auto;
+    /* background-color: cadetblue */
+}
+
+.controlesle{
+  height: 30px; 
+  font-size: 13px;
+}
+
+.textfinanc{
+  text-align:end;
+  height: 25px;
+  font-size: 13px;
+  
+}
+
+.tablexxx{
+  color: aqua;
+}
+
+/* desarrolladores*/
+@media screen and (max-width: 480px) {
+  .admin-sidebar{
+      display: none;
+  }
+}
+
+@media screen and (min-width: 480px) {
+  .admin-tabs{
+      display: none;
+  }
+}
+
+.admin-sidebar{
+  max-width: 13%;
+}
+
+#sidebar-admin{
+  position: fixed;
+}
+
+.admin-sidebar-item{
+  padding: 1em;
+  border-bottom: 1px solid white;
+}
+
+.admin-nav{
+  /*background: #49C2B3;*/
+  background: #337CB1;
+}
+
+.admin-nav-item{
+  color: white;
+  font-weight:bold;
+}
+
+.admin-nav-item:hover{
+  color: white;
+  /* background: #41aea1; */
+  background: #337CB1;
+}
+
+.admin-nav-item.active{
+  background: #337CB1 !important;
+  /*background: #53FFE7 !important;*/
+  color: white !important;
+}
+
+.admin-header-block{
+ background: #434449;
+ color: white !important;
+ text-align: left;
+  padding: 20px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  border-color: #ddd;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.admin-filter-button{
+  background: #78B404;
+  color: white !important;
+  font-weight: bold;
+}
+
+.admin-user-card{
+  margin-bottom: 10px;
+}
+
+
+.letraazul {
+  color:blue;
+  font-size:8pt; 
+  margin-bottom: 6pt;
+}
+
+.inputestandar{
+  width: 300;
+  height: 24;
+  font-size: 12;
+}

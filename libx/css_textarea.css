@@ -1,0 +1,16 @@
+@font-face { font-family: "Regular"; src: url("HelveticaNeueLTStd-Lt.otf") format("truetype") }
+@font-face { font-family: "Light"; src: url("OpenSans-Light.ttf") format("truetype") }
+@font-face { font-family: "ExtraBold"; src: url("HelveticaNeueLTStd-Bd.otf") format("truetype") }
+@font-face { font-family: "Compacta"; src: url("Abel-Regular.ttf") format("truetype") }
+@font-face { font-family: "Garigoleada"; src: url("Windsong.ttf") format("truetype") }
+
+body {
+	font-size: 12pt;
+	font-family: "Light";
+	color:black;
+	background-color: white;
+	margin-left: 10px;
+}
+
+@media only screen and (max-width:500px) {
+}

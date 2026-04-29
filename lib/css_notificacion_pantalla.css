@@ -1,0 +1,28 @@
+@font-face { font-family: "Regular"; src: url("HelveticaNeueLTStd-Lt.otf") format("truetype") }
+@font-face { font-family: "Light"; src: url("OpenSans-Light.ttf") format("truetype") }
+@font-face { font-family: "ExtraBold"; src: url("HelveticaNeueLTStd-Bd.otf") format("truetype") }
+* { font-family: "Regular"; font-size: 12pt; margin: 0px }
+body { background-color: #C6CACE; margin-right: -300px; margin-left: -300px; }
+.logo_impreso { width: 300px; }
+#documento { padding: 10px; }
+#documento table { width: 100%; }
+label { font-family: "ExtraBold" }
+.firma { margin-top: 20px; text-align: center; }
+.atentamente { text-transform: uppercase; letter-spacing: 10px; }
+.contenido p { text-align: justify-all; }
+.encabezado { font-size: 10pt; }
+.firma_img { width: 40%; }
+.pie { font-family: "Light"; font-size: 6pt; }
+.imgt { display: block; width: 100%; }
+body { text-align: center; background-color: #c6cace; }
+table { width: 100%; }
+@media only screen and (max-width:800px) {
+	table { width: 100%; }
+	.logo_impreso { width: 200px; }
+}
+@media only screen and (max-width:500px) {
+	table { width: 150%; }
+	.logo_impreso { width: 150px; }
+	* { font-family: "Regular"; font-size: 10pt; margin: 0px; padding: 0px; }
+	body { background-color: white; margin: -80px; margin-bottom: -150px; margin-left: -120px; margin-right: -120px; padding: 0px; }
+}
