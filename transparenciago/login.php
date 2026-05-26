@@ -1,4 +1,15 @@
-<?php 	require("config.php"); ?>
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    @ini_set('session.use_cookies', '1');
+    @ini_set('session.use_only_cookies', '1');
+    @ini_set('session.use_trans_sid', '0');
+    session_start();
+    if (!headers_sent() && !isset($_COOKIE[session_name()])) {
+        setcookie(session_name(), session_id(), 0, '/');
+    }
+}
+require("config.php");
+?>
 <?php 	
 require("funciones.php");
 require_once("password_fun.php");
@@ -36,11 +47,14 @@ text-shadow: #474747 3px 5px 2px;
 </form>
 
 <?php
-if (isset($_POST['FormLogin'])){
+if ($_SERVER['REQUEST_METHOD'] === 'POST'){
     require("config.php");
-    $IdEmpleado = $_POST['User']; if (ValidaVAR($IdEmpleado)==TRUE){$IdEmpleado = LimpiarVAR($IdEmpleado);} else {$IdEmpleado = "";}
-    $Password = $_POST['Password']; if (ValidaVAR($Password)==TRUE){$Password = LimpiarVAR($Password);} else {$Password = "";}
-    
+    $IdEmpleado = isset($_POST['User']) ? $_POST['User'] : "";
+    if (ValidaVAR($IdEmpleado)==TRUE){$IdEmpleado = LimpiarVAR($IdEmpleado);} else {$IdEmpleado = "";}
+
+    $Password = isset($_POST['Password']) ? $_POST['Password'] : "";
+    if (ValidaVAR($Password)==TRUE){$Password = LimpiarVAR($Password);} else {$Password = "";}
+
 	$sql = "select a.*,
     (select count(*) from aplicaciones_permisos where aplicaciones_permisos.nitavu = a.nitavu and aplicaciones_permisos.idapp = 'ap105') as ap105
     from empleados a where nitavu='".$IdEmpleado."' and estado=''";
@@ -75,13 +89,19 @@ if (isset($_POST['FormLogin'])){
        
     
         if (PasswordCheck($IdEmpleado, $Password) == TRUE){
-            Toast("Acceso concedido",4,"");
-            //session_start();
+            if (!headers_sent()) {
+                session_regenerate_id(true);
+            }
             $_SESSION['nitavu'] = $IdEmpleado; //session		                     
             $nitavu = $f['nitavu'];
 
             if ($_SESSION['nitavu'] == $IdEmpleado){
+                if (!headers_sent()) {
+                    header("Location: index.php");
+                    exit;
+                }
                 LocationFull("index.php");
+                exit;
             } else {
                 Toast("Hubo un problema",2,"");
                 // mensaje("ERROR: Hubo un problema","login.php");    

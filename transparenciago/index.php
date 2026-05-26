@@ -15,7 +15,119 @@ include("seguridad.php");
 	<script type="text/javascript" src="lib/datatables.min.js"></script>
 	<script src="lib/jquery.modalpdz.js"></script> <link rel="stylesheet" href="lib/jquery.modalcsspdz.css" />
 	<style>
-
+		/* Custom Modal Glassmorphism */
+		#Archivos {
+			background: rgba(255, 255, 255, 0.95) !important;
+			backdrop-filter: blur(15px);
+			-webkit-backdrop-filter: blur(15px);
+			border-radius: 20px !important;
+			border: 1px solid rgba(255, 255, 255, 0.3) !important;
+			box-shadow: 0 15px 35px rgba(0,0,0,0.2) !important;
+			padding: 30px !important;
+			max-width: 500px !important;
+		}
+		#Archivos h1 {
+			color: #59141b;
+			font-family: 'Open Sans', 'Helvetica Neue', sans-serif;
+			font-weight: bold;
+			font-size: 24px;
+			margin-top: 0;
+			margin-bottom: 25px;
+			text-align: center;
+			border-bottom: 2px solid #59141b;
+			padding-bottom: 10px;
+		}
+		.modern-form-group {
+			margin-bottom: 20px;
+			text-align: left;
+		}
+		.modern-form-group label {
+			display: block;
+			font-weight: 600;
+			color: #333;
+			margin-bottom: 8px;
+			width: 100%;
+			font-family: 'Open Sans', sans-serif;
+			font-size: 14px;
+		}
+		.file-upload-wrapper {
+			position: relative;
+			width: 100%;
+			height: 60px;
+			border: 2px dashed #b59378;
+			border-radius: 10px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: rgba(181, 147, 120, 0.1);
+			transition: all 0.3s ease;
+			cursor: pointer;
+		}
+		.file-upload-wrapper:hover {
+			background: rgba(181, 147, 120, 0.2);
+			border-color: #59141b;
+		}
+		.file-upload-wrapper input[type="file"] {
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			opacity: 0;
+			cursor: pointer;
+		}
+		.file-upload-text {
+			color: #59141b;
+			font-weight: bold;
+			font-size: 14px;
+			pointer-events: none;
+		}
+		.modern-textarea {
+			width: 100%;
+			border: 1px solid #ccc;
+			border-radius: 10px;
+			padding: 12px;
+			font-size: 14px;
+			font-family: 'Open Sans', sans-serif;
+			resize: vertical;
+			min-height: 80px;
+			transition: border 0.3s ease;
+			box-sizing: border-box;
+		}
+		.modern-textarea:focus {
+			border-color: #59141b;
+			outline: none;
+			box-shadow: 0 0 5px rgba(89, 20, 27, 0.3);
+		}
+		.modern-btn-submit {
+			background: linear-gradient(135deg, #59141b 0%, #892330 100%);
+			color: white;
+			border: none;
+			border-radius: 25px;
+			padding: 12px 30px;
+			font-size: 16px;
+			font-weight: bold;
+			cursor: pointer;
+			box-shadow: 0 4px 15px rgba(89, 20, 27, 0.4);
+			transition: all 0.3s ease;
+			width: 100%;
+			text-transform: uppercase;
+			letter-spacing: 1px;
+		}
+		.modern-btn-submit:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 6px 20px rgba(89, 20, 27, 0.6);
+		}
+		.modern-btn-submit:active {
+			transform: translateY(1px);
+			box-shadow: 0 2px 10px rgba(89, 20, 27, 0.4);
+		}
+		#FormSubir {
+			background-color: transparent !important;
+			padding: 0 !important;
+			width: 100% !important;
+			box-shadow: none !important;
+		}
 	</style>
 </head>
 <body>
@@ -103,16 +215,24 @@ include("seguridad.php");
 
 	<div class='modal' id='Archivos'>
 		<h1>Subir Archivos PDF</h1>
-		<form method='POST' enctype='multipart/form-data' id='FormSubir' style='width:100%; background-color:transparent;'>
-		<div style='color:black;'>
-		<!-- accept=".zip" -->
-		<span>Seleccione el archivo PDF <input type='file' name='archivo'  id='archivo' accept='.pdf' required></span>
-		<span>Descripcion:<br> <textarea name='FileDescripcion' style='width:100%;' required></textarea></span><br>
-		<center><input type='submit' class='btn btn-Primary' value='Subir'></center>
-		</div>
-
+		<form method='POST' enctype='multipart/form-data' id='FormSubir'>
+			<div class="modern-form-group">
+				<label>Seleccione uno o varios archivos PDF:</label>
+				<div class="file-upload-wrapper">
+					<span class="file-upload-text" id="file-upload-text">📁 Haga clic o arrastre sus PDF aquí</span>
+					<input type='file' name='archivo[]' id='archivo' accept='.pdf' multiple required onchange="document.getElementById('file-upload-text').innerText = this.files.length + ' archivo(s) seleccionado(s)';">
+				</div>
+			</div>
+			
+			<div class="modern-form-group">
+				<label>Descripción (aplica a todos los archivos):</label>
+				<textarea name='FileDescripcion' class="modern-textarea" placeholder="Escriba una breve descripción..." required></textarea>
+			</div>
+			
+			<div style="margin-top: 30px;">
+				<button type='submit' class='modern-btn-submit'>Subir Archivos</button>
+			</div>
 		</form>
-
 	</div>
 
 

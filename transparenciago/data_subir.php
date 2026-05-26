@@ -1,91 +1,65 @@
-<?php
-// include ("./unica/body_head.php");
-// include ("./unica/body_menu.php");
-// $nitavu = $_POST['nitavu'];
+﻿<?php
 require_once("config.php");
 require_once("funciones.php");
 
-$nitavu = $_POST['nitavu'];
-$FileDescripcion =$_POST['FileDescripcion'];
-$IdApp = 'ap105';
-$NFile = NFile($IdApp);
-$FileNombre = $_POST['FileNombre'];
+$nitavu          = $_POST['nitavu'];
+$FileDescripcion = $conexion->real_escape_string($_POST['FileDescripcion']);
+$IdApp           = 'ap105';
 
-// echo $NFile;
-if ( 0 < $_FILES['archivo']['error'] ) {
-    // echo ': ' . $_FILES['archivo']['error'] . '<br>';
+// Normalizar el array de archivos (soporta 1 o varios)
+$archivos = [];
+if (isset($_FILES['archivo']) && is_array($_FILES['archivo']['name'])) {
+    $total = count($_FILES['archivo']['name']);
+    for ($i = 0; $i < $total; $i++) {
+        $archivos[] = [
+            'name'     => $_FILES['archivo']['name'][$i],
+            'type'     => $_FILES['archivo']['type'][$i],
+            'tmp_name' => $_FILES['archivo']['tmp_name'][$i],
+            'error'    => $_FILES['archivo']['error'][$i],
+        ];
+    }
 }
-else {
 
-    $tipo_archivo = $_FILES['archivo']['type'];
+$resultados = [];
+$total_ok   = 0;
 
+foreach ($archivos as $archivo) {
 
-    //$archivofinal = 'files/'.$NFile.".zip";
+    $FileNombre   = $archivo['name'];
+    $tipo_archivo = $archivo['type'];
 
-    
-
-    $pos = strpos($tipo_archivo, '/');
-    $extension=substr($tipo_archivo,$pos+1,strlen($tipo_archivo));
-    $archivofinal='files/'.$NFile.".". $extension;
-    
-    ///echo "<script>Console.log(".$tipo_archivo.$archivofinal2.");</script>";
-     if (!strpos($tipo_archivo, "pdf") ) {
-        $msg="Tipo de archivo no permitido";
-        toast($msg,1,"");
-        
-     } else {
-        // move_uploaded_file($_FILES['file']['tmp_name'], 'wowslider/' . $_FILES['file']['name']);
-
-
-   
-        
-       // move_uploaded_file($_FILES['archivo']['tmp_name'], $archivofinal);
-        if(  move_uploaded_file($_FILES['archivo']['tmp_name'], $archivofinal))
-				{  $msg =  "Archivo subido con exito ".move_uploaded_file($_FILES['archivo']['tmp_name'], $archivofinal);
-            //agregar el registro
-            $sql = "INSERT INTO TransparenciaGo(IdFile, FileNombre, IdUser, fecha, hora, FileDescripcion)
-            VALUES ('".$NFile."', '".$FileNombre."', '".$nitavu."', '".$fecha."','".$hora."', '".$FileDescripcion."')";
-            // echo $sql;
-            if ($conexion->query($sql) == TRUE){
-                  $msg = $msg." y guardado.</b>";
-                  // mensaje($msg,"atencionp.php?sl=");
-            }
-
-				} else{
-				//$msgE= "No se actualizo ".$nombredelcontrol.", ";
-				$msg= "Error al intentar subir el archivo ". $_FILES['archivo']['tmp_name'].$archivofinal;
-
-
-                switch ($_FILES[0]['error']) {
-                    case 1:
-                       $html_body .= 'El archivo es más grande de lo que permite esta instalación de PHP';
-                       break;
-                    case 2:
-                       $html_body .= 'El archivo supera el tamaño permitido por el formulario';
-                       break;
-                    case 3:
-                       $html_body .= 'Se subió solo una parte del archivo';
-                       break;
-                    case 4:
-                       $html_body .= 'No se subió ningún archivo';
-                       break;
-                    default:
-                       $html_body .= 'Error desconocido';
-                    } 
-                  $msg=$html_body;
-                    echo "<script>Console.log(".$msg.$html_body.");</script>";
-				}
-                
-              
-            
-      
-
-        historia($nitavu,'TransparenciaGo, subio el archivo '.$FileNombre." con IdFile ".$NFile.InfoEquipo().'');		
-        toast($msg,1,"");
+    if ($archivo['error'] !== UPLOAD_ERR_OK) {
+        $resultados[] = htmlspecialchars($FileNombre) . ": error al recibir";
+        continue;
     }
 
-    
+    if (strpos($tipo_archivo, 'pdf') === false) {
+        $resultados[] = htmlspecialchars($FileNombre) . ": tipo no permitido";
+        continue;
+    }
 
+    $NFile        = NFile($IdApp);
+    $pos          = strpos($tipo_archivo, '/');
+    $extension    = substr($tipo_archivo, $pos + 1);
+    $archivofinal = 'files/' . $NFile . '.' . $extension;
+
+    if (move_uploaded_file($archivo['tmp_name'], $archivofinal)) {
+        $FileNombreEsc = $conexion->real_escape_string($FileNombre);
+        $sql = "INSERT INTO TransparenciaGo(IdFile, FileNombre, IdUser, fecha, hora, FileDescripcion)
+                VALUES ('" . $NFile . "', '" . $FileNombreEsc . "', '" . $nitavu . "', '" . $fecha . "','" . $hora . "', '" . $FileDescripcion . "')";
+        if ($conexion->query($sql) == TRUE) {
+            $total_ok++;
+            $resultados[] = htmlspecialchars($FileNombre) . ": subido y guardado";
+            historia($nitavu, 'TransparenciaGo, subio el archivo ' . $FileNombre . ' con IdFile ' . $NFile . InfoEquipo() . '');
+        } else {
+            $resultados[] = htmlspecialchars($FileNombre) . ": guardado en disco pero error en BD";
+        }
+    } else {
+        $resultados[] = htmlspecialchars($FileNombre) . ": error al mover el archivo";
+    }
 }
 
+$total_archivos = count($archivos);
+$msg = $total_ok . " de " . $total_archivos . " archivo(s) subido(s). " . implode(" | ", $resultados);
+toast($msg, 1, "");
 ?>

@@ -1,13 +1,15 @@
 <?php
-	//session_start();
 
-	if (session_status() !== PHP_SESSION_ACTIVE) {
-    session_start();
-}
+	// === MANTENIMIENTO PROGRAMADO ===
+	// Fecha de inicio: 28 de abril 2026 a las 00:00:00
+	// Duración: 24 horas
+	$mantenimiento_inicio = strtotime('2026-04-28 00:00:00');
+	$mantenimiento_fin    = strtotime('2026-04-29 00:00:00'); // 24 horas después
+	$ahora = time();
 
-	//MODO MANTENIMIENTO
-	$ModoMantenimiento = FALSE; //redirijira a mantenimiento
-	$FinDelMantenimiento = "24 may 2022 08:00:00";
+	// Se activa solo si la hora actual está dentro del rango
+	$ModoMantenimiento = ($ahora >= $mantenimiento_inicio && $ahora < $mantenimiento_fin);
+
 
 	//PARAMETROS INICIALES
 	$pyme_name ="INSTITUTO TAMAULIPECO DE VIVIENDA Y URBANISMO";
@@ -26,39 +28,36 @@
 	$paginacion= 20;
 
 	//configuraciones del sistema
-	//$urlsite = 'https://plataformaitavu.tamaulipas.gob.mx'; global $urlsite;
 	date_default_timezone_set('Mexico/General');
-	$urlsite = 'https://192.168.159.15'; global $urlsite;
-	$produccion=FALSE; global $produccion;
+	$urlsite = 'https://plataformaitavu.tamaulipas.gob.mx'; global $urlsite;
+	$produccion=FALSE; 
+	global $produccion; // vpn
 
+	//Credenciales para la base de datos de Plataforma
 	$dbhost = '192.168.159.15';
 	$dbuser = 'root';
 	$dbpass = '3L54NT0**'; 
 	$dbname = 'produccion_itavu';
-	$dbpuerto = 3306;
 
 	if (function_exists('mysqli_connect')) {
-		$conexion = new mysqli($dbhost,$dbuser,$dbpass,$dbname,$dbpuerto);
-		$acentos = $conexion->query("SET NAMES 'utf8'");
+		$conexion = new mysqli($dbhost,$dbuser,$dbpass,$dbname);
+		$acentos = $conexion->query("SET NAMES 'utf8'"); // para los acentos
 		global $conexion;
 		}else{
 			mensaje("ERROR: Hay un problema con la coneccion",'');
 		}
 
-
-	//USUARIO PARA BD VIVIENDA
-	$Vdbhost = '192.168.159.5';
-	$Vdbuser = 'root';	
-	$Vdbpass = '3LS4NT0**'; 
+	//Credenciales para la base de datos de Vivienda
+	$Vdbhost = $dbhost;	
+	$Vdbuser = $dbuser;	
+	$Vdbpass = $dbpass; 
 	$Vdbname = 'produccion_vivienda';
-	$Vdbpuerto = 3306;
 
 	if (function_exists('mysqli_connect')) {
-		$Vivienda = new mysqli($Vdbhost,$Vdbuser,$Vdbpass,$Vdbname,$Vdbpuerto);
-		$acentos = $Vivienda->query("SET NAMES 'utf8'");
-		global $Vivienda;
+			$Vivienda = new mysqli($Vdbhost,$Vdbuser,$Vdbpass,$Vdbname);
+			$acentos = $Vivienda->query("SET NAMES 'utf8'"); // para los acentos
+			global $Vivienda;
 	}else{ mensaje("ERROR: Hay un problema con la coneccion a BD vivienda",'');}
-
 
 	//PARAMETROS DE PREFERENCIA
 	$req_rezagoMax = 30;
@@ -82,13 +81,14 @@
 	$key_mapkmz = "";
 	$key_directions = "";
 	$key_map = "";
-
 	//----------------------------------------------------------------
+
 	$completar1_fecha = "2017-08-03";
+
 
 	// CONFIGURACION DEL CORREO
 	$correo_limite=1500; global $correo_limite;
-
+	
 	// SERVIDOR PARA DATOS SENSIBLES
 	$app_reso = "<p>
 		
@@ -106,7 +106,6 @@
 		</p>";
 		global $app_reso;
 		
-		
 		$SessionTiempo = "60:00";
 		$SessionTiempoRound = 6000;
 		$AccessIP = FALSE; // si esta en TRUE no deja entrar si no es detectada una IP por el navegador, no deja entrar si no se detecta una ip
@@ -116,14 +115,15 @@
 		
 		if (date("l") == "Sunday"){$Domingo=TRUE;} else {$Domingo=FALSE;}
 
-		$URLplataforma = "https://192.168.159.15";
 		$URLwebserviceVivienda = "http://192.168.159.179";
+		$URLplataforma = "http://192.168.159.5";
+		
 		$CorreoDeLaPlataforma = "plataforma.itavu@gmail.com";
 		$CorreoPass="Testing22";
+		
 		$CURP_limite = 9000;
 		$session_auto_start =0;
 		$SesionName="PlataformaITAVU";
-
 
 		$CorreoFooter='
 		<br><br>

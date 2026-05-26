@@ -63,16 +63,13 @@ function PasswordHash_verify($IdEmpleado, $Password){
 function PasswordNIP_verify($IdEmpleado, $Password){
 require("config.php");
 	$sql = "select * from empleados	WHERE nitavu ='".$IdEmpleado."' AND estado=''";	   
-    echo ":".$sql; 
 	$r= $conexion -> query($sql);						
 	if($f = $r -> fetch_array())
 	{
 		if ($f['nip']==$Password){
-            echo "pass correcto";
             return TRUE;            
             
         } else {
-            echo "noo correcto".$Password."|".$f['nip'];
             return FALSE;
             
         }

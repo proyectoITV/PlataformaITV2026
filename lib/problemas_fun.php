@@ -1,6 +1,17 @@
 <?php
 function Problema_create($TAG, $Descripcion, $IdEmpleado = "", $IdApp = ""){
 require("config.php");
+
+if (method_exists($conexion, 'real_escape_string')) {
+    $TAG = $conexion->real_escape_string($TAG);
+    $Descripcion = $conexion->real_escape_string($Descripcion);
+    $IdEmpleado = $conexion->real_escape_string($IdEmpleado);
+    $IdApp = $conexion->real_escape_string($IdApp);
+}
+
+@mysqli_query($conexion, "SET SESSION lock_wait_timeout = 2");
+@mysqli_query($conexion, "SET SESSION innodb_lock_wait_timeout = 2");
+
 $sql = "
     INSERT INTO problemas
         (TAG, Descripcion, IdEmpleado, IdApp, fecha, hora)
@@ -72,7 +83,6 @@ function problemas($IdEmpleado, $TAG, $LaFecha = ""){
     require("config.php");
     if ($LaFecha == "") {$LaFecha = $fecha;}
     $sql = "select count(*) as n from problemas	WHERE IdEmpleado='".$IdEmpleado."' and TAG='".$TAG."' and fecha='".$LaFecha."' and status='0'";	    
-    echo $sql;
     $r= $conexion -> query($sql);						
     if($f = $r -> fetch_array())
     {

@@ -29,17 +29,18 @@ global $pyme_name, $pyme_direction, $pyme_tels;
 $paginacion= 20;
 //configuraciones del sistema
 	date_default_timezone_set('Mexico/General');
-	mb_internal_encoding('UTF-8');
-	mb_http_output('UTF-8');
-	$urlsite = 'https://plataformaitavu.tamaulipas.gob.mx'; global $urlsite;
+	if (function_exists('mb_internal_encoding')) { mb_internal_encoding('UTF-8'); }
+	if (function_exists('mb_http_output')) { mb_http_output('UTF-8'); }
+	if (function_exists('mysqli_report')) { mysqli_report(MYSQLI_REPORT_OFF); }
+	//--$urlsite = 'https://plataformaitavu.tamaulipas.gob.mx'; global $urlsite;
 	//$urlsite = 'http://172.16.91.131/itavu/'; global $urlsite;
 	$produccion=FALSE; global $produccion; // vpn
 
 
-	//produccion
-	$dbhost = '192.168.159.5';	
-	$dbuser = 'wbproduction1';
-	$dbpass = '4Dm1NPr0'; 
+	//produccion --> kno
+	$dbhost = '192.168.159.15';	
+	$dbuser = 'root';
+	$dbpass = '3L54NT0**'; 
 	$dbname = 'itavu';
 
 	//test
@@ -58,14 +59,17 @@ $paginacion= 20;
 
 	if (function_exists('mysqli_connect')) {
 	//mysqli está instalado
-		//echo 'Si';
-		
-		$conexion = new mysqli($dbhost,$dbuser,$dbpass,$dbname);
-		//echo $conexion;
-		$acentos = $conexion->query("SET NAMES 'utf8'"); // para los acentos
-		global $conexion;
+		$conexion = @new mysqli($dbhost,$dbuser,$dbpass,$dbname);
+		if ($conexion && !$conexion->connect_errno) {
+			$conexion->set_charset('utf8');
+			global $conexion;
+		} else {
+			http_response_code(503);
+			die("<h3 style='font-family:Arial;'>Error de conexion a base de datos principal.</h3>");
+		}
 		}else{
-			mensaje("ERROR: Hay un problema con la coneccion",'');
+			http_response_code(500);
+			die("<h3 style='font-family:Arial;'>La extension MySQLi no esta habilitada.</h3>");
 
 
 			// echo phpinfo();
@@ -75,15 +79,21 @@ $paginacion= 20;
 
 
 	//USUARIO PARA BD VIVIENDA
-	$Vdbhost = '192.168.159.5';	
-	$Vdbuser = 'vivienda';
-	$Vdbpass = 'v1v13nd4-m4r14'; 
-	$Vdbname = 'vivienda';
+	$Vdbhost = '192.168.159.15';	
+	$Vdbuser = 'root';
+	$Vdbpass = '3L54NT0**'; 
+	$Vdbname = 'produccion_vivienda';
 	if (function_exists('mysqli_connect')) {
-			$Vivienda = new mysqli($Vdbhost,$Vdbuser,$Vdbpass,$Vdbname);
-			$acentos = $Vivienda->query("SET NAMES 'utf8'"); // para los acentos
-			global $Vivienda;
-	}else{ mensaje("ERROR: Hay un problema con la coneccion a BD vivienda",'');}
+			$Vivienda = @new mysqli($Vdbhost,$Vdbuser,$Vdbpass,$Vdbname);
+			if ($Vivienda && !$Vivienda->connect_errno) {
+				$Vivienda->set_charset('utf8');
+				global $Vivienda;
+			} else {
+				$Vivienda = null;
+			}
+	}else{
+		$Vivienda = null;
+	}
 
 
 
