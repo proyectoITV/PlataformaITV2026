@@ -112,7 +112,7 @@
             $pdf->Text(50, 50, "CERTIFICADO DE SUBSIDIO ESTATAL");
 
             //$url = $urlsite.'/fer_valida.php?id='.$_GET['print'];
-            $url = 'http://192.168.159.5/fer_valida.php?id='.$_GET['print'];
+            $url = 'http://192.168.159.15/fer_valida.php?id='.$_GET['print'];
             $pdf->write2DBarcode($url, 'QRCODE,M', 170, 238, 50, 50, $styleqr, 'N'); 
             $pdf->SetFont('', 'R', 6, '', 'false');
             $pdf->Text(170, 268.5, 'CODIGO DE CERTIFICADO');

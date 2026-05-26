@@ -13,7 +13,7 @@
 
 
 //Variables del FTP, donde almanenaras de manera segura tus archivos:
-define("SFTP_SERVER", "192.168.159.5"); 
+define("SFTP_SERVER", "192.168.159.15"); 
 define("SFTP_PORT", 21); 
 define("SFTP_USER", "desarrollo3");
 define("SFTP_PASSWORD", "3LS4NT0*");
@@ -21,7 +21,7 @@ define("SFTP_DIR", "/home/usuario/public_html/");
 define("STAG","docsecure/");
 
 //BD de Control
-define("DS_dbhost",'192.168.159.5');	
+define("DS_dbhost",'192.168.159.15');	
 define("DS_dbuser",'wbproduction1');
 define("DS_dbpass",'4Dm1NPr0');
 define("DS_dbname",'itavu');

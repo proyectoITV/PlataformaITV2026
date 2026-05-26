@@ -25,7 +25,7 @@ $Empleado = str_replace(" ", "", nitavu_nombre($IdEmpleado));
     // echo $sql;
 
 
-    $host = "192.168.159.5/";
+    $host = "192.168.159.15/";
     $msg = "";
     $r= $conexion -> query($sql);if($f = $r -> fetch_array()){	
 

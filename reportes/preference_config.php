@@ -44,7 +44,7 @@
 // $Pdbpass = "";
 // $Pdbname = "rintera";
 
-$Pdbhost = '192.168.159.5';	
+$Pdbhost = '192.168.159.15';	
 $Pdbuser = 'wbproduction1';
 $Pdbpass = '4Dm1NPr0'; 
 $Pdbname = 'itavu';

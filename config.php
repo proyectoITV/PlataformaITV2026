@@ -116,7 +116,7 @@
 		if (date("l") == "Sunday"){$Domingo=TRUE;} else {$Domingo=FALSE;}
 
 		$URLwebserviceVivienda = "http://192.168.159.179";
-		$URLplataforma = "http://192.168.159.5";
+		$URLplataforma = "http://192.168.159.15";
 		
 		$CorreoDeLaPlataforma = "plataforma.itavu@gmail.com";
 		$CorreoPass="Testing22";

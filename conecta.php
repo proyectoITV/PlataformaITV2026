@@ -11,14 +11,14 @@ if (Conecta('http://172.16.91.5:8120')==TRUE){
 
 } else {
     echo "Error al conectar con http://172.16.91.5:8120 <br>";
-    if (Conecta('http://192.168.159.5')==TRUE){
-        // header('Location: http://192.168.159.5/login.php');
+    if (Conecta('http://192.168.159.15')==TRUE){
+        // header('Location: http://192.168.159.15/login.php');
         echo "<script>
-        window.location='http://192.168.159.5/login.php';
+        window.location='http://192.168.159.15/login.php';
         </script>";
     
     } else {
-        echo "Error al conectar con http://192.168.159.5 <br>";
+        echo "Error al conectar con http://192.168.159.15 <br>";
         if (Conecta('http://192.168.158.4')==TRUE){
             // header('Location: http://192.168.158.4/login.php');
             echo "<script>

@@ -17,7 +17,7 @@
 
 
 
-define("FTP_SERVER", "192.168.159.5"); //IP o Nombre del Servidor
+define("FTP_SERVER", "192.168.159.15"); //IP o Nombre del Servidor
 // define("FTP_SERVER","localhost"); //IP o Nombre del Servidor
 define("FTP_PORT", 21); //Puerto desde fuera 2323
 define("FTP_USER", "desarrollo3"); //Nombre de Usuario

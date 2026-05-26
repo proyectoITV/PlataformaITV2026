@@ -25,7 +25,7 @@ $nuevo_nombre = $FechaNominaString.'_MiNomina_'.$Empleado.'.pdf'; //asignamos nu
     // echo $sql;
 
 
-    $host = "192.168.159.5/";
+    $host = "192.168.159.15/";
     $msg = "";
     $r= $conexion -> query($sql);if($f = $r -> fetch_array()){	
         // $archivo_xml = $host.$f['File'];        

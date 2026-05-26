@@ -23,7 +23,7 @@ $Empleado = str_replace(" ", "", nitavu_nombre($IdEmpleado));
    
 $r= $conexion -> query($sql);if($f = $r -> fetch_array()){	
         $archivoxml = $host.$f['File'];        
-        $host = "192.168.159.5/";
+        $host = "192.168.159.15/";
         $msg = "";
         $nuevo_nombre = $FechaNominaString.'_MiNomina.'.strtolower($FileType); //asignamos nuevo nombre
             $archivo_descarga = curl_init(); //inicializamos el curl
