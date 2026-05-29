@@ -34,58 +34,92 @@ $AlertaDeIntentos = 3;
 // Toast("Password = ".$Password,5,"");
 
 if ($msg ==""){
-    
-    
-    if (bloqueomaestro($IdEmpleado)==TRUE){
+    // 1) Revisar bloqueo maestro sin re-incluir config en funciones auxiliares.
+    $cuentaBloqueada = FALSE;
+    $stmtBloqueo = $conexion->prepare("SELECT status FROM bloqueomaestro WHERE Nitavu = ? LIMIT 1");
+    if ($stmtBloqueo) {
+        $stmtBloqueo->bind_param("s", $IdEmpleado);
+        if ($stmtBloqueo->execute()) {
+            $resBloqueo = $stmtBloqueo->get_result();
+            if ($rowBloqueo = $resBloqueo->fetch_assoc()) {
+                $cuentaBloqueada = ($rowBloqueo['status'] != '0');
+            }
+        }
+        $stmtBloqueo->close();
+    }
+
+    if ($cuentaBloqueada == TRUE){
         echo "<script>$('#Intentos').html('<b style=color:red>Cuenta Bloqueada</b>')</script>";
         // Toast("Favor de Comunicarse con el Dpto. de Informática",5,"");
     } else {
-            $Intentos =  problemas($IdEmpleado, "LOGIN") + 1; //Intentos Fallidos de Hoy
+            // 2) Contar intentos fallidos de hoy (tag LOGIN, status abierto).
+            $Intentos = 1;
+            $stmtIntentos = $conexion->prepare("SELECT COUNT(*) AS n FROM problemas WHERE IdEmpleado = ? AND TAG = 'LOGIN' AND fecha = ? AND status = '0'");
+            if ($stmtIntentos) {
+                $stmtIntentos->bind_param("ss", $IdEmpleado, $fecha);
+                if ($stmtIntentos->execute()) {
+                    $resIntentos = $stmtIntentos->get_result();
+                    if ($rowIntentos = $resIntentos->fetch_assoc()) {
+                        $Intentos = ((int)$rowIntentos['n']) + 1;
+                    }
+                }
+                $stmtIntentos->close();
+            }
+
             if ($Intentos <= $LimiteDeIntentos){
-                if (PasswordNIP_verify($IdEmpleado, $Password) == TRUE){
+                // 3) Validar NIP directamente contra empleados.
+                $NIPValido = FALSE;
+                $stmtNip = $conexion->prepare("SELECT nip FROM empleados WHERE nitavu = ? AND estado = '' LIMIT 1");
+                if ($stmtNip) {
+                    $stmtNip->bind_param("s", $IdEmpleado);
+                    if ($stmtNip->execute()) {
+                        $resNip = $stmtNip->get_result();
+                        if ($rowNip = $resNip->fetch_assoc()) {
+                            $NIPValido = ((string)$rowNip['nip'] === (string)$Password);
+                        }
+                    }
+                    $stmtNip->close();
+                }
+
+                if ($NIPValido == TRUE){
                     Toast("Acceso concedido",4,"");
                     session_start();
-                    $_SESSION['nitavu'] = $IdEmpleado; //session		                     
-                    $nitavu = $f['nitavu'];
+                    $_SESSION['nitavu'] = $IdEmpleado; //session
 
                     if ($_SESSION['nitavu'] == $IdEmpleado){
                         LocationFull("index.php");
                     } else {
                         echo "<script>$('#R_login').html('Hubo un Problema');</script>";
                         // Toast("Hubo un problema",2,"");
-                        mensaje("ERROR: Hubo un problema","login.php");    
+                        mensaje("ERROR: Hubo un problema","login.php");
                         Alert("ERROR: Hubo un problema");
                     }
-                    
-
-
 
                 } else {
                     echo "<script>$('#R_login').html('Contraseña incorrecta');</script>";
                     Problema_create("LOGIN", "Intento Fallido de Login con <b>".$Password."</b>", $IdEmpleado);
-                    // Toast("ERROR: no coincide tu NIP con tu cuenta   ",2,"");   
+                    // Toast("ERROR: no coincide tu NIP con tu cuenta   ",2,"");
                     // echo "<script>alert('"."ERROR: no coincide tu NIP con tu la cuenta"."');</script>";
-                    // mensaje("ERROR: no coincide tu NIP con tu la cuenta","login.php");                 
+                    // mensaje("ERROR: no coincide tu NIP con tu la cuenta","login.php");
                 }
                 if ($Intentos > $AlertaDeIntentos ){
                     echo "<script>$('#Intentos').html('<p style=font-size:9pt><b>CUIDADO</b> Tu cuenta se bloqueara a los ".$LimiteDeIntentos." intentos fallidos. </p>Llevas ".$Intentos." Intentos fallidos');</script>";
                 } else {
                     // echo "<script>$('#Intentos').html('".$Intentos." Intentos fallidos');</script>";
                 }
-                
+
                 unset($IdEmpleado, $Password);
             } else {
-                
-                    echo "<script>$('#R_login').html('Tu cuenta esta bloqueada');</script>";                
-                    // Toast("Tu cuenta ha sido bloqueada por seguridad",2,"");    
+
+                    echo "<script>$('#R_login').html('Tu cuenta esta bloqueada');</script>";
+                    // Toast("Tu cuenta ha sido bloqueada por seguridad",2,"");
 
                     Alert("Tu cuenta ha sido bloqueada por seguridad");
                     Toast("Comunicate al Dpto. de Informatica para solicitar el desbloqueo",5,"");
                     echo "<script>$('#Intentos').html('<b style=color:red>Cuenta Bloqueada</b>.<br>".$Intentos." Intentos fallidos');</script>";
-                
 
-                
-                
+
+
             }
         }
 }

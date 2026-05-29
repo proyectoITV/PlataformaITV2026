@@ -69,7 +69,7 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE){
 					$subida1 = FTP_subir($tmp,$archivo1);
 					if ($subida1 == "TRUE"){
 						$sql = "INSERT INTO cp_historialdocumentos(idInc,idDoc, NumCaso, archivo, fecha, nitavuSube, dptoSube, dptoEnviar, numOficio,hora) 
-						VALUES ('','$numDocumento', '$idDocumento', '$doc', '$fecha', '$nitavu', '$midpto','$dptoEnviar','$num','$hora')";
+						VALUES (NULL,'$numDocumento', '$idDocumento', '$doc', '$fecha', '$nitavu', '$midpto','$dptoEnviar','$num','$hora')";
 						if ($conexion->query($sql) == TRUE){ 
 							$sql2 = "UPDATE cp_nuevosdocumentos SET Turnadoa=".$dptoEnviar." WHERE id=".$idDocumento."";
 							if ($conexion->query($sql2) == TRUE){ 
@@ -117,7 +117,7 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE){
 					
 					$midpto = nitavu_dpto($nitavu);
 					$sql = "INSERT INTO cp_historialdocumentos(idInc,idDoc, NumCaso, archivo, fecha, nitavuSube, dptoSube, dptoEnviar, numOficio,hora) 
-						VALUES ('','', '$idDocumento', '', '$fecha', '$nitavu', '$midpto','$dptoEnviar','$num','$hora')";
+						VALUES (NULL,NULL, '$idDocumento', '', '$fecha', '$nitavu', '$midpto','$dptoEnviar','$num','$hora')";
 						if ($conexion->query($sql) == TRUE){ 
 							$sql2 = "UPDATE cp_nuevosdocumentos SET Turnadoa=".$dptoEnviar." WHERE id=".$idDocumento."";
 							if ($conexion->query($sql2) == TRUE){ 
@@ -229,6 +229,7 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE){
 		}else{
 			$fechaTermino ='';
 		}
+		$fechaTerminoSql = ($fechaTermino !== '') ? '"'.$fechaTermino.'"' : '"0000-00-00"';
 		$ofnumero = $_POST['ofnumero'];
 		//$prioridad = $_POST['prioridad'];
 		$remite = $_POST['remite'];
@@ -239,7 +240,7 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE){
 
 		
 		 $sql = 'UPDATE cp_nuevosdocumentos SET fechaOficio="'.$fechaoficio.'", fecha="'.$fecha.'", oficioNumero="'.$ofnumero.'",
-		remite="'.$remite.'", puesto="'.$puesto.'", dependencia="'.$dependencia.'", asunto="'.$asunto.'", descripcion="'.$descripcion.'", fecha_termino = "'.$fechaTermino.'"
+		remite="'.$remite.'", puesto="'.$puesto.'", dependencia="'.$dependencia.'", asunto="'.$asunto.'", descripcion="'.$descripcion.'", fecha_termino = '.$fechaTerminoSql.'
 		 WHERE id='. $numcaso.' ';
 		//echo $sql;
 		if ($conexion->query($sql) == TRUE){      
@@ -597,9 +598,9 @@ echo "<div  style='width=90%; margin-top:15px;'>";
 			 (SELECT DATEDIFF(CURDATE(),FechaDesde)) as Retraso,
 			 cp_nuevosdocumentos.* 
 			 FROM cp_nuevosdocumentos WHERE turnadoa=".$dpto." and estado=0 and baja=0 ORDER BY id ASC";
-			//$rc= $conexion -> query($query); 		
-			$r = $conexion -> query($sql);
-			$r_count = $r -> num_rows;
+			//$rc= $conexion -> query($query);
+			// Usamos el COUNT ya calculado para evitar una consulta completa extra sin LIMIT.
+			$r_count = (int)$count;
 
 
 // PARA PAGINAR
@@ -745,11 +746,8 @@ echo "<div  style='width=90%; margin-top:15px;'>";
 				echo "<form action='cp_controldocumental.php?editar=".$r['id']."' method='POST'  enctype='multipart/form-data'>";
 				 	//echo '<table><td><label><input type="checkbox" id="turnar" name="turnar" value="turnar" onClick="mostrarDepartamento()">Turnar</label></td><td></td><td></td></table>';
 
-					$sql4 = "SELECT * FROM cp_nuevosdocumentos WHERE id=".$r['id']."";
-					$r4= $conexion -> query($sql4); 	
-					while($res4 = $r4 -> fetch_array())    
-					{
-						if($res4['fecha_termino']!='0000-00-00'){
+					$res4 = $r;
+					if($res4['fecha_termino']!='0000-00-00'){
 						echo '<center>
 						<label><input type="checkbox" id="fechaTer'.$r['id'].'" name="fechaTer'.$r['id'].'" value="fechaTer'.$r['id'].'" onClick="quitarFechaTermino('.$r['id'].')">Fecha termino</label></center>';
 						}else{
@@ -814,7 +812,6 @@ echo "<div  style='width=90%; margin-top:15px;'>";
 						//   echo '<br><br>'; 
 						echo '<div><input class="Mbtn btn-danger" id="boton" type="submit" value="Guardar"></div>';
 
-					}
 					echo '</form>';
 					echo "</div>";
 			//---------------------------------------------------------------------------------------------------	
@@ -931,11 +928,8 @@ echo "<div  style='width=90%; margin-top:15px;'>";
 			 
 					//	echo '<table><td><label><input type="checkbox" id="turnar" name="turnar" value="turnar" onClick="mostrarDepartamento()">Turnar</label></td><td></td><td></td></table>';
 
-					$sql5 = "SELECT * FROM cp_nuevosdocumentos WHERE id=".$r['id']."";
-					$r5= $conexion -> query($sql5); 	
-					while($res5 = $r5 -> fetch_array())    
-					{
-						if($res5['fecha_termino']!='0000-00-00'){
+					$res5 = $r;
+					if($res5['fecha_termino']!='0000-00-00'){
 							echo '<center>
 							<label><input type="checkbox" id="fechaTer'.$r['id'].'" name="fechaTer'.$r['id'].'" value="fechaTer'.$r['id'].'" onClick="quitarFechaTermino('.$r['id'].')">Fecha termino</label></center>';
 							}else{
@@ -999,7 +993,6 @@ echo "<div  style='width=90%; margin-top:15px;'>";
 						echo '<textarea style="height:20%;" name="descripcion">'.$res5['descripcion'].'</textarea></span>';
 						//   echo '<br><br>'; 
 						echo '<div><input class="Mbtn btn-default" id="boton" type="submit" value="Guardar"></div>';
-
 					}
 					echo '</form>';
 					echo "</div>";
@@ -1111,11 +1104,8 @@ echo "<div  style='width=90%; margin-top:15px;'>";
 	
 			//	echo '<table><td><label><input type="checkbox" id="turnar" name="turnar" value="turnar" onClick="mostrarDepartamento()">Turnar</label></td><td></td><td></td></table>';
 
-					$sql6 = "SELECT * FROM cp_nuevosdocumentos WHERE id=".$r['id']."";
-					$r6= $conexion -> query($sql6); 	
-					while($res6 = $r6 -> fetch_array())    
-					{
-						if($res6['fecha_termino']!='0000-00-00'){
+					$res6 = $r;
+					if($res6['fecha_termino']!='0000-00-00'){
 							echo '<center>
 							<label><input type="checkbox" id="fechaTer'.$r['id'].'" name="fechaTer'.$r['id'].'" value="fechaTer'.$r['id'].'" onClick="quitarFechaTermino('.$r['id'].')">Fecha termino</label></center>';
 							}else{
@@ -1179,7 +1169,6 @@ echo "<div  style='width=90%; margin-top:15px;'>";
 						//   echo '<br><br>'; 
 						echo '<div><input class="Mbtn btn-default" id="boton" type="submit" value="Guardar"></div>';
 
-					}
 					echo '</form>';
 					echo "</div>";
 			//---------------------------------------------------------------------------------------------------	
@@ -1367,11 +1356,8 @@ echo "<div  style='width=90%; margin-top:15px;'>";
 				echo "<form action='cp_controldocumental.php?editar=".$ra['id']."' method='POST'  enctype='multipart/form-data'>";
 				 	//echo '<table><td><label><input type="checkbox" id="turnar" name="turnar" value="turnar" onClick="mostrarDepartamento()">Turnar</label></td><td></td><td></td></table>';
 
-					$sql4 = "SELECT * FROM cp_nuevosdocumentos WHERE id=".$ra['id']."";
-					$r4= $conexion -> query($sql4); 	
-					while($res4 = $r4 -> fetch_array())    
-					{
-						if($res4['fecha_termino']!='0000-00-00'){
+					$res4 = $ra;
+					if($res4['fecha_termino']!='0000-00-00'){
 						echo '<center>
 						<label><input type="checkbox" id="fechaTer'.$ra['id'].'" name="fechaTer'.$ra['id'].'" value="fechaTer'.$ra['id'].'" onClick="quitarFechaTermino('.$ra['id'].')">Fecha termino</label></center>';
 						}else{
@@ -1412,7 +1398,6 @@ echo "<div  style='width=90%; margin-top:15px;'>";
 						echo '<textarea style="height:20%;" name="descripcion">'.$res4['descripcion'].'</textarea></span></div>';
 						echo '<div><input class="Mbtn btn-danger" id="boton" type="submit" value="Guardar"></div>';
 
-					}
 					echo '</form>';
 					echo "</div>";
 			//---------------------------------------------------------------------------------------------------	
@@ -1948,8 +1933,8 @@ if ($rc->num_rows>0)
 				echo '<input   placeholder="Dirección, departamento, delegación" id="dependencia" name="dependencia" class="inputestandar"></div>';
 				echo "</td></tr>";
 
-				echo "<tr><td colspan=2>";	
-				echo '<div><label>*Asunto</label>';
+				echo "<tr><td colspan=2 align='left'>";	
+				echo '<div style="text-align:left;"><label>*Asunto</label>';
 				echo '<input placeholder="*Descripción breve del caso" name="asunto" style="width:665px" class="inputestandar" required></div>';		
 				echo "</td></tr>";
 
@@ -1966,7 +1951,7 @@ if ($rc->num_rows>0)
 				echo "<tr><td colspan=2><hr></hr></td></tr>";
 				echo "<tr>";
 				//style='display:none;'
-				echo "<td><h2 style=' font-size: 19; color: darkred;'>  Turnar a: <h2></td>";
+				echo "<td><h2 style=' font-size: 19; color: darkred;'>  Turnar a: </h2></td>";
 				echo "<td style='widt:197%'><div  id='turnarDpto' style='width:90%' >";			
 					echo "<label  class='label'>Departamento:";
 					echo "<select name='departamento'   id='departamento'   style='margin-left: 0px;' required>";	
@@ -1976,10 +1961,8 @@ if ($rc->num_rows>0)
 					//	FROM	cat_gerarquia where (id <>".nitavu_dpto($nitavu).") ORDER BY cat_gerarquia.nombre ";
 					$sql="SELECT	cat_gerarquia.id ,	cat_gerarquia.titular ,	cat_gerarquia.nombre,	cat_gerarquia.dependencia
 						FROM	cat_gerarquia  ORDER BY cat_gerarquia.nombre ";
-						echo $sql;
-					$r = $conexion -> query($sql);	
-						
-					while($f = $r -> fetch_array())
+					$rDptos = $conexion->query($sql);
+					while($f = $rDptos -> fetch_array())
 						{ 
 						echo "<option value='".$f['id']."'>".$f['nombre']. " </option>";
 						}	
@@ -2018,15 +2001,15 @@ if ($rc->num_rows>0)
 				");
 				echo "</td></tr>";
 				 echo "<tr style='height: 156px;'><td align=center><br>";
-				 	echo '<div><input class="Mbtn btn-danger" id="boton" type="submit" style="width:250px" value="Guardar"></div>';
+				 	echo '<div><input type="hidden" name="turnar" value="turnar"><input class="Mbtn btn-danger" id="boton" type="submit" style="width:250px" value="Guardar"></div>';
 				 echo "</td></tr>";
 				echo "</table>";
 
 
 	  echo "</td>";
 	  echo "</tr></table>";
-		echo "</div>";
 		echo '</form></td>';
+		echo "</div>";
 	//Cuando se registra un nuevo caso
 
 	if (isset($_POST['departamento']) && isset($_POST['turnar'])){
@@ -2048,6 +2031,7 @@ if ($rc->num_rows>0)
 					}else{
 						$fechaTermino = '';
 					}
+					$fechaTerminoSql = ($fechaTermino !== '') ? "'".$fechaTermino."'" : "'0000-00-00'";
 					$ofnumero = $_POST['ofnumero'];
 					//$remite = strtoupper($_POST['remite']);
 					$remite = $_POST['remite'];
@@ -2067,14 +2051,14 @@ if ($rc->num_rows>0)
 					//$empleadoseturna=$_POST['empleadoseturna'];
 					if ($subida == "TRUE"){
 						$sql = "INSERT INTO cp_nuevosdocumentos(idauto, id, fechaoficio, fecha, oficionumero, remite, puesto, dependencia,asunto, descripcion, nitavucaptura, iddptocrea,turnadoa,estado,baja, vobo, fecha_termino) 
-						VALUES ('', '$idDocumento','$fechaOficio', '$fecha', '$ofnumero', '$remite', '$puesto', '$dependencia','$asunto','$descripcion','$nitavu','$dpto','$dptoTurnar',0,0,'','$fechaTermino')";
+						VALUES ('', '$idDocumento','$fechaOficio', '$fecha', '$ofnumero', '$remite', '$puesto', '$dependencia','$asunto','$descripcion','$nitavu','$dpto','$dptoTurnar',0,0,'',$fechaTerminoSql)";
 						if($conexion->query($sql) == TRUE){ 
 							if($ofnumero==numeroOficioPublico(TRUE)){
 								numeroOficioPublico(FALSE);
 							}
 							idDocumento(FALSE);
 							$sql2 = "INSERT INTO cp_historialdocumentos(idinc, iddoc, numcaso, archivo, fecha, nitavusube, dptosube, dptoenviar, numoficio, activo, tipo,hora) 
-							VALUES ('', '$numDocumento', '$idDocumento', '$myFile', '$fecha', '$nitavu', '$dpto','$dptoTurnar','$ofnumero',0,0,'$hora')";
+							VALUES (NULL, '$numDocumento', '$idDocumento', '$myFile', '$fecha', '$nitavu', '$dpto','$dptoTurnar','$ofnumero',0,0,'$hora')";
 							if ($conexion->query($sql2) == TRUE){  
 								numdeDocumento(FALSE);
 								historia($nitavu,'cp_Agregó un nuevo caso llamado: '.$ofnumero.' con Id: '.$idDocumento);
@@ -2100,6 +2084,7 @@ if ($rc->num_rows>0)
 					}else{
 						$fechaTermino = '';
 					}
+					$fechaTerminoSql = ($fechaTermino !== '') ? "'".$fechaTermino."'" : "'0000-00-00'";
 					$ofnumero = $_POST['ofnumero'];
 					$remite = $_POST['remite'];
 					$puesto = $_POST['puesto'];
@@ -2115,7 +2100,7 @@ if ($rc->num_rows>0)
 					//$empleadoseturna=$_POST['empleadoseturna'];
 						$sql = "INSERT INTO cp_nuevosdocumentos(idauto, id, fechaoficio, fecha, oficionumero, remite, puesto, dependencia,asunto, descripcion, nitavucaptura, iddptocrea, turnadoa, estado, baja, vobo, fecha_termino) 
 						VALUES ('', '$idDocumento','$fechaOficio', '$fecha', '$ofnumero', '$remite', '$puesto', '$dependencia',
-						'$asunto','$descripcion','$nitavu','$dpto','$dptoTurnar',0,0,'','$fechaTermino')";
+							'$asunto','$descripcion','$nitavu','$dpto','$dptoTurnar',0,0,'',$fechaTerminoSql)";
 					
 						if($conexion->query($sql) == TRUE){ 
 							// if($ofnumero==numeroOficioPublico(TRUE)){
@@ -2123,7 +2108,7 @@ if ($rc->num_rows>0)
 							// }
 							idDocumento(FALSE);
 							$sql2 = "INSERT INTO cp_historialdocumentos(idinc, iddoc, numcaso, archivo, fecha, nitavusube, dptosube, dptoenviar, numoficio, activo, tipo,hora) 
-							VALUES ('', '$numDocumento', '$idDocumento', '$myFile', '$fecha', '$nitavu', '$dpto','$dptoTurnar','$ofnumero',0,0,'$hora')";
+								VALUES (NULL, '$numDocumento', '$idDocumento', '$myFile', '$fecha', '$nitavu', '$dpto','$dptoTurnar','$ofnumero',0,0,'$hora')";
 							if ($conexion->query($sql2) == TRUE){  
 								numdeDocumento(FALSE);
 								historia($nitavu,'cp_Agregó un nuevo caso llamado: '.$ofnumero.' con Id: '.$idDocumento.'Archivo: '.$myFile);						
@@ -2152,6 +2137,7 @@ if ($rc->num_rows>0)
 				}else{
 					$fechaTermino = '';
 				}
+				$fechaTerminoSql = ($fechaTermino !== '') ? "'".$fechaTermino."'" : "'0000-00-00'";
 				$ofnumero = $_POST['ofnumero'];
 				$remite = $_POST['remite'];
 				$puesto = $_POST['puesto'];
@@ -2170,14 +2156,14 @@ if ($rc->num_rows>0)
 				//$empleadoseturna=$_POST['empleadoseturna'];
 				if ($subida == "TRUE"){
 					$sql = "INSERT INTO cp_nuevosdocumentos(idauto, id, fechaoficio, fecha, oficionumero, remite, puesto, dependencia,asunto, descripcion, nitavucaptura, iddptocrea,turnadoa,estado,baja, vobo, fecha_termino) 
-					VALUES ('', '$idDocumento','$fechaOficio', '$fecha', '$ofnumero', '$remite', '$puesto', '$dependencia','$asunto','$descripcion','$nitavu','$dpto','$dptoTurnar',0,0,'','$fechaTermino')";
+					VALUES ('', '$idDocumento','$fechaOficio', '$fecha', '$ofnumero', '$remite', '$puesto', '$dependencia','$asunto','$descripcion','$nitavu','$dpto','$dptoTurnar',0,0,'',$fechaTerminoSql)";
 					if($conexion->query($sql) == TRUE){ 
 						if($ofnumero==numeroOficioPublico(TRUE)){
 							numeroOficioPublico(FALSE);
 						}
 						idDocumento(FALSE);
 						$sql2 = "INSERT INTO cp_historialdocumentos(idinc, iddoc, numcaso, archivo, fecha, nitavusube, dptosube, dptoenviar, numoficio, activo, tipo,hora) 
-						VALUES ('', '$numDocumento', '$idDocumento', '$myFile', '$fecha', '$nitavu', '$dpto','$dptoTurnar','$ofnumero',0,0,'$hora')";
+						VALUES (NULL, '$numDocumento', '$idDocumento', '$myFile', '$fecha', '$nitavu', '$dpto','$dptoTurnar','$ofnumero',0,0,'$hora')";
 						if ($conexion->query($sql2) == TRUE){  
 							numdeDocumento(FALSE);
 							historia($nitavu,'cp_Agregó un nuevo caso llamado: '.$ofnumero.' con Id: '.$idDocumento);
@@ -2203,6 +2189,7 @@ if ($rc->num_rows>0)
 				}else{
 					$fechaTermino = '';
 				}
+				$fechaTerminoSql = ($fechaTermino !== '') ? "'".$fechaTermino."'" : "'0000-00-00'";
 				$ofnumero = $_POST['ofnumero'];
 				$remite = $_POST['remite'];
 				$puesto = $_POST['puesto'];
@@ -2218,14 +2205,14 @@ if ($rc->num_rows>0)
 				//$empleadoseturna= $_POST['empleadoseturna'];
 					$sql = "INSERT INTO cp_nuevosdocumentos(idauto, id, fechaoficio, fecha, oficionumero, remite, puesto, dependencia,asunto, descripcion, nitavucaptura, iddptocrea, turnadoa, estado, baja, vobo, fecha_termino) 
 					VALUES ('', '$idDocumento','$fechaOficio', '$fecha', '$ofnumero', '$remite', '$puesto', '$dependencia',
-					'$asunto','$descripcion','$nitavu','$dpto','$dptoTurnar',0,0,'','$fechaTermino')";
+					'$asunto','$descripcion','$nitavu','$dpto','$dptoTurnar',0,0,'',$fechaTerminoSql)";
 					if($conexion->query($sql) == TRUE){ 
 						/*if($ofnumero==numeroOficioPublico(TRUE)){
 							numeroOficioPublico(FALSE);
 						}*/
 						idDocumento(FALSE);
 						$sql2 = "INSERT INTO cp_historialdocumentos(idinc, iddoc, numcaso, archivo, fecha, nitavusube, dptosube, dptoenviar, numoficio, activo, tipo,hora) 
-						VALUES ('', '$numDocumento', '$idDocumento', '$myFile', '$fecha', '$nitavu', '$dpto','$dptoTurnar','$ofnumero',0,0,'$hora')";
+						VALUES (NULL, '$numDocumento', '$idDocumento', '$myFile', '$fecha', '$nitavu', '$dpto','$dptoTurnar','$ofnumero',0,0,'$hora')";
 						if ($conexion->query($sql2) == TRUE){  
 							numdeDocumento(FALSE);
 							historia($nitavu,'cp_Agregó un nuevo caso llamado: '.$ofnumero.' con Id: '.$idDocumento.'Archivo: '.$myFile);						
@@ -2406,7 +2393,6 @@ if (isset($_GET['plantilla']))
 				echo '<option value="100" >Fuera del Instituto </option>';
 				$sql="SELECT	cat_gerarquia.id ,	cat_gerarquia.titular ,	cat_gerarquia.nombre,	cat_gerarquia.dependencia
 					FROM	cat_gerarquia where (id <>".nitavu_dpto($nitavu).") ORDER BY cat_gerarquia.nombre ";
-					echo $sql;
 				  $r = $conexion -> query($sql);	
 				    
 				  while($f = $r -> fetch_array())

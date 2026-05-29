@@ -360,7 +360,7 @@ function ValidarAcceso() {
     $.ajax({
         url: "login_toctoc.php",
         type: "post",
-        timeout: 12000,
+        timeout: 30000,
         data: { Usuario: Usuario, NIP: NIP },
         success: function(data) {
             $("#R").html(data);
@@ -384,7 +384,7 @@ function RecoveryNIP() {
     $.ajax({
         url: "login_recovery.php",
         type: "post",
-        timeout: 12000,
+        timeout: 30000,
         data: { Usuario: Usuario },
         success: function(data) {
             $("#R").html(data);
