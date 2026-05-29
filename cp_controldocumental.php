@@ -2026,10 +2026,10 @@ if ($rc->num_rows>0)
 					//$prioridad = $_POST['prioridad'];
 					$fechaOficio = $_POST['fechaOficio'];
 					$fecha = $_POST['fecha'];
-					if(isset($_POST['fechaTermino'])){
+					if (isset($_POST['fechaTermino']) && $_POST['fechaTermino'] !== '') {
 						$fechaTermino = $_POST['fechaTermino'];
-					}else{
-						$fechaTermino = '';
+					} else {
+						$fechaTermino = '0000-00-00';
 					}
 					$fechaTerminoSql = ($fechaTermino !== '') ? "'".$fechaTermino."'" : "'0000-00-00'";
 					$ofnumero = $_POST['ofnumero'];
@@ -2051,14 +2051,14 @@ if ($rc->num_rows>0)
 					//$empleadoseturna=$_POST['empleadoseturna'];
 					if ($subida == "TRUE"){
 						$sql = "INSERT INTO cp_nuevosdocumentos(idauto, id, fechaoficio, fecha, oficionumero, remite, puesto, dependencia,asunto, descripcion, nitavucaptura, iddptocrea,turnadoa,estado,baja, vobo, fecha_termino) 
-						VALUES ('', '$idDocumento','$fechaOficio', '$fecha', '$ofnumero', '$remite', '$puesto', '$dependencia','$asunto','$descripcion','$nitavu','$dpto','$dptoTurnar',0,0,'',$fechaTerminoSql)";
+						VALUES ('', '$idDocumento','$fechaOficio', '$fecha', '$ofnumero', '$remite', '$puesto', '$dependencia','$asunto','$descripcion','$nitavu','$dpto','$dptoTurnar',0,0,'','$fechaTermino')";
 						if($conexion->query($sql) == TRUE){ 
 							if($ofnumero==numeroOficioPublico(TRUE)){
 								numeroOficioPublico(FALSE);
 							}
 							idDocumento(FALSE);
 							$sql2 = "INSERT INTO cp_historialdocumentos(idinc, iddoc, numcaso, archivo, fecha, nitavusube, dptosube, dptoenviar, numoficio, activo, tipo,hora) 
-							VALUES (NULL, '$numDocumento', '$idDocumento', '$myFile', '$fecha', '$nitavu', '$dpto','$dptoTurnar','$ofnumero',0,0,'$hora')";
+							VALUES ('', '$numDocumento', '$idDocumento', '$myFile', '$fecha', '$nitavu', '$dpto','$dptoTurnar','$ofnumero',0,0,'$hora')";
 							if ($conexion->query($sql2) == TRUE){  
 								numdeDocumento(FALSE);
 								historia($nitavu,'cp_Agregó un nuevo caso llamado: '.$ofnumero.' con Id: '.$idDocumento);
@@ -2079,10 +2079,10 @@ if ($rc->num_rows>0)
 					//$prioridad = $_POST['prioridad'];
 					$fechaOficio = $_POST['fechaOficio'];
 					$fecha = $_POST['fecha'];
-					if(isset($_POST['fechaTermino'])){
+					if (isset($_POST['fechaTermino']) && $_POST['fechaTermino'] !== '') {
 						$fechaTermino = $_POST['fechaTermino'];
-					}else{
-						$fechaTermino = '';
+					} else {
+						$fechaTermino = '0000-00-00';
 					}
 					$fechaTerminoSql = ($fechaTermino !== '') ? "'".$fechaTermino."'" : "'0000-00-00'";
 					$ofnumero = $_POST['ofnumero'];
@@ -2100,7 +2100,7 @@ if ($rc->num_rows>0)
 					//$empleadoseturna=$_POST['empleadoseturna'];
 						$sql = "INSERT INTO cp_nuevosdocumentos(idauto, id, fechaoficio, fecha, oficionumero, remite, puesto, dependencia,asunto, descripcion, nitavucaptura, iddptocrea, turnadoa, estado, baja, vobo, fecha_termino) 
 						VALUES ('', '$idDocumento','$fechaOficio', '$fecha', '$ofnumero', '$remite', '$puesto', '$dependencia',
-							'$asunto','$descripcion','$nitavu','$dpto','$dptoTurnar',0,0,'',$fechaTerminoSql)";
+						'$asunto','$descripcion','$nitavu','$dpto','$dptoTurnar',0,0,'','$fechaTermino')";
 					
 						if($conexion->query($sql) == TRUE){ 
 							// if($ofnumero==numeroOficioPublico(TRUE)){
@@ -2108,7 +2108,7 @@ if ($rc->num_rows>0)
 							// }
 							idDocumento(FALSE);
 							$sql2 = "INSERT INTO cp_historialdocumentos(idinc, iddoc, numcaso, archivo, fecha, nitavusube, dptosube, dptoenviar, numoficio, activo, tipo,hora) 
-								VALUES (NULL, '$numDocumento', '$idDocumento', '$myFile', '$fecha', '$nitavu', '$dpto','$dptoTurnar','$ofnumero',0,0,'$hora')";
+							VALUES ('', '$numDocumento', '$idDocumento', '$myFile', '$fecha', '$nitavu', '$dpto','$dptoTurnar','$ofnumero',0,0,'$hora')";
 							if ($conexion->query($sql2) == TRUE){  
 								numdeDocumento(FALSE);
 								historia($nitavu,'cp_Agregó un nuevo caso llamado: '.$ofnumero.' con Id: '.$idDocumento.'Archivo: '.$myFile);						
@@ -2132,10 +2132,10 @@ if ($rc->num_rows>0)
 				//$prioridad = $_POST['prioridad'];
 				$fechaOficio = $_POST['fechaOficio'];
 				$fecha = $_POST['fecha'];
-				if(isset($_POST['fechaTermino'])){
+								if (isset($_POST['fechaTermino']) && $_POST['fechaTermino'] !== '') {
 					$fechaTermino = $_POST['fechaTermino'];
-				}else{
-					$fechaTermino = '';
+				} else {
+					$fechaTermino = '0000-00-00';
 				}
 				$fechaTerminoSql = ($fechaTermino !== '') ? "'".$fechaTermino."'" : "'0000-00-00'";
 				$ofnumero = $_POST['ofnumero'];
@@ -2156,14 +2156,14 @@ if ($rc->num_rows>0)
 				//$empleadoseturna=$_POST['empleadoseturna'];
 				if ($subida == "TRUE"){
 					$sql = "INSERT INTO cp_nuevosdocumentos(idauto, id, fechaoficio, fecha, oficionumero, remite, puesto, dependencia,asunto, descripcion, nitavucaptura, iddptocrea,turnadoa,estado,baja, vobo, fecha_termino) 
-					VALUES ('', '$idDocumento','$fechaOficio', '$fecha', '$ofnumero', '$remite', '$puesto', '$dependencia','$asunto','$descripcion','$nitavu','$dpto','$dptoTurnar',0,0,'',$fechaTerminoSql)";
+					VALUES ('', '$idDocumento','$fechaOficio', '$fecha', '$ofnumero', '$remite', '$puesto', '$dependencia','$asunto','$descripcion','$nitavu','$dpto','$dptoTurnar',0,0,'','$fechaTermino')";
 					if($conexion->query($sql) == TRUE){ 
 						if($ofnumero==numeroOficioPublico(TRUE)){
 							numeroOficioPublico(FALSE);
 						}
 						idDocumento(FALSE);
 						$sql2 = "INSERT INTO cp_historialdocumentos(idinc, iddoc, numcaso, archivo, fecha, nitavusube, dptosube, dptoenviar, numoficio, activo, tipo,hora) 
-						VALUES (NULL, '$numDocumento', '$idDocumento', '$myFile', '$fecha', '$nitavu', '$dpto','$dptoTurnar','$ofnumero',0,0,'$hora')";
+						VALUES ('', '$numDocumento', '$idDocumento', '$myFile', '$fecha', '$nitavu', '$dpto','$dptoTurnar','$ofnumero',0,0,'$hora')";
 						if ($conexion->query($sql2) == TRUE){  
 							numdeDocumento(FALSE);
 							historia($nitavu,'cp_Agregó un nuevo caso llamado: '.$ofnumero.' con Id: '.$idDocumento);
@@ -2184,10 +2184,11 @@ if ($rc->num_rows>0)
 				//$prioridad = $_POST['prioridad'];
 				$fechaOficio = $_POST['fechaOficio'];
 				$fecha = $_POST['fecha'];
-				if(isset($_POST['fechaTermino'])){
+				// !empty() verifica que la variable exista y que tenga un valor real (no vacío)
+				if (isset($_POST['fechaTermino']) && $_POST['fechaTermino'] !== '') {
 					$fechaTermino = $_POST['fechaTermino'];
-				}else{
-					$fechaTermino = '';
+				} else {
+					$fechaTermino = '0000-00-00';
 				}
 				$fechaTerminoSql = ($fechaTermino !== '') ? "'".$fechaTermino."'" : "'0000-00-00'";
 				$ofnumero = $_POST['ofnumero'];
@@ -2205,14 +2206,14 @@ if ($rc->num_rows>0)
 				//$empleadoseturna= $_POST['empleadoseturna'];
 					$sql = "INSERT INTO cp_nuevosdocumentos(idauto, id, fechaoficio, fecha, oficionumero, remite, puesto, dependencia,asunto, descripcion, nitavucaptura, iddptocrea, turnadoa, estado, baja, vobo, fecha_termino) 
 					VALUES ('', '$idDocumento','$fechaOficio', '$fecha', '$ofnumero', '$remite', '$puesto', '$dependencia',
-					'$asunto','$descripcion','$nitavu','$dpto','$dptoTurnar',0,0,'',$fechaTerminoSql)";
+					'$asunto','$descripcion','$nitavu','$dpto','$dptoTurnar',0,0,'','$fechaTermino')";
 					if($conexion->query($sql) == TRUE){ 
 						/*if($ofnumero==numeroOficioPublico(TRUE)){
 							numeroOficioPublico(FALSE);
 						}*/
 						idDocumento(FALSE);
 						$sql2 = "INSERT INTO cp_historialdocumentos(idinc, iddoc, numcaso, archivo, fecha, nitavusube, dptosube, dptoenviar, numoficio, activo, tipo,hora) 
-						VALUES (NULL, '$numDocumento', '$idDocumento', '$myFile', '$fecha', '$nitavu', '$dpto','$dptoTurnar','$ofnumero',0,0,'$hora')";
+						VALUES ('', '$numDocumento', '$idDocumento', '$myFile', '$fecha', '$nitavu', '$dpto','$dptoTurnar','$ofnumero',0,0,'$hora')";
 						if ($conexion->query($sql2) == TRUE){  
 							numdeDocumento(FALSE);
 							historia($nitavu,'cp_Agregó un nuevo caso llamado: '.$ofnumero.' con Id: '.$idDocumento.'Archivo: '.$myFile);						
