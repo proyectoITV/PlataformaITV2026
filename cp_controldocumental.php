@@ -69,7 +69,7 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE){
 					$subida1 = FTP_subir($tmp,$archivo1);
 					if ($subida1 == "TRUE"){
 						$sql = "INSERT INTO cp_historialdocumentos(idInc,idDoc, NumCaso, archivo, fecha, nitavuSube, dptoSube, dptoEnviar, numOficio,hora) 
-						VALUES (NULL,'$numDocumento', '$idDocumento', '$doc', '$fecha', '$nitavu', '$midpto','$dptoEnviar','$num','$hora')";
+						VALUES ('0','$numDocumento', '$idDocumento', '$doc', '$fecha', '$nitavu', '$midpto','$dptoEnviar','$num','$hora')";
 						if ($conexion->query($sql) == TRUE){ 
 							$sql2 = "UPDATE cp_nuevosdocumentos SET Turnadoa=".$dptoEnviar." WHERE id=".$idDocumento."";
 							if ($conexion->query($sql2) == TRUE){ 
