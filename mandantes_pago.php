@@ -190,7 +190,7 @@
             signo2: signo2, engancheAhorro:engancheAhorro, signo3: signo3, transferencia:transferencia, signo4:signo4, pagosUniversales: pagosUniversales, signo5: signo5, escritura: escritura, signo6:signo6,
             derechos: derechos, signo7: signo7, pagoDerechos: pagoDerechos, signo8: signo8, pagooxxo: pagooxxo, centavo: centavo, comentario: comentario, observacionPago:observacionPago, idTipoMov:idTipoMov, datosbancarios:datosbancarios,signo9: signo9, pagootros: pagootros, pgastosesc: pgastosesc, gastosesc: gastosesc , otrosdesc:otrosdesc, nitavu1: <?php echo $nitavu; ?>},
             success: function(data){
-                console.log(data);
+              //  console.log(data);
               
                  $('#mensajeConfirmacion').html(data+"\n");
                 $("#mensajeConfirmacion").css({'display':'inline-block',}).slideUp(4000).delay(10000).fadeOut(4000);
@@ -251,7 +251,7 @@
             type: "post",
             data: {idmandante: idmandante, idcolonia: idcolonia, idmunicipio: idmunicipio, fecha2:fecha2, montoPagado2: montoPagado2,montoAcumulado2: montoAcumulado2, saldo2: saldo2, comentario: comentario, idTipoMov:idTipoMov ,datosbancarios:datosbancarios,nitavu1: <?php echo $nitavu; ?>},
             success: function(data){
-                console.log(data);
+                //console.log(data);
                 $('#mensajeConfirmacion').html(data+"\n");
                 $("#mensajeConfirmacion").css({'display':'inline-block',}).slideUp(4000).delay(10000).fadeOut(4000);
                 document.formulario1.fecha2.value = "";
