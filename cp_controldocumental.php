@@ -2233,7 +2233,7 @@ if ($rc->num_rows>0)
 							mensaje('4. Se ha registrado con éxito el nuevo documento. '.$idDocumento,'cp_controldocumental.php');
 							//agregarSeguimiento($idDocumento, $ofnumero, $numDocumento, $dpto, $fecha);
 						}else{
-							mensaje('Ocurrio un error al momento de guardar la información. Por favor vuelva a intentarlo.','cp_controldocumental.php');
+							mensaje('Ocurrio un error al momento de guardar la información. Por favor vuelva a intentarlo.'.$sql2,'cp_controldocumental.php');
 						}	
 					}else{
 						mensaje('Ocurrio un error al momento de guardar la información. Por favor vuelva a intentarlo.','cp_controldocumental.php');

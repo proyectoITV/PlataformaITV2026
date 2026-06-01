@@ -93,6 +93,7 @@ function numProductosReq2($id){
 			(IdConcepto, Cantidad, IdUnidad, IdDepartamento,Cancelado,Nitavu_crea,FechaCrea, Justificacion)
 				VALUES
 					( '$idConcepto', '$cantidad', '$idUnidad', $idDepartamento,'0','$quien',NOW(), '$justificacion')";
+					// echo $sql;
 							
 							if ($conexion->query($sql) == TRUE)
 								{

@@ -397,12 +397,11 @@ else {
     type: "post",   
     data: { idapp: idapp,nitavu: usuario ,nitavu1: <?php echo $nitavu; ?>,accion:"add",nivel:nivel},
     success: function(data){
-//	alert(data);
+	//alert(data);
+	//console.log(data);
 	$("#preloaderbloque").css({'display':'none'});
      $("#bloque1").css({'display':'inline-block'});    
      $('#bloque1').html(data+"\n");
-
-    
     location.reload();
 
       

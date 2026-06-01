@@ -19,9 +19,9 @@
 
 define("FTP_SERVER", "192.168.159.15"); //IP o Nombre del Servidor
 // define("FTP_SERVER","localhost"); //IP o Nombre del Servidor
-//define("FTP_PORT", 21); //Puerto desde fuera 2323
-define("FTP_USER", "desarrollo3"); //Nombre de Usuario
-define("FTP_PASSWORD", "3LS4NT0*"); //Contraseña de acceso
+define("FTP_PORT", 21); //Puerto desde fuera 2323
+define("FTP_USER", "eguzman"); //Nombre de Usuario
+define("FTP_PASSWORD", "eguzman"); //Contraseña de acceso
 // define("FTP_PASSWORD","*8l4ckp4nt3r*"); //Contraseña de acceso
 define("FTP_DIR", "/home/desarrollo2/public_html/"); //ruta del  ftp
 
@@ -9318,8 +9318,8 @@ function FTP_subir_post($archivo_local,$archivo_remoto){
 function FTP_subir($archivo_local,$archivo_remoto){
 	//Sube archivo de la maquina Cliente al Servidor (Comando PUT)
 	$id_ftp=FTP_conectar(); //Obtiene un manejador y se conecta al Servidor FTP
-	//echo "REMOTO:".$id_ftp,FTP_ruta().$archivo_remoto."\n";
-	//echo  "LOCAL:".$archivo_local;
+	// echo "REMOTO:".$id_ftp,FTP_ruta().$archivo_remoto."\n";
+	// echo  "LOCAL:".$archivo_local;
 	if (ftp_put($id_ftp,FTP_ruta().$archivo_remoto,$archivo_local,FTP_BINARY)){
 		return "TRUE";} else {return "FALSE";}
 	//Sube un archivo al Servidor FTP en modo Binario
