@@ -28,58 +28,88 @@
 
 
 
-function Preference($Preference, $GroupA, $GroupB){  
-    require("preference_config.php");    
-    $sql = "select Value from preferences 
-    WHERE Preference ='".$Preference."' and GroupA='".$GroupA."' and GroupB='".$GroupB."'";    
-    $rP= $dbP -> query($sql);
-    // echo $sql;
-    if($fP = $rP -> fetch_array())
-    {
-        return $fP['Value'];
-    } else {
-        return 'NoR';
-        //NoR = No Registrada
+function PreferenceDb(){
+    static $dbPConn = null;
+    if ($dbPConn === null){
+        require("preference_config.php");
+        $dbPConn = $dbP;
     }
+    return $dbPConn;
 }
 
-function PreferenceNew($Preference, $GroupA, $GroupB, $Value){  
-    require("preference_config.php");    
+function Preference($Preference, $GroupA, $GroupB){
+    global $PreferenceCache;
+    if (!isset($PreferenceCache)){
+        $PreferenceCache = array();
+    }
+    $cacheKey = $Preference."|".$GroupA."|".$GroupB;
+    if (array_key_exists($cacheKey, $PreferenceCache)){
+        return $PreferenceCache[$cacheKey];
+    }
+
+    $dbP = PreferenceDb();
+    $sql = "select Value from preferences 
+    WHERE Preference ='".$Preference."' and GroupA='".$GroupA."' and GroupB='".$GroupB."'";
+    $rP = $dbP -> query($sql);
+    if($rP && ($fP = $rP -> fetch_array()))
+    {
+        $PreferenceCache[$cacheKey] = $fP['Value'];
+        return $fP['Value'];
+    }
+
+    $PreferenceCache[$cacheKey] = 'NoR';
+    return 'NoR';
+    //NoR = No Registrada
+}
+
+function PreferenceNew($Preference, $GroupA, $GroupB, $Value){
+    global $PreferenceCache;
+    $dbP = PreferenceDb();
     $sql = "INSERT INTO preferences 
     (Preference, GroupA, GroupB, Value) 
     VALUES ('".$Preference."', '".$GroupA."', '".$GroupB."','".$Value."')";
     // echo $sql;
     if ($dbP->query($sql) == TRUE)
-    {return TRUE;}
+    {
+        $PreferenceCache[$Preference."|".$GroupA."|".$GroupB] = $Value;
+        return TRUE;
+    }
     else {return FALSE;}
 
 }
 
 
-function PreferenceDelete($Preference, $GroupA, $GroupB){  
-    require("preference_config.php");    
+function PreferenceDelete($Preference, $GroupA, $GroupB){
+    global $PreferenceCache;
+    $dbP = PreferenceDb();
     $sql = "DELETE preferences 
     WHERE Preference ='".$Preference."' and GroupA='".$GroupA."' and GroupB='".$GroupB."'";    
     if ($dbP->query($sql) == TRUE)
-    {return TRUE;}
+    {
+        unset($PreferenceCache[$Preference."|".$GroupA."|".$GroupB]);
+        return TRUE;
+    }
     else {return FALSE;}
 
 }
 
-function PreferenceEdit($Preference, $GroupA, $GroupB, $Value){  
-    require("preference_config.php");    
+function PreferenceEdit($Preference, $GroupA, $GroupB, $Value){
+    global $PreferenceCache;
+    $dbP = PreferenceDb();
     $sql = "UPDATE preferences 
     SET Value='".$Value."'
     WHERE Preference ='".$Preference."' and GroupA='".$GroupA."' and GroupB='".$GroupB."'";    
     // echo $sql;
     if ($dbP->query($sql) == TRUE)
-    {return TRUE;}
+    {
+        $PreferenceCache[$Preference."|".$GroupA."|".$GroupB] = $Value;
+        return TRUE;
+    }
     else {return FALSE;}
 
 }
 
-function PreferenceUpdate($Preference, $GroupA, $GroupB, $Value){  
-    require("preference_config.php");    
+function PreferenceUpdate($Preference, $GroupA, $GroupB, $Value){
     if (Preference($Preference, $GroupA, $GroupB) == 'NoR'){
         return PreferenceNew($Preference, $GroupA, $GroupB,$Value);
     } else {

@@ -40,12 +40,14 @@
 	$dbname = 'produccion_itavu';
 
 	if (function_exists('mysqli_connect')) {
-		$conexion = new mysqli($dbhost,$dbuser,$dbpass,$dbname);
-		$acentos = $conexion->query("SET NAMES 'utf8'"); // para los acentos
-		global $conexion;
-		}else{
-			mensaje("ERROR: Hay un problema con la coneccion",'');
+	    if (!isset($GLOBALS['conexion']) || !($GLOBALS['conexion'] instanceof mysqli)) {
+		    $GLOBALS['conexion'] = new mysqli($dbhost,$dbuser,$dbpass,$dbname);
+		    $GLOBALS['conexion']->query("SET NAMES 'utf8'"); // para los acentos
 		}
+		$conexion = $GLOBALS['conexion'];
+	}else{
+		mensaje("ERROR: Hay un problema con la coneccion",'');
+	}
 
 	//Credenciales para la base de datos de Vivienda
 	$Vdbhost = $dbhost;	
@@ -54,9 +56,11 @@
 	$Vdbname = 'produccion_vivienda';
 
 	if (function_exists('mysqli_connect')) {
-			$Vivienda = new mysqli($Vdbhost,$Vdbuser,$Vdbpass,$Vdbname);
-			$acentos = $Vivienda->query("SET NAMES 'utf8'"); // para los acentos
-			global $Vivienda;
+	    if (!isset($GLOBALS['Vivienda']) || !($GLOBALS['Vivienda'] instanceof mysqli)) {
+			$GLOBALS['Vivienda'] = new mysqli($Vdbhost,$Vdbuser,$Vdbpass,$Vdbname);
+			$GLOBALS['Vivienda']->query("SET NAMES 'utf8'"); // para los acentos
+		}
+		$Vivienda = $GLOBALS['Vivienda'];
 	}else{ mensaje("ERROR: Hay un problema con la coneccion a BD vivienda",'');}
 
 	//PARAMETROS DE PREFERENCIA

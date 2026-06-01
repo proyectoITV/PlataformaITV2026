@@ -2018,27 +2018,47 @@ function actualizarVistoBueno($id,$nitavu){
     }
 }
 function marcadaconVistoBueno($id,$nitavu){
-   require("config.php");
-    $sql = "SELECT * FROM cp_historialvobo WHERE idcaso=".$id." and quien_nitavu=".$nitavu." order by id desc limit 1";
-    //echo $sql;
-    $r = $conexion -> query($sql);
-    $vobo= '';
-    while($f = $r -> fetch_array())
-    { // resultado de la busqueda.................
+    static $cache = array();
+    $key = $id."|".$nitavu;
+    if (array_key_exists($key, $cache)) {
+        return $cache[$key];
+    }
+
+    global $conexion;
+    if (!isset($conexion)) {
+        require("config.php");
+    }
+
+    $sql = "SELECT fecha FROM cp_historialvobo WHERE idcaso=".$id." and quien_nitavu=".$nitavu." order by id desc limit 1";
+    $r = $conexion->query($sql);
+    $vobo = '';
+    if ($r && ($f = $r->fetch_array())) {
         $vobo = $f['fecha'];
     }
+
+    $cache[$key] = $vobo;
     return $vobo;
 }
 function quienDioVistoBueno($id,$nitavu){
-     require("config.php");
-    $sql = "SELECT * FROM cp_historialvobo WHERE idcaso=".$id." and quien_nitavu=".$nitavu." order by id desc limit 1";
-    //echo $sql;
-    $r = $conexion -> query($sql);
-    $who= '';
-    while($f = $r -> fetch_array())
-    { // resultado de la busqueda.................
+    static $cache = array();
+    $key = $id."|".$nitavu;
+    if (array_key_exists($key, $cache)) {
+        return $cache[$key];
+    }
+
+    global $conexion;
+    if (!isset($conexion)) {
+        require("config.php");
+    }
+
+    $sql = "SELECT quien_nitavu FROM cp_historialvobo WHERE idcaso=".$id." and quien_nitavu=".$nitavu." order by id desc limit 1";
+    $r = $conexion->query($sql);
+    $who = '';
+    if ($r && ($f = $r->fetch_array())) {
         $who = $f['quien_nitavu'];
     }
+
+    $cache[$key] = $who;
     return $who;
 }
 function miTitularDioVistobueno($id,$titular){
@@ -2128,35 +2148,55 @@ function casoIsTurnado($id){
         
 }
 function casoCompartidoCon($id){
-require("config.php");
-     $num="";
-     $num1="";
-    $sql = "SELECT * FROM cp_colaboradores WHERE numcaso=".$id." and activo=0";
-    $r = $conexion -> query($sql); 
-    if($r -> num_rows >0){
-        while($f = $r -> fetch_array()){
-        $num = $num.$f['nitavu'].'/';
+    static $cache = array();
+    if (array_key_exists($id, $cache)) {
+        return $cache[$id];
     }
-    $num= trim($num, '/');    
-    $num1 = explode('/',$num);
-    
-    return $num1;
-    }else{
-        return 0;
+
+    global $conexion;
+    if (!isset($conexion)) {
+        require("config.php");
     }
+
+    $num = "";
+    $sql = "SELECT nitavu FROM cp_colaboradores WHERE numcaso=".$id." and activo=0";
+    $r = $conexion->query($sql);
+    if ($r && $r->num_rows > 0) {
+        while($f = $r->fetch_array()){
+            $num = $num.$f['nitavu'].'/';
+        }
+        $num = trim($num, '/');
+        $num1 = explode('/',$num);
+        $cache[$id] = $num1;
+        return $num1;
+    }
+
+    $cache[$id] = 0;
+    return 0;
     
 }
 
 function subioArchivos($numcaso,$nitavu){
-    require("config.php");
-    $sql = "SELECT * FROM cp_historialdocumentos WHERE NumCaso=".$numcaso." and nitavuSube=".$nitavu."";
-    // $sql;
-    $rc= $conexion -> query($sql);
-    if($f = $rc -> fetch_array()){
-        return 'TRUE';
-    }else{
-        return 'FALSE';
+    static $cache = array();
+    $key = $numcaso."|".$nitavu;
+    if (array_key_exists($key, $cache)) {
+        return $cache[$key];
     }
+
+    global $conexion;
+    if (!isset($conexion)) {
+        require("config.php");
+    }
+
+    $sql = "SELECT * FROM cp_historialdocumentos WHERE NumCaso=".$numcaso." and nitavuSube=".$nitavu."";
+    $rc= $conexion->query($sql);
+    if($rc && ($f = $rc->fetch_array())){
+        $cache[$key] = 'TRUE';
+        return 'TRUE';
+    }
+
+    $cache[$key] = 'FALSE';
+    return 'FALSE';
 }
 
 function actividaddelCaso($numcaso){
