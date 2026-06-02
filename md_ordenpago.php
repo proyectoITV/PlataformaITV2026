@@ -1,4 +1,8 @@
 <?php
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 require("config.php");
 require_once('seguridad.php');
 require_once('lib/funciones.php');
@@ -25,23 +29,23 @@ $sql = "Select periodopago, periodopago2 from mandantes_abonos where id= ".$id."
 $rc = $conexion -> query($sql);
 while($f = $rc -> fetch_array())
 {
-    $fecha = $f['periodopago'];
+    $fechaP = $f['periodopago'];
     $fecha2 = $f['periodopago2'];
 }
 //echo $fecha.'-'.$fecha2;
-if($fecha2 == $fecha){
+if($fecha2 == $fechaP){
 //echo 'ENTRO AQUI';
-    $fechaComoEntero = strtotime($fecha);
+    $fechaComoEntero = strtotime($fechaP);
     $monthNum  = date("n", $fechaComoEntero);
     $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
-    $fecha = strtoupper($meses[$monthNum-1]).'-'.date('Y', $fechaComoEntero);
+    $fechaP= strtoupper($meses[$monthNum-1]).'-'.date('Y', $fechaComoEntero);
     $fecha2 = "";
     
 }else{
-    $fechaComoEntero = strtotime($fecha);
+    $fechaComoEntero = strtotime($fechaP);
     $monthNum  = date("n", $fechaComoEntero);
     $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
-    $fecha = date('d',$fechaComoEntero).'-'.strtoupper($meses[$monthNum-1]).'-'.date('Y', $fechaComoEntero);
+    $fechaP = date('d',$fechaComoEntero).'-'.strtoupper($meses[$monthNum-1]).'-'.date('Y', $fechaComoEntero);
 
     $fechaComoEntero2 = strtotime($fecha2);
     $monthNum2  = date("n", $fechaComoEntero2);
@@ -109,9 +113,9 @@ if ($HayToken == '') {
     DEPARTAMENTO DE CRÉDITO';
     if($fecha2<>""){
         
-        $titulosyfecha=$titulosyfecha.'<BR><BR>RELACIÓN CORRESPONDIENTE DEL <b>'.$fecha.'</b> AL <b>'.$fecha2.'</b>';
+        $titulosyfecha=$titulosyfecha.'<BR><BR>RELACIÓN CORRESPONDIENTE DEL <b>'.$fechaP.'</b> AL <b>'.$fecha2.'</b>';
     }else{
-        $titulosyfecha=$titulosyfecha.'<BR><BR>RELACIÓN CORRESPONDIENTE AL MES DE <b>'.$fecha.'</b>';
+        $titulosyfecha=$titulosyfecha.'<BR><BR>RELACIÓN CORRESPONDIENTE AL MES DE <b>'.$fechaP.'</b>';
     }
     $titulosyfecha=$titulosyfecha.'<BR><B>PROGRAMA '.buscarProgramaMandante($idmandante, $idcolonia, $idmunicipio).'</B>
     </p>
@@ -149,9 +153,9 @@ if ($HayToken == '') {
                             $recuperacion = $recuperacion.'</td>
                         <td style="width:65%;">';
                         if($fecha2 <> ""){
-                            $recuperacion = $recuperacion.'Recuperación correspondiente al '.$fecha.' al '.$fecha2.' emitidos por el sistema';
+                            $recuperacion = $recuperacion.'Recuperación correspondiente al '.$fechaP.' al '.$fecha2.' emitidos por el sistema';
                         }else{
-                            $recuperacion = $recuperacion.'Recuperación correspondiente al mes de '.$fecha.' emitidos por el sistema';
+                            $recuperacion = $recuperacion.'Recuperación correspondiente al mes de '.$fechaP.' emitidos por el sistema';
                         }
                         $recuperacion = $recuperacion.'</td>
                         <td style="width:15%" align="rigth">$
