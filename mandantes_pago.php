@@ -1,326 +1,5 @@
 <?php include ("./lib/body_head.php"); include ("./lib/body_menu.php"); ?>
 
-<script>
-
-
-    
-    $(document).on("change", "#municipio", function(event) {
-       $("#req_menu").css({'display':'none',});
-        $("#registroPago").css({'display':'none',});
-        $("#tablaRegistros").css({'display':'none',});
-        
-        $('#Mandantes').html('');
-        $('#Apoderado').html('');
-	    mostrarColonias($("#municipio option:selected").val());
-        
-        
-    });              
-    function mostrarColonias(id){
-        $("#preloader").css({'display':'inline-block',});
-        $("#req_menu").css({'display':'none',});
-        $("#registroPago").css({'display':'none',});
-        $("#tablaRegistros").css({'display':'none',});
-        $('#Mandantes').html('');
-        $('#Apoderado').html('');
-
-        $.ajax({
-            url: "md_colonias.php",
-            type: "get",
-            data: {id: id},
-            success: function(data){
-                $("#preloader").css({'display':'none',});
-                $('#colonia').html(data+"\n");
-            }
-        });
-
-        document.getElementById("idmunicipio").value=id;        
-    }
-
-    //mostrar mandantes     
-    function mostrarMandantes(){
-        $("#req_menu").css({'display':'none',});
-        $("#registroPago").css({'display':'none',});
-        $("#tablaRegistros").css({'display':'none',});
-        $("#preloader").css({'display':'inline-block',});
-        var id = $("#colonia option:selected").val();
-        var idmunicipio = $("#municipio option:selected").val();
-        
-        $('#Apoderado').html('');
-        $.ajax({
-            url: "md_mandantes.php",
-            type: "get",
-            data: {id: id, idmunicipio: idmunicipio },
-            success: function(data){
-                $("#preloader").css({'display':'none',});
-                $('#Mandantes').html(data+"\n");
-            }
-        });
-
-        document.getElementById("idcolonia").value=id;
-    }
-
-    function mostrarApoderado(){
-         $("#req_menu").css({'display':'none',});
-        $("#registroPago").css({'display':'none',});
-        $("#tablaRegistros").css({'display':'none',});
-        $("#preloader").css({'display':'inline-block',});
-        var id = $("#colonia option:selected").val();
-        var idmunicipio = $("#municipio option:selected").val();
-        var idmandante = $("#mandantes option:selected").val();
-
-        $.ajax({
-            url: "md_apoderado.php",
-            type: "get",
-            data: {id: id, idmunicipio: idmunicipio, idmandante: idmandante },
-            success: function(data){
-                $("#preloader").css({'display':'none',});
-                $('#Apoderado').html(data+"\n");
-            }
-        });
-        document.getElementById("idmandante").value=idmandante;
-    }
-
-  
-    function mostrarOpciones(){
-        //alert('entroActualizar');
-        $("#req_menu").css({'display':'inline-block',});
-        $("#tablaRegistros").css({'display':'inline-block',});
-        
-        var id = $("#mandantes option:selected").val();
-        //alert($("#mandantes option:selected").val());
-        idcolonia = document.getElementById("idcolonia").value;
-        idmunicipio = document.getElementById("idmunicipio").value;
-        nitavu = document.getElementById('nitavu').value;
-
-        var URLactual = window.location;    
-       
-        document.getElementById('url').value = URLactual;
-      
-        //alert(id+','+idcolonia+','+idmunicipio);
-        //history.pushState(null, "", 'mandantes_pago.php?idmandante='+id+'&idcolonia='+idcolonia+'&idmunicipio='+idmunicipio');
-       //console.log('idmandante:'+id+'idcolonia'+idcolonia+'idmunicipio'+idmunicipio);
-        $.ajax({
-            
-            url: "md_registrosMandante.php",
-            type: "get",
-            data: {id: id, idcolonia: idcolonia, idmunicipio: idmunicipio, nitavu: nitavu },
-            success: function(data){
-                $("#preloader").css({'display':'none',});
-                //document.getElementById("reporteMandante").href = "md_reporte.php?id="+id+"&idcolonia="+idcolonia+"&idmunicipio="+idmunicipio;
-                document.forms['reporteMandante'].action = "md_reporte.php?id="+id+"&idcolonia="+idcolonia+"&idmunicipio="+idmunicipio;
-                document.getElementById("nuevoCargo").href = "md_nuevoCargo.php?id="+id+"&idcolonia="+idcolonia+"&idmunicipio="+idmunicipio;
-                document.getElementById("mddocumentos").href = "md_documentos.php?id="+id+"&idcolonia="+idcolonia+"&idmunicipio="+idmunicipio;
-                             
-                //alert(data);
-                $('#tablaRegistros').html(data+"\n");
-                //document.getElementById('url1').value = URLactual;
-                $('.url1').val(URLactual);   
-                $('url').val(URLactual); 
-                
-                //console.log('puso los registros');
-            }
-        });
-        document.getElementById("idmandante").value=id;
-        
-    }
-
-    function enviarDatos(){
-        //idmandante = document.formulario.idmandante.value;
-        //idcolonia = document.formulario.idcolonia.value;
-        //idmunicipio = document.formulario.idmunicipio.value;
-
-        idmandante = document.getElementById("idmandante").value;
-        idcolonia = document.getElementById("idcolonia").value;
-        idmunicipio = document.getElementById("idmunicipio").value;
-
-        fecha = document.formulario.fecha.value;
-        periodo2 = document.formulario.periodo2.value;
-        recu = document.formulario.recuperacion.value;
-        pgastos = document.formulario.pgastos.value;
-        gastos = document.formulario.gastos.value;
-        montopagar = document.formulario.montopagar.value;
-        //pdevols = document.formulario.pdevols.value;
-        pdevols = 0;
-        devols = document.formulario.devols.value;
-        otrosdesc = document.formulario.otrosdesc.value;
-        pamorAnt = document.formulario.pamorAnt.value;
-        amorAnticipo = document.formulario.amorAnticipo.value;
-        montoPagado = document.formulario.montoPagado.value;
-        montoAcumulado = document.formulario.montoAcumulado.value;
-        saldo = document.formulario.saldo.value;
-        sistema = document.formulario.sistema.value;
-        //engancheTraspaso = document.formulario.engancheTraspaso.value;
-        var signo1 = $("#mas_menos1 option:selected").val();
-        desNomina = document.formulario.desNomina.value;
-        var signo2 = $("#mas_menos2 option:selected").val();
-        engancheAhorro = document.formulario.engancheAhorro.value;
-        var signo3 = $("#mas_menos3 option:selected").val();
-        transferencia = document.formulario.transferencia.value;
-        var signo4 = $("#mas_menos4 option:selected").val();
-        pagosUniversales = document.formulario.pagosUniversales.value;
-        var signo5 = $("#mas_menos5 option:selected").val();
-        escritura = document.formulario.escritura.value;
-        var signo6 = $("#mas_menos6 option:selected").val();
-        derechos = document.formulario.derechos.value;
-        var signo7 = $("#mas_menos7 option:selected").val();
-        pagoDerechos = document.formulario.pagoDerechos.value;
-        var signo8 = $("#mas_menos8 option:selected").val();
-        var signo9 = $("#mas_menos9 option:selected").val();
-        pagooxxo = document.formulario.pagooxxo.value;
-        pagootros = document.formulario.pagootros.value;
-        //centavo = document.formulario.centavo.value;
-        centavo = 0;
-        comentario = document.formulario.comentario.value;
-        observacionPago = document.formulario.observacionPago.value;
-        datosbancarios = document.formulario.datosBancarios.value;
-
-
-        pgastosesc = document.formulario.pgastosesc.value;
-        gastosesc = document.formulario.gastosesc.value;
-        //alert(signo1+','+signo2+','+signo3+','+signo3);
-        
-       
-        var idTipoMov = $("#tipo_mov option:selected").val();
-        //window.open("md_ordenpago.php?idmandante="+idmandante+"&idcolonia="+idcolonia+"&idmunicipio="+idmunicipio);
-        $.ajax({
-            url: "md_ingresardatosBD.php",
-            type: "post",
-            data: {idmandante: idmandante, idcolonia: idcolonia, idmunicipio: idmunicipio, fecha:fecha, periodo2: periodo2, recuperacion:recu, pgastos: pgastos, gastos: gastos, 
-            montopagar: montopagar, pdevols: pdevols, devols:devols, pamorAnt: pamorAnt, amorAnticipo:amorAnticipo, montoPagado: montoPagado, montoAcumulado: montoAcumulado, saldo: saldo, sistema: sistema, signo1: signo1, desNomina: desNomina,
-            signo2: signo2, engancheAhorro:engancheAhorro, signo3: signo3, transferencia:transferencia, signo4:signo4, pagosUniversales: pagosUniversales, signo5: signo5, escritura: escritura, signo6:signo6,
-            derechos: derechos, signo7: signo7, pagoDerechos: pagoDerechos, signo8: signo8, pagooxxo: pagooxxo, centavo: centavo, comentario: comentario, observacionPago:observacionPago, idTipoMov:idTipoMov, datosbancarios:datosbancarios,signo9: signo9, pagootros: pagootros, pgastosesc: pgastosesc, gastosesc: gastosesc , otrosdesc:otrosdesc, nitavu1: <?php echo $nitavu; ?>},
-            success: function(data){
-              //  console.log(data);
-              
-                 $('#mensajeConfirmacion').html(data+"\n");
-                $("#mensajeConfirmacion").css({'display':'inline-block',}).slideUp(4000).delay(10000).fadeOut(4000);
-                document.formulario.fecha.value = "";
-                document.formulario.periodo2.value="";
-                document.formulario.recuperacion.value = "";
-                document.formulario.pgastos.value = "";
-                document.formulario.gastos.value = "";
-                document.formulario.montopagar.value = "";
-                //document.formulario.pdevols.value = "";
-                document.formulario.devols.value = "";
-                document.formulario.otrosdesc.value = "";
-                document.formulario.pamorAnt.value = "";
-                document.formulario.amorAnticipo.value = "";
-                document.formulario.montoPagado.value = "";
-                document.formulario.montoAcumulado.value = "";
-                document.formulario.saldo.value = "";
-                document.formulario.sistema.value="";
-                //document.formulario.engancheTraspaso.value="";
-                document.formulario.desNomina.value = "";
-                document.formulario.engancheAhorro.value = "";
-                document.formulario.transferencia.value = "";
-                document.formulario.pagosUniversales.value = "";
-                document.formulario.escritura.value = "";
-                document.formulario.derechos.value = "";
-                document.formulario.pagoDerechos.value = "";
-                document.formulario.pagooxxo.value = "";
-                document.formulario.pagootros.value = "";
-                document.formulario.gastosesc.value="";
-                //document.formulario.centavo.value="";
-                document.formulario.comentario.value = "";
-                document.formulario.observacionPago.value = "";
-                document.formulario.datosBancarios.value = "";
-                mostrarOpciones();
-            }
-        });
-
-    }
-
-    function enviarDatos2(){
-        //alert('entro2');
-        
-        idmandante = document.getElementById("idmandante").value;
-        idcolonia = document.getElementById("idcolonia").value;
-        idmunicipio = document.getElementById("idmunicipio").value;
-
-        fecha2 = document.formulario1.fecha2.value;
-        montoPagado2 = document.formulario1.montoPagado2.value;
-        montoAcumulado2 = document.formulario1.montoAcumulado2.value;
-        saldo2 = document.formulario1.saldo2.value;
-        comentario = document.formulario1.comentario.value;
-        datosbancarios=document.formulario1.datosBancarios1.value;
-        
-        var idTipoMov = $("#tipo_mov option:selected").val();
-        //window.open("md_ordenpago.php?idmandante="+idmandante+"&idcolonia="+idcolonia+"&idmunicipio="+idmunicipio);
-        $.ajax({
-            url: "md_ingresardatosBD.php",
-            type: "post",
-            data: {idmandante: idmandante, idcolonia: idcolonia, idmunicipio: idmunicipio, fecha2:fecha2, montoPagado2: montoPagado2,montoAcumulado2: montoAcumulado2, saldo2: saldo2, comentario: comentario, idTipoMov:idTipoMov ,datosbancarios:datosbancarios,nitavu1: <?php echo $nitavu; ?>},
-            success: function(data){
-                //console.log(data);
-                $('#mensajeConfirmacion').html(data+"\n");
-                $("#mensajeConfirmacion").css({'display':'inline-block',}).slideUp(4000).delay(10000).fadeOut(4000);
-                document.formulario1.fecha2.value = "";
-                document.formulario1.montoPagado2.value = "";
-                document.formulario1.montoAcumulado2.value = "";
-                document.formulario1.saldo2.value = "";
-                document.formulario1.comentario.value="";
-            
-                mostrarOpciones();
-            }
-        });
-    }
-
-    function pasarId(vuelta){
-        
-        idComprobante = document.getElementById('idComprobante'+vuelta).value;
-        idmandante = document.getElementById('idmandante1').value;
-        idcolonia = document.getElementById('idcolonia1').value;
-        idmunicipio = document.getElementById('idmunicipio1').value;
-        document.getElementById('comprobante').value = idComprobante;
-        document.getElementById('idmandante2').value = idmandante;
-        document.getElementById('idcolonia2').value = idcolonia;
-        document.getElementById('idmunicipio2').value = idmunicipio;
-    }
-
-   function seleccionarQueDivMostrar(){
-       var id = $("#tipo_mov option:selected").val();
-       //alert(id);
-       if(id == 3){
-          
-        
-
-        buscarGastosAdmin();
-        buscarGastosEsc();
-        buscarAmortizacionAnt();
-       
-           $("#formulario").css({'display':'inline-block',});
-           $("#formulario1").css({'display':'none',});
-
-           
-
-       }else{
-            $("#formulario1").css({'display':'inline-block',});
-            $("#formulario").css({'display':'none',});
-       }
-       
-      
-   }
-
-   function recalcular(){
-        idmandante = document.getElementById("idmandante").value;
-        idcolonia = document.getElementById("idcolonia").value;
-        idmunicipio = document.getElementById("idmunicipio").value;
-        nitavu = document.getElementById('nitavu').value;
-
-        $.ajax({
-            url: "md_recalcular.php",
-            type: "post",
-            data: {idmandante: idmandante, idcolonia: idcolonia, idmunicipio: idmunicipio, nitavu:nitavu},
-            success: function(data){
-                console.log(data);
-                $('#respuesta').html(data+"\n");
-            }
-        });
-   }
-   
-
-</script>
-
 
 <?php
 require("config.php");
@@ -1909,6 +1588,325 @@ else{
 }
 
 ?>
+<script>
+    
+    $(document).on("change", "#municipio", function(event) {
+       $("#req_menu").css({'display':'none',});
+        $("#registroPago").css({'display':'none',});
+        $("#tablaRegistros").css({'display':'none',});
+        
+        $('#Mandantes').html('');
+        $('#Apoderado').html('');
+	    mostrarColonias($("#municipio option:selected").val());
+        
+        
+    });              
+    function mostrarColonias(id){
+        $("#preloader").css({'display':'inline-block',});
+        $("#req_menu").css({'display':'none',});
+        $("#registroPago").css({'display':'none',});
+        $("#tablaRegistros").css({'display':'none',});
+        $('#Mandantes').html('');
+        $('#Apoderado').html('');
+
+        $.ajax({
+            url: "md_colonias.php",
+            type: "get",
+            data: {id: id},
+            success: function(data){
+                $("#preloader").css({'display':'none',});
+                $('#colonia').html(data+"\n");
+            }
+        });
+
+        document.getElementById("idmunicipio").value=id;        
+    }
+
+    //mostrar mandantes     
+    function mostrarMandantes(){
+        $("#req_menu").css({'display':'none',});
+        $("#registroPago").css({'display':'none',});
+        $("#tablaRegistros").css({'display':'none',});
+        $("#preloader").css({'display':'inline-block',});
+        var id = $("#colonia option:selected").val();
+        var idmunicipio = $("#municipio option:selected").val();
+        
+        $('#Apoderado').html('');
+        $.ajax({
+            url: "md_mandantes.php",
+            type: "get",
+            data: {id: id, idmunicipio: idmunicipio },
+            success: function(data){
+                $("#preloader").css({'display':'none',});
+                $('#Mandantes').html(data+"\n");
+            }
+        });
+
+        document.getElementById("idcolonia").value=id;
+    }
+
+    function mostrarApoderado(){
+         $("#req_menu").css({'display':'none',});
+        $("#registroPago").css({'display':'none',});
+        $("#tablaRegistros").css({'display':'none',});
+        $("#preloader").css({'display':'inline-block',});
+        var id = $("#colonia option:selected").val();
+        var idmunicipio = $("#municipio option:selected").val();
+        var idmandante = $("#mandantes option:selected").val();
+
+        $.ajax({
+            url: "md_apoderado.php",
+            type: "get",
+            data: {id: id, idmunicipio: idmunicipio, idmandante: idmandante },
+            success: function(data){
+                $("#preloader").css({'display':'none',});
+                $('#Apoderado').html(data+"\n");
+            }
+        });
+        document.getElementById("idmandante").value=idmandante;
+    }
+
+  
+    function mostrarOpciones(){
+        //alert('entroActualizar');
+        $("#req_menu").css({'display':'inline-block',});
+        $("#tablaRegistros").css({'display':'inline-block',});
+        
+        var id = $("#mandantes option:selected").val();
+        //alert($("#mandantes option:selected").val());
+        idcolonia = document.getElementById("idcolonia").value;
+        idmunicipio = document.getElementById("idmunicipio").value;
+        nitavu = document.getElementById('nitavu').value;
+
+        var URLactual = window.location;    
+       
+        document.getElementById('url').value = URLactual;
+      
+        //alert(id+','+idcolonia+','+idmunicipio);
+        //history.pushState(null, "", 'mandantes_pago.php?idmandante='+id+'&idcolonia='+idcolonia+'&idmunicipio='+idmunicipio');
+       //console.log('idmandante:'+id+'idcolonia'+idcolonia+'idmunicipio'+idmunicipio);
+        $.ajax({
+            
+            url: "md_registrosMandante.php",
+            type: "get",
+            data: {id: id, idcolonia: idcolonia, idmunicipio: idmunicipio, nitavu: nitavu },
+            success: function(data){
+                $("#preloader").css({'display':'none',});
+                //document.getElementById("reporteMandante").href = "md_reporte.php?id="+id+"&idcolonia="+idcolonia+"&idmunicipio="+idmunicipio;
+                document.forms['reporteMandante'].action = "md_reporte.php?id="+id+"&idcolonia="+idcolonia+"&idmunicipio="+idmunicipio;
+                document.getElementById("nuevoCargo").href = "md_nuevoCargo.php?id="+id+"&idcolonia="+idcolonia+"&idmunicipio="+idmunicipio;
+                document.getElementById("mddocumentos").href = "md_documentos.php?id="+id+"&idcolonia="+idcolonia+"&idmunicipio="+idmunicipio;
+                             
+                //alert(data);
+                $('#tablaRegistros').html(data+"\n");
+                //document.getElementById('url1').value = URLactual;
+                $('.url1').val(URLactual);   
+                $('url').val(URLactual); 
+                
+                //console.log('puso los registros');
+            }
+        });
+        document.getElementById("idmandante").value=id;
+        
+    }
+
+    function enviarDatos(){
+        //idmandante = document.formulario.idmandante.value;
+        //idcolonia = document.formulario.idcolonia.value;
+        //idmunicipio = document.formulario.idmunicipio.value;
+
+        idmandante = document.getElementById("idmandante").value;
+        idcolonia = document.getElementById("idcolonia").value;
+        idmunicipio = document.getElementById("idmunicipio").value;
+
+        fecha = document.formulario.fecha.value;
+        periodo2 = document.formulario.periodo2.value;
+        recu = document.formulario.recuperacion.value;
+        pgastos = document.formulario.pgastos.value;
+        gastos = document.formulario.gastos.value;
+        montopagar = document.formulario.montopagar.value;
+        //pdevols = document.formulario.pdevols.value;
+        pdevols = 0;
+        devols = document.formulario.devols.value;
+        otrosdesc = document.formulario.otrosdesc.value;
+        pamorAnt = document.formulario.pamorAnt.value;
+        amorAnticipo = document.formulario.amorAnticipo.value;
+        montoPagado = document.formulario.montoPagado.value;
+        montoAcumulado = document.formulario.montoAcumulado.value;
+        saldo = document.formulario.saldo.value;
+        sistema = document.formulario.sistema.value;
+        //engancheTraspaso = document.formulario.engancheTraspaso.value;
+        var signo1 = $("#mas_menos1 option:selected").val();
+        desNomina = document.formulario.desNomina.value;
+        var signo2 = $("#mas_menos2 option:selected").val();
+        engancheAhorro = document.formulario.engancheAhorro.value;
+        var signo3 = $("#mas_menos3 option:selected").val();
+        transferencia = document.formulario.transferencia.value;
+        var signo4 = $("#mas_menos4 option:selected").val();
+        pagosUniversales = document.formulario.pagosUniversales.value;
+        var signo5 = $("#mas_menos5 option:selected").val();
+        escritura = document.formulario.escritura.value;
+        var signo6 = $("#mas_menos6 option:selected").val();
+        derechos = document.formulario.derechos.value;
+        var signo7 = $("#mas_menos7 option:selected").val();
+        pagoDerechos = document.formulario.pagoDerechos.value;
+        var signo8 = $("#mas_menos8 option:selected").val();
+        var signo9 = $("#mas_menos9 option:selected").val();
+        pagooxxo = document.formulario.pagooxxo.value;
+        pagootros = document.formulario.pagootros.value;
+        //centavo = document.formulario.centavo.value;
+        centavo = 0;
+        comentario = document.formulario.comentario.value;
+        observacionPago = document.formulario.observacionPago.value;
+        datosbancarios = document.formulario.datosBancarios.value;
+
+
+        pgastosesc = document.formulario.pgastosesc.value;
+        gastosesc = document.formulario.gastosesc.value;
+        //alert(signo1+','+signo2+','+signo3+','+signo3);
+        
+       
+        var idTipoMov = $("#tipo_mov option:selected").val();
+        //window.open("md_ordenpago.php?idmandante="+idmandante+"&idcolonia="+idcolonia+"&idmunicipio="+idmunicipio);
+        $.ajax({
+            url: "md_ingresardatosBD.php",
+            type: "post",
+            data: {idmandante: idmandante, idcolonia: idcolonia, idmunicipio: idmunicipio, fecha:fecha, periodo2: periodo2, recuperacion:recu, pgastos: pgastos, gastos: gastos, 
+            montopagar: montopagar, pdevols: pdevols, devols:devols, pamorAnt: pamorAnt, amorAnticipo:amorAnticipo, montoPagado: montoPagado, montoAcumulado: montoAcumulado, saldo: saldo, sistema: sistema, signo1: signo1, desNomina: desNomina,
+            signo2: signo2, engancheAhorro:engancheAhorro, signo3: signo3, transferencia:transferencia, signo4:signo4, pagosUniversales: pagosUniversales, signo5: signo5, escritura: escritura, signo6:signo6,
+            derechos: derechos, signo7: signo7, pagoDerechos: pagoDerechos, signo8: signo8, pagooxxo: pagooxxo, centavo: centavo, comentario: comentario, observacionPago:observacionPago, idTipoMov:idTipoMov, datosbancarios:datosbancarios,signo9: signo9, pagootros: pagootros, pgastosesc: pgastosesc, gastosesc: gastosesc , otrosdesc:otrosdesc, nitavu1: <?php echo $nitavu; ?>},
+            success: function(data){
+              //  console.log(data);
+              
+                 $('#mensajeConfirmacion').html(data+"\n");
+                $("#mensajeConfirmacion").css({'display':'inline-block',}).slideUp(4000).delay(10000).fadeOut(4000);
+                document.formulario.fecha.value = "";
+                document.formulario.periodo2.value="";
+                document.formulario.recuperacion.value = "";
+                document.formulario.pgastos.value = "";
+                document.formulario.gastos.value = "";
+                document.formulario.montopagar.value = "";
+                //document.formulario.pdevols.value = "";
+                document.formulario.devols.value = "";
+                document.formulario.otrosdesc.value = "";
+                document.formulario.pamorAnt.value = "";
+                document.formulario.amorAnticipo.value = "";
+                document.formulario.montoPagado.value = "";
+                document.formulario.montoAcumulado.value = "";
+                document.formulario.saldo.value = "";
+                document.formulario.sistema.value="";
+                //document.formulario.engancheTraspaso.value="";
+                document.formulario.desNomina.value = "";
+                document.formulario.engancheAhorro.value = "";
+                document.formulario.transferencia.value = "";
+                document.formulario.pagosUniversales.value = "";
+                document.formulario.escritura.value = "";
+                document.formulario.derechos.value = "";
+                document.formulario.pagoDerechos.value = "";
+                document.formulario.pagooxxo.value = "";
+                document.formulario.pagootros.value = "";
+                document.formulario.gastosesc.value="";
+                //document.formulario.centavo.value="";
+                document.formulario.comentario.value = "";
+                document.formulario.observacionPago.value = "";
+                document.formulario.datosBancarios.value = "";
+                mostrarOpciones();
+            }
+        });
+
+    }
+
+    function enviarDatos2(){
+        //alert('entro2');
+        
+        idmandante = document.getElementById("idmandante").value;
+        idcolonia = document.getElementById("idcolonia").value;
+        idmunicipio = document.getElementById("idmunicipio").value;
+
+        fecha2 = document.formulario1.fecha2.value;
+        montoPagado2 = document.formulario1.montoPagado2.value;
+        montoAcumulado2 = document.formulario1.montoAcumulado2.value;
+        saldo2 = document.formulario1.saldo2.value;
+        comentario = document.formulario1.comentario.value;
+        datosbancarios=document.formulario1.datosBancarios1.value;
+        
+        var idTipoMov = $("#tipo_mov option:selected").val();
+        //window.open("md_ordenpago.php?idmandante="+idmandante+"&idcolonia="+idcolonia+"&idmunicipio="+idmunicipio);
+        $.ajax({
+            url: "md_ingresardatosBD.php",
+            type: "post",
+            data: {idmandante: idmandante, idcolonia: idcolonia, idmunicipio: idmunicipio, fecha2:fecha2, montoPagado2: montoPagado2,montoAcumulado2: montoAcumulado2, saldo2: saldo2, comentario: comentario, idTipoMov:idTipoMov ,datosbancarios:datosbancarios,nitavu1: <?php echo $nitavu; ?>},
+            success: function(data){
+                //console.log(data);
+                $('#mensajeConfirmacion').html(data+"\n");
+                $("#mensajeConfirmacion").css({'display':'inline-block',}).slideUp(4000).delay(10000).fadeOut(4000);
+                document.formulario1.fecha2.value = "";
+                document.formulario1.montoPagado2.value = "";
+                document.formulario1.montoAcumulado2.value = "";
+                document.formulario1.saldo2.value = "";
+                document.formulario1.comentario.value="";
+            
+                mostrarOpciones();
+            }
+        });
+    }
+
+    function pasarId(vuelta){
+        
+        idComprobante = document.getElementById('idComprobante'+vuelta).value;
+        idmandante = document.getElementById('idmandante1').value;
+        idcolonia = document.getElementById('idcolonia1').value;
+        idmunicipio = document.getElementById('idmunicipio1').value;
+        document.getElementById('comprobante').value = idComprobante;
+        document.getElementById('idmandante2').value = idmandante;
+        document.getElementById('idcolonia2').value = idcolonia;
+        document.getElementById('idmunicipio2').value = idmunicipio;
+    }
+
+   function seleccionarQueDivMostrar(){
+       var id = $("#tipo_mov option:selected").val();
+       //alert(id);
+       if(id == 3){
+          
+        
+
+        buscarGastosAdmin();
+        buscarGastosEsc();
+        buscarAmortizacionAnt();
+       
+           $("#formulario").css({'display':'inline-block',});
+           $("#formulario1").css({'display':'none',});
+
+           
+
+       }else{
+            $("#formulario1").css({'display':'inline-block',});
+            $("#formulario").css({'display':'none',});
+       }
+       
+      
+   }
+
+   function recalcular(){
+        idmandante = document.getElementById("idmandante").value;
+        idcolonia = document.getElementById("idcolonia").value;
+        idmunicipio = document.getElementById("idmunicipio").value;
+        nitavu = document.getElementById('nitavu').value;
+
+        $.ajax({
+            url: "md_recalcular.php",
+            type: "post",
+            data: {idmandante: idmandante, idcolonia: idcolonia, idmunicipio: idmunicipio, nitavu:nitavu},
+            success: function(data){
+                console.log(data);
+                $('#respuesta').html(data+"\n");
+            }
+        });
+   }
+   
+
+</script>
+
 <script>
 function mostrarFecha2(){
     if (peri2.checked == true){
