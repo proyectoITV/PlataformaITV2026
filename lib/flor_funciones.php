@@ -3082,7 +3082,7 @@ function MiToken($usuario, $descripcion){
 function MiToken_Init($usuario, $descripcion){
     require("config.php");
     $sql = "SELECT count(*) as n from tokens WHERE user='$usuario' and activo='0'";
-    // echo $sql;
+//echo $sql;
     $rc= $conexion -> query($sql);
     if($rc){
         if($f = $rc -> fetch_array())
@@ -3091,10 +3091,10 @@ function MiToken_Init($usuario, $descripcion){
             if ($f['n'] == 0 )   {
                 // si no tiene continuamos
 				$Token = MiToken_generate();
-				//echo $Token;
-                $sql = "INSERT INTO tokens (id, user, descripcion, token, fecha, hora, activo, cierre_fecha, cierre_hora)
-                VALUES ('','$usuario', '$descripcion', '$Token','$fecha', '$hora','0','','')";
-                //echo $sql;
+				//echo $oken;
+                $sql = "INSERT INTO tokens ( user, descripcion, token, fecha, hora, activo, cierre_fecha, cierre_hora)
+                VALUES ('$usuario', '$descripcion', '$Token','$fecha', '$hora','0',0,0)";
+               //echo $sql
                 if ($conexion->query($sql) == TRUE)
                 {return $Token;} else {return '';}
       
