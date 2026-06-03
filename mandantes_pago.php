@@ -1,6 +1,4 @@
 <?php include ("./lib/body_head.php"); include ("./lib/body_menu.php"); ?>
-
-
 <?php
 require("config.php");
 $id_aplicacion = 'ap70';
@@ -1588,8 +1586,7 @@ else{
 }
 
 ?>
-<script>
-    
+<script>    
     $(document).on("change", "#municipio", function(event) {
        $("#req_menu").css({'display':'none',});
         $("#registroPago").css({'display':'none',});
