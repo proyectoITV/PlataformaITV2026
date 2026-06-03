@@ -73,6 +73,7 @@ try {
 		}
 	}
 
+	error_log('req_solicitar_req_bd.php: '.$e->getMessage().' SQL=['.$sql.']');
 	$msg = 'ERROR: Fallo al agrupar requisiciones. ' . $e->getMessage();
 	mensaje($msg,'req_solicitar_req.php');
 }
@@ -94,4 +95,6 @@ try {
 
 			}
 else{echo "<br><br>";echo "No tiene acceso a ".$id_aplicacion;}
+
+include ("./lib/body_footer.php");
 ?>
