@@ -5,7 +5,7 @@
 		<!-- <title>Plataforma ITAVU</title> -->
 		<?php		
 		// if ($dbhost =='localhost'){
-			echo "<title>".$nitavu." |  Plataforma | ".$dbhost."-".$Vdbhost."</title>";
+			echo "<title>".$nitavu." |  Plataforma | ".$dbhost."-".(isset($Vdbhost) ? $Vdbhost : $dbhost)."</title>";
 		// } else {
 		// 	echo "<title>".$nitavu." |  Plataforma </title>";
 		// }

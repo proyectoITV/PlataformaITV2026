@@ -17,14 +17,24 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE)
 
 if (isset($_POST['btnAgrupar'])) 
 {
- if(isset($_POST["idrequisiciones"]) && isset($_POST["idrequisiciones"])=="1")
+ if (!empty($_POST['idrequisiciones']) && is_array($_POST['idrequisiciones']))
 
 {
  
  	 $selected = '';
-         $num_countries = count($_POST['idrequisiciones']);
+         $idrequisiciones = array_map('intval', $_POST['idrequisiciones']);
+         $idrequisiciones = array_filter($idrequisiciones, function ($id) {
+          	return $id > 0;
+         });
+
+         if (empty($idrequisiciones)) {
+         	mensaje('Debe seleccionar al menos una requisicion valida','req_solicitar_req.php');
+         	exit;
+         }
+
+         $num_countries = count($idrequisiciones);
          $current = 0;
-         foreach ($_POST['idrequisiciones'] as $key => $value) 
+         foreach ($idrequisiciones as $key => $value) 
          {
              if ($current != $num_countries-1)
                  $selected .=  "(^".$value."$)|";
@@ -36,24 +46,36 @@ if (isset($_POST['btnAgrupar']))
 
 $sql ="CALL sp_agruparRequisiciones(".$nitavu.",'".$selected."')";
 
-//echo $sql;
-if ($conexion->query($sql) == TRUE) 
-		{
-			$msg="";
-			
-			
-			historia($nitavu,'Req_Se han agrupado las requisiciones de los siguientes Dptos:'.$selected);			
-			$msg = $msg."Se han agrupado las requisiciones seleccionadas";
-			mensaje($msg,'req.php');
-			//header('location:../index.php');	
-		} 
-	else 
-		{
-		$msg="Error inesperado ".$sql; //<-- Descripcion de error
-		//creamos un historial de error extraordinario
-		//header("location:../lib/error.php?er=".$msg);
-		mensaje($msg,'req.php');
-		} 
+try {
+	$resultado = $conexion->query($sql);
+
+	if ($resultado instanceof mysqli_result) {
+		$resultado->free();
+	}
+
+	while ($conexion->more_results() && $conexion->next_result()) {
+		$resultadoExtra = $conexion->store_result();
+		if ($resultadoExtra instanceof mysqli_result) {
+			$resultadoExtra->free();
+		}
+	}
+
+	$msg="";
+	historia($nitavu,'Req_Se han agrupado las requisiciones de los siguientes Dptos:'.$selected);
+	$msg = $msg."Se han agrupado las requisiciones seleccionadas";
+	mensaje($msg,'req.php');
+	//header('location:../index.php');
+} catch (Throwable $e) {
+	while ($conexion->more_results() && $conexion->next_result()) {
+		$resultadoExtra = $conexion->store_result();
+		if ($resultadoExtra instanceof mysqli_result) {
+			$resultadoExtra->free();
+		}
+	}
+
+	$msg = 'ERROR: Fallo al agrupar requisiciones. ' . $e->getMessage();
+	mensaje($msg,'req_solicitar_req.php');
+}
 
  }
 

@@ -5837,7 +5837,10 @@ function Turno($IdDpto, $Agregar){
 			$Nuevo = 1;
 			$sql="UPDATE cat_gerarquia SET TurnoCount='$Nuevo' WHERE (id='".$IdDpto."')";
 			if ($conexion->query($sql) == TRUE){
-				historia("TURNOS","Se reinicio el contador de turnos de la delegacion ".$IdDpto);
+				$nitavuTurnos = (isset($_SESSION['nitavu']) && is_numeric($_SESSION['nitavu'])) ? intval($_SESSION['nitavu']) : 0;
+				if ($nitavuTurnos > 0) {
+					historia($nitavuTurnos,"TURNOS: Se reinicio el contador de turnos de la delegacion ".$IdDpto);
+				}
 				return $Nuevo;
 			} else  {return FALSE;}
 		} else { // sino continua con el contador
@@ -11455,29 +11458,40 @@ $dif=$fin-$ini;
 
 function historia($nitavu_, $descripcion, $IdApp=""){
 require("config.php");
-	if ($ModoProduccion == TRUE){
-		$descripcion = addslashes($descripcion);
-		if ($IdApp == ""){
-			$sql = "INSERT INTO historia
-			(nitavu, fecha, hora, descripcion)
-			VALUES
-			('$nitavu_', '$fecha', '$hora','$descripcion')";
-		} else {
-			$sql = "INSERT INTO historia
-			(nitavu, fecha, hora, descripcion, IdApp)
-			VALUES
-			('$nitavu_', '$fecha', '$hora','$descripcion','".$IdApp."')";
-		}
+	if ($ModoProduccion != TRUE){
+		return FALSE;
+	}
 
-		if ($conexion->query($sql) == TRUE)
-		{	
-			return TRUE;
-		}
-			else
-		{	
-			return FALSE;
-		}
+	if (!isset($nitavu_) || !is_numeric($nitavu_) || intval($nitavu_) <= 0) {
+		error_log('historia(): nitavu invalido ['.print_r($nitavu_, true).'] desc=['.$descripcion.']');
+		return FALSE;
+	}
+
+	if (!isset($conexion) || !($conexion instanceof mysqli)) {
+		error_log('historia(): conexion mysqli no disponible');
+		return FALSE;
+	}
+
+	$nitavu_ = intval($nitavu_);
+	$descripcion = addslashes((string)$descripcion);
+	$IdApp = addslashes((string)$IdApp);
+
+	if ($IdApp == ""){
+		$sql = "INSERT INTO historia
+		(nitavu, fecha, hora, descripcion)
+		VALUES
+		('".$nitavu_."', '".$fecha."', '".$hora."','".$descripcion."')";
 	} else {
+		$sql = "INSERT INTO historia
+		(nitavu, fecha, hora, descripcion, IdApp)
+		VALUES
+		('".$nitavu_."', '".$fecha."', '".$hora."','".$descripcion."','".$IdApp."')";
+	}
+
+	try {
+		return ($conexion->query($sql) == TRUE);
+	} catch (Throwable $e) {
+		error_log('historia(): '.$e->getMessage().' SQL=['.$sql.']');
 		return FALSE;
 	}
 }
@@ -12323,8 +12337,13 @@ function app_detalle($idapp, $nitavu=""){
 	$rc= $conexion -> query($sql);	
 	
 	//$nitavu = $_SESSION['nitavu'];
-	xd_update($idapp, $nitavu);
-	historia($nitavu, " Entro a aplicacion "."(".$idapp.") ".app_nombre($idapp));
+	if ((!isset($nitavu) || $nitavu == "") && isset($_SESSION['nitavu']) && is_numeric($_SESSION['nitavu'])) {
+		$nitavu = $_SESSION['nitavu'];
+	}
+	if (isset($nitavu) && is_numeric($nitavu) && intval($nitavu) > 0) {
+		xd_update($idapp, $nitavu);
+		historia($nitavu, " Entro a aplicacion "."(".$idapp.") ".app_nombre($idapp));
+	}
 	//toast($nitavu);
 	$msg="";
 	if($f = $rc -> fetch_array())
