@@ -14,9 +14,9 @@ if (method_exists($conexion, 'real_escape_string')) {
 
 $sql = "
     INSERT INTO problemas
-        (TAG, Descripcion, IdEmpleado, IdApp, fecha, hora)
+        (TAG, Descripcion, IdEmpleado, IdApp, fecha, hora, status)
     VALUES 
-        ('".$TAG."', '".$Descripcion."', '".$IdEmpleado."', '".$IdApp."','".$fecha."', '".$hora."')
+        ('".$TAG."', '".$Descripcion."', '".$IdEmpleado."', '".$IdApp."','".$fecha."', '".$hora."', '0')
     
     ";
     if ($conexion->query($sql) == TRUE){                   	        
