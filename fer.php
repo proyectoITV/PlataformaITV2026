@@ -379,7 +379,7 @@ echo "
     
     //ejercicio=".$ejercicio." order by ejercicio, cast(nfer_id as INTEGER)';
 
-    guardareporte(1,$sqlreporte,$nitavu,'','',$ejercicio,'','produccion_itavu' );
+    guardareporte(1,$sqlreporte,$nitavu,$fecha,$fecha,$ejercicio,'xx','produccion_itavu' );
             
             echo "<table class='tabla'>
                 <th class='pc' hidden>IdFer </th>

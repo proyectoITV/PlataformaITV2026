@@ -10,7 +10,7 @@ $(document).on("change", "#municipio", function(event) {
     mostrarLocalidades($("#municipio option:selected").val()); 
 });              
 function mostrarLocalidades(id){
-   //alert('entro');
+   alert('entro');
     $("#preloader").css({'display':'inline-block',});
     $.ajax({
         url: "en_localidad.php",
@@ -251,25 +251,25 @@ VALUES ("'.$CURP.'","'.$NumContrato.'", "'.$telefono.'", "'.$entidad.'", "'.$tra
        
         //echo "<h3>ENCUESTA DE SATISFACCION</h3>";
         echo '<div class="card" style="text-align: justify; width:100%;">
-        
         <h1 class="card-header h5">Encuesta de Satisfacción</h1>';
        
             echo '<div class="card-body" style="width:100%;">';  
         //**boton regresa
         //$aniox=date("Y",$fecha);
-        $aniox=2026;       
+        $aniox=2025;
+        //$sqlreporte="Select  nombre,Fecha, CURP, NombreBeneficiario,Tramite,NumContrato,Delegacion,Programa, Folio, Capturista FROM encuesta_satisfactoria INNER JOIN   cat_delegaciones  ON encuesta_satisfactoria.Delegacion = cat_delegaciones.id where YEAR(Fecha)=".$aniox." and Delegacion=".midelegacion_id($nitavu)." ORDER BY fecha DESC";
+        //$sqlreporte="SELECT nombre as Delegacion, Fecha, CURP, NombreBeneficiario, Tramite, NumContrato, cat_programa.programa, Folio, Capturista FROM encuesta_satisfactoria INNER JOIN cat_delegaciones ON encuesta_satisfactoria.Delegacion = cat_delegaciones.id INNER JOIN cat_programa ON encuesta_satisfactoria.Programa = cat_programa.IdPrograma WHERE YEAR(Fecha) = 2023 AND Delegacion =".midelegviviendaid($nitavu)." ORDER BY fecha DESC"
         $sqlreporte="SELECT	nombre AS Delegacion, Fecha, CURP, NombreBeneficiario, Tramite, NumContrato, cat_programa.Programa, Folio, Capturista FROM	encuesta_satisfactoria	LEFT JOIN	cat_delegaciones	ON 		encuesta_satisfactoria.Delegacion = cat_delegaciones.id	LEFT JOIN	cat_programa	ON 		encuesta_satisfactoria.Programa = cat_programa.IdPrograma WHERE	YEAR(Fecha) =".$aniox." AND	Delegacion =".midelegviviendaid($nitavu)." ORDER BY	fecha DESC";
-              
-        //echo $sqlreporte;
+        //guardareporte(2,$sqlreporte,$nitavu, "", "",$aniox ,"","produccion_itavu" );
+        guardareporte(4,$sqlreporte,$nitavu, "", "",$aniox ,"","produccion_itavu" );
 
-        guardareporte(5,$sqlreporte,$nitavu, $fecha, $fecha,$aniox ,$aniox,"produccion_itavu" );        
 
         echo "<table width=100%>";
         echo "<tr>";
         echo "<td style='text-align-last: left';></td>";
         echo "<td align=right>";
 
-        echo "<a  class='btn btn-danger' href='excel_export.php?n=5'>Reporte</a>";
+        echo "<a  class='btn btn-danger' href='excel_export.php?n=4'>Reporte</a>";
         echo "</td>";
         echo "</tr>";
         echo "</table>";

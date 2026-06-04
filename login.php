@@ -269,7 +269,7 @@ if ($Pdbhost == "localhost") echo '<div class="alert alert-danger" role="alert" 
         <div class="brand-logo">
             <img src="img/logoitavu.jpg" alt="ITAVU">
         </div>
-        <div class="brand-name">Plataforma TAVU</div>
+        <div class="brand-name">Plataforma ITAVU</div>
         <div class="brand-sub">Sistema de gestión integral para el Instituto Tamaulipeco de Vivienda y Urbanismo.</div>
         <div class="brand-stats">
             <?php
@@ -360,7 +360,7 @@ function ValidarAcceso() {
     $.ajax({
         url: "login_toctoc.php",
         type: "post",
-        timeout: 12000,
+        timeout: 30000,
         data: { Usuario: Usuario, NIP: NIP },
         success: function(data) {
             $("#R").html(data);
@@ -384,7 +384,7 @@ function RecoveryNIP() {
     $.ajax({
         url: "login_recovery.php",
         type: "post",
-        timeout: 12000,
+        timeout: 30000,
         data: { Usuario: Usuario },
         success: function(data) {
             $("#R").html(data);
