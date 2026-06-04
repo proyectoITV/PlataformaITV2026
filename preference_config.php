@@ -6,11 +6,11 @@
     $Pdbpuerto = 3306;
 
 if (function_exists('mysqli_connect')) {		
-    $dbP = new mysqli($Pdbhost,$Pdbuser,$Pdbpass,$Pdbname,$Pdbpuerto);
-    $acentos = $dbP->query("SET NAMES 'utf8'"); // para los acentos
-    
-    // global $dbP;
-    
+    if (!isset($GLOBALS['dbP']) || !($GLOBALS['dbP'] instanceof mysqli)) {
+        $GLOBALS['dbP'] = new mysqli($Pdbhost,$Pdbuser,$Pdbpass,$Pdbname,$Pdbpuerto);
+        $GLOBALS['dbP']->query("SET NAMES 'utf8'"); // para los acentos
+    }
+    $dbP = $GLOBALS['dbP'];
     }else{			
         die ("Error en la conexion a la base de datos principal de RINTERA");
     }

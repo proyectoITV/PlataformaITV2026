@@ -9,10 +9,13 @@ $mode = VarClean($_POST['mode']);
 // echo "mode=".$mode;
 // echo "- ".$nitavu." buscando ".$busqueda;
 if ($mode == 0){
-    $sql = "select DISTINCT a.nitavu,
-    (select nombre from empleados where nitavu = a.nitavu) as Nombre,
-    (select count(*) from ticketpendientes where nitavu = a.nitavu and estado = 0) as Pendientes
-    from ticketpendientes a  where  dpto = ".nitavu_dpto($nitavu)." and estado=0";
+    $sql = "select a.nitavu,
+    e.nombre as Nombre,
+    count(*) as Pendientes
+    from ticketpendientes a
+    left join empleados e on e.nitavu = a.nitavu
+    where  a.dpto = ".nitavu_dpto($nitavu)." and a.estado=0
+    group by a.nitavu, e.nombre";
     // echo $sql;
     $r= $conexion -> query($sql);
     $data = "";
@@ -28,10 +31,11 @@ if ($mode == 0){
         $sqlR = "
         SELECT 
         a.*,
-        (select asunto from cp_nuevosdocumentos where id = a.numcaso) as Asunto,
-        (select estado from cp_nuevosdocumentos where id = a.numcaso) as Estado
-
-        FROM cp_colaboradores a WHERE nitavu = ".$f['nitavu']." and activo = 0
+        b.asunto as Asunto,
+        b.estado as Estado
+        FROM cp_colaboradores a 
+        LEFT JOIN cp_nuevosdocumentos b on b.id = a.numcaso
+        WHERE a.nitavu = ".$f['nitavu']." and a.activo = 0
                 ";
         $rx= $conexion -> query($sqlR);
         echo  "<table class='tabla'>";

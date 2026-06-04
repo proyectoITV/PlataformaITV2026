@@ -19,9 +19,9 @@
 
 define("FTP_SERVER", "192.168.159.15"); //IP o Nombre del Servidor
 // define("FTP_SERVER","localhost"); //IP o Nombre del Servidor
-//define("FTP_PORT", 21); //Puerto desde fuera 2323
-define("FTP_USER", "desarrollo3"); //Nombre de Usuario
-define("FTP_PASSWORD", "3LS4NT0*"); //Contraseña de acceso
+define("FTP_PORT", 21); //Puerto FTP
+define("FTP_USER", "eguzman"); //Nombre de Usuario
+define("FTP_PASSWORD", "eguzman"); //Contraseña de acceso
 // define("FTP_PASSWORD","*8l4ckp4nt3r*"); //Contraseña de acceso
 define("FTP_DIR", "/home/desarrollo2/public_html/"); //ruta del  ftp
 
@@ -5837,7 +5837,10 @@ function Turno($IdDpto, $Agregar){
 			$Nuevo = 1;
 			$sql="UPDATE cat_gerarquia SET TurnoCount='$Nuevo' WHERE (id='".$IdDpto."')";
 			if ($conexion->query($sql) == TRUE){
-				historia("TURNOS","Se reinicio el contador de turnos de la delegacion ".$IdDpto);
+				$nitavuTurnos = (isset($_SESSION['nitavu']) && is_numeric($_SESSION['nitavu'])) ? intval($_SESSION['nitavu']) : 0;
+				if ($nitavuTurnos > 0) {
+					historia($nitavuTurnos,"TURNOS: Se reinicio el contador de turnos de la delegacion ".$IdDpto);
+				}
 				return $Nuevo;
 			} else  {return FALSE;}
 		} else { // sino continua con el contador
@@ -9212,12 +9215,27 @@ $directorio->close();
 
 
 function FTP_existe_archivo($archivo){
+	if (FTP_local_mode_enabled()) {
+		if (file_exists($archivo)) {
+			return "TRUE";
+		}
+	}
 	$id_ftp=FTP_conectar(); //Obtiene un manejador y se conecta al Servidor FTP
 	$fileSize = ftp_size($id_ftp, FTP_ruta().$archivo);
 	if ($fileSize != -1) {return "TRUE";} else {return "FALSE";}
 }
 
 function FTP_descargar($archivo){
+	if (FTP_local_mode_enabled()) {
+		$destino = "tmp/".$archivo;
+		$dirDestino = dirname($destino);
+		if (!file_exists($dirDestino)) {
+			mkdir($dirDestino, 0777, true);
+		}
+		if (file_exists($archivo) && copy($archivo, $destino)) {
+			return "TRUE";
+		}
+	}
 	$lista="";
 	$id_ftp=FTP_conectar(); //Obtiene un manejador y se conecta al Servidor FTP
 	ftp_pasv($id_ftp, true);
@@ -9236,6 +9254,16 @@ function FTP_descargar($archivo){
 }
 
 function FTP_descargar_doc($archivo){
+	if (FTP_local_mode_enabled()) {
+		$destino = "tmp/".$archivo;
+		$dirDestino = dirname($destino);
+		if (!file_exists($dirDestino)) {
+			mkdir($dirDestino, 0777, true);
+		}
+		if (file_exists($archivo) && copy($archivo, $destino)) {
+			return "TRUE";
+		}
+	}
 	$lista="";
 	$id_ftp=FTP_conectar(); //Obtiene un manejador y se conecta al Servidor FTP
 	ftp_pasv($id_ftp, true);
@@ -9279,11 +9307,23 @@ function FTP_lista(){
 	}
 	return $lista;
 }
+
+function FTP_local_mode_enabled(){
+	$esLocalhost = isset($_SERVER['HTTP_HOST']) && ($_SERVER['HTTP_HOST'] == 'localhost' || $_SERVER['HTTP_HOST'] == '127.0.0.1');
+	$forzarRemoto = defined('FTP_FORCE_REMOTE') && FTP_FORCE_REMOTE === TRUE;
+	return $esLocalhost && !$forzarRemoto;
+}
+
 function FTP_leer($archivo_nombre){
+	if (FTP_local_mode_enabled()) {
+		$archivo = fopen ($archivo_nombre, "r");
+		if (!$archivo) { return "ERROR"; } else { return $archivo; }
+	}
+
 $ftp_url="ftp://".FTP_USER.":".FTP_PASSWORD."@".FTP_SERVER.FTP_DIR.$archivo_nombre;
 //ftp://desarrollo2:jpedraza@ftp.172.16.90.3/home/desarrollo2/public_html/tam.png
 
-echo $ftp_url;
+//echo $ftp_url;
 $archivo = fopen ($ftp_url, "r");
 if (!$archivo) {
 		return "ERROR";
@@ -9294,8 +9334,8 @@ if (!$archivo) {
 
 function FTP_conectar(){
 //Permite conectarse al Servidor FTP
-	
-	$id_ftp=ftp_connect(FTP_SERVER,FTP_PORT); //Obtiene un manejador del Servidor FTP
+	$ftp_port = defined('FTP_PORT') ? FTP_PORT : 21;
+	$id_ftp=ftp_connect(FTP_SERVER,$ftp_port); //Obtiene un manejador del Servidor FTP
 	//$id_ftp=ftp_ssl_connect(FTP_SERVER,FTP_PORT); //Obtiene un manejador del Servidor FTP
 	ftp_login($id_ftp,FTP_USER,FTP_PASSWORD); //Se loguea al Servidor FTP
 	ftp_pasv($id_ftp, TRUE); //Establece el modo de conexión
@@ -9304,6 +9344,17 @@ return $id_ftp; //Devuelve el manejador a la función
 
 
 function FTP_subir_post($archivo_local,$archivo_remoto){
+	if (FTP_local_mode_enabled()) {
+		$dir = dirname($archivo_remoto);
+		if (!file_exists($dir)) {
+			mkdir($dir, 0777, true);
+		}
+		if (move_uploaded_file($_FILES[$archivo_local]['tmp_name'], $archivo_remoto)) {
+			return "TRUE";
+		} else {
+			return "FALSE";
+		}
+	}
 //if (isset($_FILES[$archivo_local])){	
 	//Sube archivo de la maquina Cliente al Servidor (Comando PUT)
 	$id_ftp=FTP_conectar(); //Obtiene un manejador y se conecta al Servidor FTP
@@ -9316,10 +9367,21 @@ function FTP_subir_post($archivo_local,$archivo_remoto){
 }
 
 function FTP_subir($archivo_local,$archivo_remoto){
+	if (FTP_local_mode_enabled()) {
+		$dir = dirname($archivo_remoto);
+		if (!file_exists($dir)) {
+			mkdir($dir, 0777, true);
+		}
+		if (move_uploaded_file($archivo_local, $archivo_remoto)) {
+			return "TRUE";
+		} else {
+			return "FALSE";
+		}
+	}
 	//Sube archivo de la maquina Cliente al Servidor (Comando PUT)
 	$id_ftp=FTP_conectar(); //Obtiene un manejador y se conecta al Servidor FTP
-	//echo "REMOTO:".$id_ftp,FTP_ruta().$archivo_remoto."\n";
-	//echo  "LOCAL:".$archivo_local;
+	// echo "REMOTO:".$id_ftp,FTP_ruta().$archivo_remoto."\n";
+	// echo  "LOCAL:".$archivo_local;
 	if (ftp_put($id_ftp,FTP_ruta().$archivo_remoto,$archivo_local,FTP_BINARY)){
 		return "TRUE";} else {return "FALSE";}
 	//Sube un archivo al Servidor FTP en modo Binario
@@ -11396,29 +11458,40 @@ $dif=$fin-$ini;
 
 function historia($nitavu_, $descripcion, $IdApp=""){
 require("config.php");
-	if ($ModoProduccion == TRUE){
-		$descripcion = addslashes($descripcion);
-		if ($IdApp == ""){
-			$sql = "INSERT INTO historia
-			(nitavu, fecha, hora, descripcion)
-			VALUES
-			('$nitavu_', '$fecha', '$hora','$descripcion')";
-		} else {
-			$sql = "INSERT INTO historia
-			(nitavu, fecha, hora, descripcion, IdApp)
-			VALUES
-			('$nitavu_', '$fecha', '$hora','$descripcion','".$IdApp."')";
-		}
+	if ($ModoProduccion != TRUE){
+		return FALSE;
+	}
 
-		if ($conexion->query($sql) == TRUE)
-		{	
-			return TRUE;
-		}
-			else
-		{	
-			return FALSE;
-		}
+	if (!isset($nitavu_) || !is_numeric($nitavu_) || intval($nitavu_) <= 0) {
+		error_log('historia(): nitavu invalido ['.print_r($nitavu_, true).'] desc=['.$descripcion.']');
+		return FALSE;
+	}
+
+	if (!isset($conexion) || !($conexion instanceof mysqli)) {
+		error_log('historia(): conexion mysqli no disponible');
+		return FALSE;
+	}
+
+	$nitavu_ = intval($nitavu_);
+	$descripcion = addslashes((string)$descripcion);
+	$IdApp = addslashes((string)$IdApp);
+
+	if ($IdApp == ""){
+		$sql = "INSERT INTO historia
+		(nitavu, fecha, hora, descripcion)
+		VALUES
+		('".$nitavu_."', '".$fecha."', '".$hora."','".$descripcion."')";
 	} else {
+		$sql = "INSERT INTO historia
+		(nitavu, fecha, hora, descripcion, IdApp)
+		VALUES
+		('".$nitavu_."', '".$fecha."', '".$hora."','".$descripcion."','".$IdApp."')";
+	}
+
+	try {
+		return ($conexion->query($sql) == TRUE);
+	} catch (Throwable $e) {
+		error_log('historia(): '.$e->getMessage().' SQL=['.$sql.']');
 		return FALSE;
 	}
 }
@@ -12264,8 +12337,13 @@ function app_detalle($idapp, $nitavu=""){
 	$rc= $conexion -> query($sql);	
 	
 	//$nitavu = $_SESSION['nitavu'];
-	xd_update($idapp, $nitavu);
-	historia($nitavu, " Entro a aplicacion "."(".$idapp.") ".app_nombre($idapp));
+	if ((!isset($nitavu) || $nitavu == "") && isset($_SESSION['nitavu']) && is_numeric($_SESSION['nitavu'])) {
+		$nitavu = $_SESSION['nitavu'];
+	}
+	if (isset($nitavu) && is_numeric($nitavu) && intval($nitavu) > 0) {
+		xd_update($idapp, $nitavu);
+		historia($nitavu, " Entro a aplicacion "."(".$idapp.") ".app_nombre($idapp));
+	}
 	//toast($nitavu);
 	$msg="";
 	if($f = $rc -> fetch_array())
@@ -12623,19 +12701,26 @@ function nitavu_profesionfull($id){
 
 
 function nitavu_nombre($id){
-require("config.php");
-$sql = "SELECT * FROM empleados WHERE nitavu='".$id."'";
-$rc= $conexion -> query($sql);
-$msg="";
-if($f = $rc -> fetch_array())
-{
-if ($f['profesion_abr']==""){
-return $f['nombre'];}
-else
-{return $f['nombre'];}
+static $cache = array();
+if (array_key_exists($id, $cache)) {
+return $cache[$id];
 }
-else
-{ return FALSE;}
+
+global $conexion;
+if (!isset($conexion)) {
+require("config.php");
+}
+
+$sql = "SELECT nombre FROM empleados WHERE nitavu='".$id."'";
+$rc= $conexion -> query($sql);
+if($rc && ($f = $rc -> fetch_array()))
+{
+$cache[$id] = $f['nombre'];
+return $f['nombre'];
+}
+
+$cache[$id] = FALSE;
+return FALSE;
 }
 					function nitavu_nombre2($id){
 					require("config.php");

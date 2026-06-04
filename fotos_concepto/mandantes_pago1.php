@@ -163,6 +163,7 @@
             success: function(data){
                 $('#mensajeConfirmacion').html(data+"\n");
                 $("#mensajeConfirmacion").css({'display':'inline-block',}).slideUp(4000).delay(10000).fadeOut(4000);
+                  //console.log(data);
                 document.formulario.fecha.value = "";
                 document.formulario.periodo2.value="";
                 document.formulario.recuperacion.value = "";
@@ -211,6 +212,7 @@
             type: "post",
             data: {idmandante: idmandante, idcolonia: idcolonia, idmunicipio: idmunicipio, fecha2:fecha2, montoPagado2: montoPagado2,montoAcumulado2: montoAcumulado2, saldo2: saldo2, comentario: comentario, idTipoMov:idTipoMov },
             success: function(data){
+               // console.log(data);
                 $('#mensajeConfirmacion').html(data+"\n");
                 $("#mensajeConfirmacion").css({'display':'inline-block',}).slideUp(4000).delay(10000).fadeOut(4000);
                 document.formulario1.fecha2.value = "";

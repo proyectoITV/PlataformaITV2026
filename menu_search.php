@@ -16,17 +16,19 @@ if ($mode == 0){
     PreferenceUpdate('VistaMenu', $nitavu, '',0);
 if ($busqueda <> ''){
     $sqlCat="
-    select DISTINCT ifnull(Categoria,'') as Categoria
+    select ifnull(Categoria,'') as Categoria
     from _searchpermisos a where IdEmpleado = ".$nitavu."
     and (Label like '%".$busqueda."%' or  descripcion like '%".$busqueda."%')
-    order by (select count(*) from _searchpermisos where Categoria = a.Categoria and IdEmpleado=a.IdEmpleado) DESC
+    GROUP BY ifnull(Categoria,'')
+    order by count(*) DESC
     ";
 
 } else {
 $sqlCat="
-select DISTINCT ifnull(Categoria,'') as Categoria
-from _searchpermisos a where IdEmpleado = ".$nitavu." order by (select count(*) from _searchpermisos where Categoria = a.Categoria and IdEmpleado=a.IdEmpleado) DESC
-
+select ifnull(Categoria,'') as Categoria
+from _searchpermisos a where IdEmpleado = ".$nitavu." 
+GROUP BY ifnull(Categoria,'')
+order by count(*) DESC
 ";
 }
 // echo $sqlCat;
@@ -40,26 +42,34 @@ while($fc = $rc -> fetch_array())
         <h4 style='font-size:10pt; color: #990000; font-weight: bold;'>".$fc['Categoria']."</h4>
         ";
         if ($busqueda <> ''){
-            $sql = "select  
-            *
-            from 
-
-            _searchpermisos a where IdEmpleado = ".$nitavu." and Categoria='".$fc['Categoria']."' 
-            and (Label like '%".$busqueda."%' or  descripcion like '%".$busqueda."%')
+            $sql = "select
+            a.*,
+            ifnull(p.Value, 'NoR') as MiApp
+            from _searchpermisos a
+            left join preferences p
+                on p.Preference = a.IdApp
+                and p.GroupA = '".$nitavu."'
+                and p.GroupB = ''
+            where a.IdEmpleado = ".$nitavu." and a.Categoria='".$fc['Categoria']."'
+            and (a.Label like '%".$busqueda."%' or  a.descripcion like '%".$busqueda."%')
             ";
         } else {
-            $sql = "select  
-            *
-            from 
-
-            _searchpermisos a where IdEmpleado = ".$nitavu." and Categoria='".$fc['Categoria']."' order by Label";
+            $sql = "select
+            a.*,
+            ifnull(p.Value, 'NoR') as MiApp
+            from _searchpermisos a
+            left join preferences p
+                on p.Preference = a.IdApp
+                and p.GroupA = '".$nitavu."'
+                and p.GroupB = ''
+            where a.IdEmpleado = ".$nitavu." and a.Categoria='".$fc['Categoria']."' order by a.Label";
         }
         // echo $sql;
         $r = $conexion -> query($sql);
         while($fap = $r -> fetch_array())
         {//Categorias de Aplicaciones
 
-            $MiApp = Preference($fap['IdApp'],$nitavu,'');
+            $MiApp = $fap['MiApp'];
 
             if ($MiApp == 'NoR'){ //No registrada        
                 echo "<article>";

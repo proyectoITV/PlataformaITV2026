@@ -33,31 +33,134 @@
 	$produccion=FALSE; 
 	global $produccion; // vpn
 
-	//Credenciales para la base de datos de Plataforma
-	$dbhost = '192.168.159.15';
-	$dbuser = 'root';
-	$dbpass = '3L54NT0**'; 
-	$dbname = 'produccion_itavu';
-
-	if (function_exists('mysqli_connect')) {
-		$conexion = new mysqli($dbhost,$dbuser,$dbpass,$dbname);
-		$acentos = $conexion->query("SET NAMES 'utf8'"); // para los acentos
-		global $conexion;
-		}else{
-			mensaje("ERROR: Hay un problema con la coneccion",'');
+	/* Config robusta para entorno + BD */
+	if (!function_exists('env_value')) {
+		function env_value($key, $default = '')
+		{
+			$value = getenv($key);
+			if ($value === false && isset($_ENV[$key])) {
+				$value = $_ENV[$key];
+			}
+			if ($value === false && isset($_SERVER[$key])) {
+				$value = $_SERVER[$key];
+			}
+			return ($value === false || $value === null) ? $default : trim($value);
 		}
+	}
 
-	//Credenciales para la base de datos de Vivienda
-	$Vdbhost = $dbhost;	
-	$Vdbuser = $dbuser;	
-	$Vdbpass = $dbpass; 
+	if (!function_exists('load_dotenv_if_needed')) {
+		function load_dotenv_if_needed($baseDir, $appEnv)
+		{
+			// En produccion NO se usa .env
+			if ($appEnv === 'production') {
+				return;
+			}
+
+			$envPath = $baseDir . '/.env';
+			if (!is_file($envPath)) {
+				return;
+			}
+
+			$lines = file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+			if ($lines === false) {
+				return;
+			}
+
+			foreach ($lines as $line) {
+				$line = trim($line);
+				if ($line === '' || strpos($line, '#') === 0 || strpos($line, '=') === false) {
+					continue;
+				}
+
+				list($key, $value) = explode('=', $line, 2);
+				$key = trim($key);
+				$value = trim($value);
+
+				if (stripos($key, 'export ') === 0) {
+					$key = trim(substr($key, 7));
+				}
+
+				// Quitar comillas envolventes
+				if (strlen($value) >= 2) {
+					$first = $value[0];
+					$last = $value[strlen($value) - 1];
+					if (($first === '"' && $last === '"') || ($first === "'" && $last === "'")) {
+						$value = substr($value, 1, -1);
+					}
+				}
+
+				// No sobreescribir entorno existente del servidor
+				if (getenv($key) === false) {
+					putenv($key . '=' . $value);
+					$_ENV[$key] = $value;
+					$_SERVER[$key] = $value;
+				}
+			}
+		}
+	}
+
+	if (!function_exists('require_env_vars')) {
+		function require_env_vars(array $keys)
+		{
+			$missing = array();
+
+			foreach ($keys as $key) {
+				if (env_value($key, '') === '') {
+					$missing[] = $key;
+				}
+			}
+
+			if (!empty($missing)) {
+				error_log('ITAVU config error: faltan variables: ' . implode(', ', $missing));
+				http_response_code(500);
+				exit('Error de configuracion del sistema. Contacte al administrador.');
+			}
+		}
+	}
+
+	/* 1) Resolver entorno */
+	$appEnv = env_value('APP_ENV', '');
+	if ($appEnv === '') {
+		$appEnv = is_file(__DIR__ . '/.env') ? 'development' : 'production';
+	}
+
+	/* 2) Cargar .env solo en no-produccion */
+	load_dotenv_if_needed(__DIR__, $appEnv);
+
+	/* 3) Validar variables criticas */
+	require_env_vars(array('DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASS'));
+
+	/* 4) Obtener credenciales */
+	$dbhost = env_value('DB_HOST');
+	$dbname = env_value('DB_NAME');
+	$dbuser = env_value('DB_USER');
+	$dbpass = env_value('DB_PASS');
+
+	/* 5) Conexion segura */
+	mysqli_report(MYSQLI_REPORT_OFF);
+	$conexion = @new mysqli($dbhost, $dbuser, $dbpass, $dbname);
+
+	if ($conexion->connect_errno) {
+		error_log('ITAVU DB error [' . $conexion->connect_errno . ']: ' . $conexion->connect_error);
+		http_response_code(500);
+		exit('Error de conexion al sistema. Contacte al administrador.');
+	}
+
+	$conexion->set_charset('utf8');
+	$GLOBALS['conexion'] = $conexion;
+
+	/* Si usas otra BD secundaria */
 	$Vdbname = 'produccion_vivienda';
+	$Vivienda = @new mysqli($dbhost, $dbuser, $dbpass, $Vdbname);
 
-	if (function_exists('mysqli_connect')) {
-			$Vivienda = new mysqli($Vdbhost,$Vdbuser,$Vdbpass,$Vdbname);
-			$acentos = $Vivienda->query("SET NAMES 'utf8'"); // para los acentos
-			global $Vivienda;
-	}else{ mensaje("ERROR: Hay un problema con la coneccion a BD vivienda",'');}
+	if ($Vivienda->connect_errno) {
+		error_log('ITAVU Vivienda DB error [' . $Vivienda->connect_errno . ']: ' . $Vivienda->connect_error);
+		http_response_code(500);
+		exit('Error de conexion al sistema. Contacte al administrador.');
+	}
+
+	$Vivienda->set_charset('utf8');
+	$GLOBALS['Vivienda'] = $Vivienda;
 
 	//PARAMETROS DE PREFERENCIA
 	$req_rezagoMax = 30;
