@@ -261,7 +261,7 @@ $pdf->SetFont('Helvetica','B',8);
 $pdf->Cell(60,10,"ELABORA BITACORA",0 ,0,'C',0);
 $pdf->SetFont('Helvetica','',8); 
 $pdf->SetXY(130,245);
-$pdf->Cell(60,10,"C. FLORENTINO CHAVEZ LEAL", 0,0,'C',0);
+$pdf->Cell(60,10,"LIC. JACOBO LOPEZ GARCIA", 0,0,'C',0);
 $pdf->SetXY(130,250);
 $pdf->Cell(60,10,"ENCARGADO DE MANTENIMIENTO VEHICULAR", 0,0,'C',0);
 
