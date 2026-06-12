@@ -151,7 +151,7 @@ $("#FormSubir").on("submit", function(e){
             $.ajax({
                 url: "data_subir.php",
                 type: "post",
-                dataType: "html",
+                dataType: "json",
                 data: formData,             
                 cache: false,
                 contentType: false,
@@ -159,12 +159,20 @@ $("#FormSubir").on("submit", function(e){
                 beforeSend:function(){
                     $('#preloader').show();
                 },
-                success:function(data){
-                    console.log(data);
+                success:function(res){
+                    console.log(res);
 					$('#preloader').hide();
-					location.reload();
-                    $('#R').html(data);
-                }
+					if (res.success) {
+						alert("Éxito:\n" + res.message);
+						location.reload();
+					} else {
+						alert("ERROR AL SUBIR ARCHIVOS:\n" + res.message);
+					}
+                },
+				error: function (xhr, status, error) {
+					$('#preloader').hide();
+					alert("ERROR DE CONEXIÓN O SERVIDOR:\nNo se pudo procesar la solicitud. " + error);
+				}
             });
         
         });

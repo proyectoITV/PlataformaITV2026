@@ -66,19 +66,30 @@ WHERE rq.IdRequisicion = ".$idRequisicion."  GROUP BY rq.IdRequisicion";
 $rc= $conexion -> query($sql);
 $msg="";
 
+function limpiar_titulo_duplicado($nombre) {
+    if (empty($nombre)) return $nombre;
+    $nombre = preg_replace('/^\bC\.?\s*P\.?\s+C\.?\s*P\.?\.?\s+/i', 'C.P. ', $nombre);
+    $nombre = preg_replace('/^\bING\.?\s+ING\.?\.?\s+/i', 'ING. ', $nombre);
+    $nombre = preg_replace('/^\bLIC\.?\s+LIC\.?\.?\s+/i', 'LIC. ', $nombre);
+    $nombre = preg_replace('/^\bARQ\.?\s+ARQ\.?\.?\s+/i', 'ARQ. ', $nombre);
+    $nombre = preg_replace('/^\bDR\.?\s+DR\.?\.?\s+/i', 'DR. ', $nombre);
+    $nombre = preg_replace('/^\bDRA\.?\s+DRA\.?\.?\s+/i', 'DRA. ', $nombre);
+    return $nombre;
+}
+
 if($f = $rc -> fetch_array())
 {
 
-    $TitularAdquisiciones=$f['TitularAdquisiciones'];
-    $TitularFinanzas=$f['TitularFinanzas'];
+    $TitularAdquisiciones=limpiar_titulo_duplicado($f['TitularAdquisiciones']);
+    $TitularFinanzas=limpiar_titulo_duplicado($f['TitularFinanzas']);
     $Departamento=$f['Departamento'];
     $Direccion=$f['Direccion'];
     $FechaCrea=$f['FechaCrea'];
     $TipoRequisicion=$f['Requisicion'];
-    $Titular=$f['Titular'];// ERA JEFE DE DEPTO Y SE CAMBIO A DIRECTOR
+    $Titular=limpiar_titulo_duplicado($f['Titular']);// ERA JEFE DE DEPTO Y SE CAMBIO A DIRECTOR
     $Justificacion=$f['Justificacion'];
     $nivel=$f['nivel'];
-    $TitularJ=$f['TitularJefeDpto'];
+    $TitularJ=limpiar_titulo_duplicado($f['TitularJefeDpto']);
    
 }
 //  if(strpos($Departamento, 'DELEGACION') !== false ) 

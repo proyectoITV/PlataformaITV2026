@@ -2,6 +2,9 @@
 
 require("config.php");
 require_once('seguridad.php');
+if (!defined('K_PATH_IMAGES')) {
+    define('K_PATH_IMAGES', dirname(__FILE__) . '/img/');
+}
 require_once('pdf/tcpdf.php');
 //$nitavu="2809";
 $clave_servicio = $_GET['clave_servicio'];
@@ -206,7 +209,7 @@ $pdf->SetKeywords('SERVICIO');
 
 
 
-$pdf->SetHeaderData('pdf_logo.jpg', '40',strtoupper($titulo).'', strtoupper($descripcion));
+$pdf->SetHeaderData('LogotipoOficial.jpg', '40',strtoupper($titulo).'', strtoupper($descripcion));
 
 // set default header data
 //$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, strtoupper($titulo).'', strtoupper($descripcion));

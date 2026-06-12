@@ -17,13 +17,22 @@
 
 
 
-define("FTP_SERVER", "192.168.159.15"); //IP o Nombre del Servidor
-// define("FTP_SERVER","localhost"); //IP o Nombre del Servidor
-define("FTP_PORT", 21); //Puerto FTP
-define("FTP_USER", "eguzman"); //Nombre de Usuario
-define("FTP_PASSWORD", "eguzman"); //Contraseña de acceso
-// define("FTP_PASSWORD","*8l4ckp4nt3r*"); //Contraseña de acceso
-define("FTP_DIR", "/home/desarrollo2/public_html/"); //ruta del  ftp
+if (!defined('FTP_SERVER')) {
+	define("FTP_SERVER", trim(getenv('FTP_SERVER') ?: "192.168.159.15", "'\"")); //IP o Nombre del Servidor
+}
+if (!defined('FTP_PORT')) {
+	$env_port = getenv('FTP_PORT');
+	define("FTP_PORT", $env_port ? intval(trim($env_port, "'\"")) : 21); //Puerto FTP
+}
+if (!defined('FTP_USER')) {
+	define("FTP_USER", trim(getenv('FTP_USER') ?: "eguzman", "'\"")); //Nombre de Usuario
+}
+if (!defined('FTP_PASSWORD')) {
+	define("FTP_PASSWORD", trim(getenv('FTP_PASSWORD') ?: "eguzman", "'\"")); //Contraseña de acceso
+}
+if (!defined('FTP_DIR')) {
+	define("FTP_DIR", trim(getenv('FTP_DIR') ?: "/home/desarrollo2/public_html/", "'\"")); //ruta del ftp
+}
 
 
 // define("FTP_SERVER","itvoc.dyndns.org"); //IP o Nombre del Servidor
@@ -5837,10 +5846,7 @@ function Turno($IdDpto, $Agregar){
 			$Nuevo = 1;
 			$sql="UPDATE cat_gerarquia SET TurnoCount='$Nuevo' WHERE (id='".$IdDpto."')";
 			if ($conexion->query($sql) == TRUE){
-				$nitavuTurnos = (isset($_SESSION['nitavu']) && is_numeric($_SESSION['nitavu'])) ? intval($_SESSION['nitavu']) : 0;
-				if ($nitavuTurnos > 0) {
-					historia($nitavuTurnos,"TURNOS: Se reinicio el contador de turnos de la delegacion ".$IdDpto);
-				}
+				historia("TURNOS","Se reinicio el contador de turnos de la delegacion ".$IdDpto);
 				return $Nuevo;
 			} else  {return FALSE;}
 		} else { // sino continua con el contador
@@ -11458,40 +11464,29 @@ $dif=$fin-$ini;
 
 function historia($nitavu_, $descripcion, $IdApp=""){
 require("config.php");
-	if ($ModoProduccion != TRUE){
-		return FALSE;
-	}
+	if ($ModoProduccion == TRUE){
+		$descripcion = addslashes($descripcion);
+		if ($IdApp == ""){
+			$sql = "INSERT INTO historia
+			(nitavu, fecha, hora, descripcion)
+			VALUES
+			('$nitavu_', '$fecha', '$hora','$descripcion')";
+		} else {
+			$sql = "INSERT INTO historia
+			(nitavu, fecha, hora, descripcion, IdApp)
+			VALUES
+			('$nitavu_', '$fecha', '$hora','$descripcion','".$IdApp."')";
+		}
 
-	if (!isset($nitavu_) || !is_numeric($nitavu_) || intval($nitavu_) <= 0) {
-		error_log('historia(): nitavu invalido ['.print_r($nitavu_, true).'] desc=['.$descripcion.']');
-		return FALSE;
-	}
-
-	if (!isset($conexion) || !($conexion instanceof mysqli)) {
-		error_log('historia(): conexion mysqli no disponible');
-		return FALSE;
-	}
-
-	$nitavu_ = intval($nitavu_);
-	$descripcion = addslashes((string)$descripcion);
-	$IdApp = addslashes((string)$IdApp);
-
-	if ($IdApp == ""){
-		$sql = "INSERT INTO historia
-		(nitavu, fecha, hora, descripcion)
-		VALUES
-		('".$nitavu_."', '".$fecha."', '".$hora."','".$descripcion."')";
+		if ($conexion->query($sql) == TRUE)
+		{	
+			return TRUE;
+		}
+			else
+		{	
+			return FALSE;
+		}
 	} else {
-		$sql = "INSERT INTO historia
-		(nitavu, fecha, hora, descripcion, IdApp)
-		VALUES
-		('".$nitavu_."', '".$fecha."', '".$hora."','".$descripcion."','".$IdApp."')";
-	}
-
-	try {
-		return ($conexion->query($sql) == TRUE);
-	} catch (Throwable $e) {
-		error_log('historia(): '.$e->getMessage().' SQL=['.$sql.']');
 		return FALSE;
 	}
 }
@@ -12337,13 +12332,8 @@ function app_detalle($idapp, $nitavu=""){
 	$rc= $conexion -> query($sql);	
 	
 	//$nitavu = $_SESSION['nitavu'];
-	if ((!isset($nitavu) || $nitavu == "") && isset($_SESSION['nitavu']) && is_numeric($_SESSION['nitavu'])) {
-		$nitavu = $_SESSION['nitavu'];
-	}
-	if (isset($nitavu) && is_numeric($nitavu) && intval($nitavu) > 0) {
-		xd_update($idapp, $nitavu);
-		historia($nitavu, " Entro a aplicacion "."(".$idapp.") ".app_nombre($idapp));
-	}
+	xd_update($idapp, $nitavu);
+	historia($nitavu, " Entro a aplicacion "."(".$idapp.") ".app_nombre($idapp));
 	//toast($nitavu);
 	$msg="";
 	if($f = $rc -> fetch_array())

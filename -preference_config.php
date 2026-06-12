@@ -1,8 +1,8 @@
 <?php
-    $Pdbhost = trim(getenv('DB_HOST') ?: '192.168.159.15', "'\"");	
-    $Pdbuser = trim(getenv('DB_USER') ?: 'root', "'\"");
-    $Pdbpass = trim(getenv('DB_PASS') ?: '3L54NT0**', "'\""); 
-    $Pdbname = trim(getenv('DB_NAME') ?: 'produccion_itavu', "'\"");
+    $Pdbhost = '192.168.159.15';	
+    $Pdbuser = 'root';
+    $Pdbpass = '3L54NT0**'; 
+    $Pdbname = 'produccion_itavu';
     $Pdbpuerto = 3306;
 
 if (function_exists('mysqli_connect')) {		

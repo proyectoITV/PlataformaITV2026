@@ -1,6 +1,76 @@
 <?php
 
 
+/* Config robusta para entorno + BD - modificado po cambio a (.env y .confg) */
+if (!function_exists('env_value')) {
+	function env_value($key, $default = '')
+	{
+		$value = getenv($key);
+		if ($value === false && isset($_ENV[$key])) {
+			$value = $_ENV[$key];
+		}
+		if ($value === false && isset($_SERVER[$key])) {
+			$value = $_SERVER[$key];
+		}
+		return ($value === false || $value === null) ? $default : trim($value);
+	}
+}
+
+if (!function_exists('load_dotenv_if_needed')) {
+	function load_dotenv_if_needed($baseDir, $appEnv)
+	{
+		if ($appEnv === 'production') {
+			return;
+		}
+
+		$envPath = $baseDir . '/.env';
+		if (!is_file($envPath)) {
+			return;
+		}
+
+		$lines = file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+		if ($lines === false) {
+			return;
+		}
+
+		foreach ($lines as $line) {
+			$line = trim($line);
+			if ($line === '' || strpos($line, '#') === 0 || strpos($line, '=') === false) {
+				continue;
+			}
+
+			list($key, $value) = explode('=', $line, 2);
+			$key = trim($key);
+			$value = trim($value);
+
+			if (stripos($key, 'export ') === 0) {
+				$key = trim(substr($key, 7));
+			}
+
+			if (strlen($value) >= 2) {
+				$first = $value[0];
+				$last = $value[strlen($value) - 1];
+				if (($first === '"' && $last === '"') || ($first === "'" && $last === "'")) {
+					$value = substr($value, 1, -1);
+				}
+			}
+
+			if (getenv($key) === false) {
+				putenv($key . '=' . $value);
+				$_ENV[$key] = $value;
+				$_SERVER[$key] = $value;
+			}
+		}
+	}
+}
+
+$appEnv = env_value('APP_ENV', '');
+if ($appEnv === '') {
+	$appEnv = is_file(dirname(__DIR__) . '/.env') ? 'development' : 'production';
+}
+load_dotenv_if_needed(dirname(__DIR__), $appEnv);
+
+
 //            .-::///////:`                           
 //     .:+shhhhhhhhhhhhhh+                           
 //  -+yhhyshhhhhs/-```.`                             
@@ -38,10 +108,15 @@ $paginacion= 20;
 
 
 	//produccion --> kno
-	$dbhost = '192.168.159.15';	
-	$dbuser = 'root';
-	$dbpass = '3L54NT0**'; 
-	$dbname = 'itavu';
+	// modificado po cambio a (.env y .confg)
+	// $dbhost = '192.168.159.15';	
+	// $dbuser = 'root';
+	// $dbpass = '3L54NT0**'; 
+	// $dbname = 'itavu';
+	$dbhost = env_value('DB_HOST_TRANSPARENCIA', env_value('DB_HOST'));	
+	$dbuser = env_value('DB_USER_TRANSPARENCIA', env_value('DB_USER'));
+	$dbpass = env_value('DB_PASS_TRANSPARENCIA', env_value('DB_PASS')); 
+	$dbname = env_value('DB_NAME_TRANSPARENCIA', env_value('DB_NAME'));
 
 	//test
 	// $dbhost = '172.16.91.5';	
@@ -79,9 +154,14 @@ $paginacion= 20;
 
 
 	//USUARIO PARA BD VIVIENDA
-	$Vdbhost = '192.168.159.15';	
-	$Vdbuser = 'root';
-	$Vdbpass = '3L54NT0**'; 
+	// modificado po cambio a (.env y .confg)
+	// $Vdbhost = '192.168.159.15';	
+	// $Vdbuser = 'root';
+	// $Vdbpass = '3L54NT0**'; 
+	// $Vdbname = 'produccion_vivienda';
+	$Vdbhost = env_value('DB_HOST');
+	$Vdbuser = env_value('DB_USER');
+	$Vdbpass = env_value('DB_PASS');
 	$Vdbname = 'produccion_vivienda';
 	if (function_exists('mysqli_connect')) {
 			$Vivienda = @new mysqli($Vdbhost,$Vdbuser,$Vdbpass,$Vdbname);

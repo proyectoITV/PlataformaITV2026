@@ -2,6 +2,9 @@
 
 require("config.php");
 require_once('seguridad.php');
+if (!defined('K_PATH_IMAGES')) {
+    define('K_PATH_IMAGES', dirname(__FILE__) . '/img/');
+}
 require_once('pdf/tcpdf.php');
 //$nitavu="2809";
 $idRequisicion = $_GET['n'];
@@ -46,19 +49,30 @@ WHERE rq.IdRequisicion = ".$idRequisicion."  GROUP BY rq.IdRequisicion";
 $rc= $conexion -> query($sql);
 $msg="";
 
+function limpiar_titulo_duplicado($nombre) {
+    if (empty($nombre)) return $nombre;
+    $nombre = preg_replace('/^\bC\.?\s*P\.?\s+C\.?\s*P\.?\.?\s+/i', 'C.P. ', $nombre);
+    $nombre = preg_replace('/^\bING\.?\s+ING\.?\.?\s+/i', 'ING. ', $nombre);
+    $nombre = preg_replace('/^\bLIC\.?\s+LIC\.?\.?\s+/i', 'LIC. ', $nombre);
+    $nombre = preg_replace('/^\bARQ\.?\s+ARQ\.?\.?\s+/i', 'ARQ. ', $nombre);
+    $nombre = preg_replace('/^\bDR\.?\s+DR\.?\.?\s+/i', 'DR. ', $nombre);
+    $nombre = preg_replace('/^\bDRA\.?\s+DRA\.?\.?\s+/i', 'DRA. ', $nombre);
+    return $nombre;
+}
+
 if($f = $rc -> fetch_array())
 {
 
-    $TitularAdquisiciones=$f['TitularAdquisiciones'];
-    $TitularFinanzas=$f['TitularFinanzas'];
+    $TitularAdquisiciones=limpiar_titulo_duplicado($f['TitularAdquisiciones']);
+    $TitularFinanzas=limpiar_titulo_duplicado($f['TitularFinanzas']);
     $Departamento=$f['Departamento'];
     $Direccion=$f['Direccion'];
     $FechaCrea=$f['FechaCrea'];
     $TipoRequisicion=$f['Requisicion'];
-    $Titular=$f['Titular'];// ERA JEFE DE DEPTO Y SE CAMBIO A DIRECTOR
+    $Titular=limpiar_titulo_duplicado($f['Titular']);// ERA JEFE DE DEPTO Y SE CAMBIO A DIRECTOR
     $Justificacion=$f['Justificacion'];
     $nivel=$f['nivel'];
-    $TitularJ=$f['TitularJefeDpto'];
+    $TitularJ=limpiar_titulo_duplicado($f['TitularJefeDpto']);
      $dir=$f['id'];
    
 }
@@ -98,10 +112,10 @@ $tablaDatos='<BR><BR>
     
     
     
-</table><br><br>';
+</table>';
 
 
-$t='<table cellpadding="4" style="border: 0.3px solid black; height:90%;">                            
+$t='<table cellpadding="4" style="border: 0.3px solid black;">                            
 <tr  style=" text-align: center; background-color:#BDBDBD;  font-weight:bold;">
 	<td  style="width:5%; height:15px;  border: 0.3px solid black;">#</td>								
    
@@ -149,7 +163,7 @@ $tabla_contenido2='';
                       
                         
                             $t=$t.$tabla_contenido2;
-$t=$t."</table><br><br><br><br><br><br>";
+$t=$t."</table>";
 
 $tabla=$tablaDatos.$t;
 
@@ -176,7 +190,7 @@ $pdf->SetKeywords('REQUISICION DE PAPELERIA');
 
 
 
-$pdf->SetHeaderData('pdf_logo.jpg', '40',strtoupper($titulo).'', strtoupper($descripcion));
+$pdf->SetHeaderData('LogotipoOficial.jpg', '40',strtoupper($titulo).'', strtoupper($descripcion));
 
 // set default header data
 //$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, strtoupper($titulo).'', strtoupper($descripcion));
@@ -213,6 +227,8 @@ $html = $tabla;
 $pdf->writeHTML($html, true, false, true, false, '');
 
 
+
+$pdf->SetAutoPageBreak(false);
 
 $pdf->SetFont('Helvetica','B',7); 
 $pdf->SetXY(10,253);

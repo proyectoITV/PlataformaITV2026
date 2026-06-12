@@ -30,13 +30,28 @@
 
 
 
-define("FTP_SERVER","192.168.159.15"); //IP o Nombre del Servidor
+if (!function_exists('env_value')) {
+	function env_value($key, $default = '')
+	{
+		$value = getenv($key);
+		if ($value === false && isset($_ENV[$key])) {
+			$value = $_ENV[$key];
+		}
+		if ($value === false && isset($_SERVER[$key])) {
+			$value = $_SERVER[$key];
+		}
+		return ($value === false || $value === null) ? $default : trim($value);
+	}
+}
+
+// modificado po cambio a (.env y .confg)
+define("FTP_SERVER", env_value("FTP_SERVER")); //IP o Nombre del Servidor
 // define("FTP_SERVER","localhost"); //IP o Nombre del Servidor
-define("FTP_PORT",21); //Puerto desde fuera 2323
-define("FTP_USER","desarrollo2"); //Nombre de Usuario
+define("FTP_PORT", intval(env_value("FTP_PORT", 21))); //Puerto desde fuera 2323
+define("FTP_USER", env_value("FTP_USER")); //Nombre de Usuario
 //define("FTP_PASSWORD","3LS4NT0*"); //Contraseña de acceso
-define("FTP_PASSWORD","8l4ckp4nt3r"); //Contraseña de acceso
-define("FTP_DIR","/home/desarrollo2/public_html/"); //ruta del  ftp
+define("FTP_PASSWORD", env_value("FTP_PASSWORD")); //Contraseña de acceso
+define("FTP_DIR", env_value("FTP_DIR")); //ruta del  ftp
 require("password_fun.php");
 require("problemas_fun.php");
 
@@ -3432,7 +3447,7 @@ function EdoCuenta_InfoFooter($contrato, $nitavu, $IdDelegacion, $myip){
 }
 
 
-function TablaDinamica_MySQL($tbCont, $sql, $IdDiv, $IdTabla, $Clase, $Tipo){
+function TablaDinamica_MySQL($tbCont, $sql, $IdDiv, $IdTabla, $Clase, $Tipo, $defaultLength = 10, $order = null){
 	require("config.php");
 	
 	if ($tbCont == '') {
@@ -3475,51 +3490,66 @@ function TablaDinamica_MySQL($tbCont, $sql, $IdDiv, $IdTabla, $Clase, $Tipo){
 		
 	}
 	echo  $tbCont;
-		switch ($Tipo) {
-			case 1: //Scroll Vertical
-					echo '<script>
-					$(document).ready(function() {
-						$("#'.$IdTabla.'").DataTable( {
-							"scrollY":        "200px",
-							"scrollCollapse": true,
-							"paging":         false,
-							"language": {
-								"decimal": ",",
-								"thousands": "."
-							}
-						} );
-					} );
-					</script>';
-				break;
 
-			case 2: //Scroll Horizontal
-					echo '<script>
-					$(document).ready(function() {
-						$("#'.$IdTabla.'").DataTable( {
-							"scrollX": true,
-							"scrollCollapse": true,
-							"paging":         true,
-							"language": {
-								"decimal": ",",
-								"thousands": "."
-							}
-						} );
-					} );
-					</script>';
-				break;
-			
-			default:
+	$actualLength = 10;
+	if (isset($defaultLength) && is_numeric($defaultLength)) {
+		$actualLength = intval($defaultLength);
+	}
+	$actualOrder = null;
+	if (isset($order) && is_string($order) && $order !== '') {
+		$actualOrder = $order;
+	}
+
+	$dtParams = array();
+	if ($actualLength !== 10) {
+		$dtParams[] = '"pageLength": ' . $actualLength;
+	}
+	if ($actualOrder !== null) {
+		$dtParams[] = '"order": ' . $actualOrder;
+	}
+
+	switch ($Tipo) {
+		case 1: //Scroll Vertical
+				$options = $dtParams;
+				$options[] = '"scrollY":        "200px"';
+				$options[] = '"scrollCollapse": true';
+				$options[] = '"paging":         false';
+				$options[] = '"language": { "decimal": ",", "thousands": ".", "lengthMenu": "Cantidad de registros que desea ver _MENU_", "search": "Buscar:" }';
 				echo '<script>
 				$(document).ready(function() {
 					$("#'.$IdTabla.'").DataTable( {
-						"language": {
-							"decimal": ",",
-							"thousands": "."
-						}
+						' . implode(",\n\t\t\t\t\t\t", $options) . '
 					} );
 				} );
 				</script>';
-		}
+			break;
+
+		case 2: //Scroll Horizontal
+				$options = $dtParams;
+				$options[] = '"scrollX": true';
+				$options[] = '"scrollCollapse": true';
+				$options[] = '"paging":         true';
+				$options[] = '"language": { "decimal": ",", "thousands": ".", "lengthMenu": "Cantidad de registros que desea ver _MENU_", "search": "Buscar:" }';
+				echo '<script>
+				$(document).ready(function() {
+					$("#'.$IdTabla.'").DataTable( {
+						' . implode(",\n\t\t\t\t\t\t", $options) . '
+					} );
+				} );
+				</script>';
+			break;
+		
+		default:
+				$options = $dtParams;
+				$options[] = '"language": { "decimal": ",", "thousands": ".", "lengthMenu": "Cantidad de registros que desea ver _MENU_", "search": "Buscar:" }';
+				echo '<script>
+				$(document).ready(function() {
+					$("#'.$IdTabla.'").DataTable( {
+						' . implode(",\n\t\t\t\t\t\t", $options) . '
+					} );
+				} );
+				</script>';
+	}
        
 
 }

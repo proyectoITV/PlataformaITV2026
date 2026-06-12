@@ -2,6 +2,9 @@
 require("config.php");
 //require_once('/seguridad.php');
 require_once('lib/funciones.php');
+if (!defined('K_PATH_IMAGES')) {
+    define('K_PATH_IMAGES', dirname(__FILE__) . '/img/');
+}
 require_once('pdf/tcpdf.php');
 require('lib/flor_funciones.php');
 require('lib/yes_funciones.php');
@@ -101,7 +104,7 @@ $tGenelares=$tGenelares.'</table><BR><BR><BR>';
             
 
 
-$t='<p><b>DOCUMENTOS ENTREGADOS</b></p><br><br><table style="height:90%;">';
+$t='<p><b>DOCUMENTOS ENTREGADOS</b></p><br><br><table>';
  
 $tabla_contenido2='';
 
@@ -143,7 +146,7 @@ $tabla_contenido2='';
             }
 
             $t=$t.$tabla_contenido2;
-           $t=$t."</table><br><br><br><br>";
+           $t=$t."</table>";
             
          
 
@@ -213,6 +216,8 @@ $pdf->writeHTML($html, true, false, true, false, '');
 
 
 
+
+$pdf->SetAutoPageBreak(false);
 
 $linea='_________________________________';
 $pdf->SetFont('Helvetica','B',7); 

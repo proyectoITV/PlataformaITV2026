@@ -387,3 +387,143 @@ label {
 
 
 /* #FileList * {opacity: 0.6}; */
+
+/* ==========================================
+   DataTable Controls Styling (Mostrar / Buscar)
+   ========================================== */
+
+.dataTables_length {
+    float: left;
+    margin-bottom: 20px;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.dataTables_length label {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    color: #59141b !important; /* Brand dark-red color */
+    font-size: 11pt !important;
+    font-weight: bold !important;
+    margin: 0px !important;
+    width: auto !important;
+}
+
+.dataTables_length select {
+    background-color: #ffffff !important;
+    border: 2px solid #b59378 !important; /* Brand accent color */
+    border-radius: 8px !important;
+    padding: 6px 12px !important;
+    font-size: 10pt !important;
+    font-weight: bold !important;
+    color: #59141b !important;
+    outline: none !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05) !important;
+}
+
+.dataTables_length select:focus {
+    border-color: #59141b !important;
+    box-shadow: 0 0 5px rgba(89, 20, 27, 0.3) !important;
+}
+
+.dataTables_filter {
+    float: right;
+    margin-bottom: 20px;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.dataTables_filter label {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    color: #59141b !important; /* Brand dark-red color */
+    font-size: 11pt !important;
+    font-weight: bold !important;
+    margin: 0px !important;
+    width: auto !important;
+}
+
+.dataTables_filter input {
+    background-color: #ffffff !important;
+    border: 2px solid #b59378 !important; /* Brand accent color */
+    border-radius: 20px !important;
+    padding: 6px 15px !important;
+    font-size: 10pt !important;
+    color: #333333 !important;
+    outline: none !important;
+    width: 220px !important;
+    height: 34px !important; /* Override generic 50px input height */
+    display: inline-block !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05) !important;
+    box-sizing: border-box !important;
+}
+
+.dataTables_filter input:focus {
+    border-color: #59141b !important;
+    box-shadow: 0 0 5px rgba(89, 20, 27, 0.3) !important;
+    width: 280px !important; /* Nice visual expand effect */
+}
+
+/* Pagination and Info Styling */
+.dataTables_info {
+    float: left;
+    margin-top: 15px;
+    font-size: 9.5pt !important;
+    color: #59141b !important;
+    font-weight: bold !important;
+}
+
+.dataTables_paginate {
+    float: right;
+    margin-top: 10px;
+}
+
+.dataTables_wrapper::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+/* ==========================================
+   Column adjustments for AyudaTabla (Transparencia)
+   ========================================== */
+
+#AyudaTabla {
+    table-layout: auto !important;
+    width: 100% !important;
+}
+
+#AyudaTabla th:nth-child(1),
+#AyudaTabla td:nth-child(1) {
+    width: 70px !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+}
+
+#AyudaTabla th:nth-child(2),
+#AyudaTabla td:nth-child(2) {
+    width: 180px !important;
+    text-align: center !important;
+}
+
+#AyudaTabla th:nth-child(3),
+#AyudaTabla td:nth-child(3) {
+    width: 250px !important;
+}
+
+#AyudaTabla th:nth-child(4),
+#AyudaTabla td:nth-child(4) {
+    /* Info column wraps long text/filenames cleanly */
+    word-break: break-word !important;
+}
+
+#AyudaTabla th:nth-child(5),
+#AyudaTabla td:nth-child(5) {
+    width: 110px !important;
+    white-space: nowrap !important;
+    text-align: center !important;
+}
+

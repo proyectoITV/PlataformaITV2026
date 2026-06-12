@@ -42,7 +42,7 @@ function reporte_guia($guia){
 require('config.php');
 
 //seleccionar por proveedor
-if (guia_proveedor($guia)=='1'){
+if (guia_proveedor($guia)=='2'){
     require_once('pdf/tcpdf.php');    
     $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
     $pdf->setPrintHeader(false);

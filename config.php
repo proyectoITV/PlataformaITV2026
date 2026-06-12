@@ -1,199 +1,104 @@
 <?php
+// === MANTENIMIENTO PROGRAMADO ===
+// Fecha de inicio: 28 de abril 2026 a las 00:00:00
+// Duración: 24 horas
+$mantenimiento_inicio = strtotime('2026-04-28 00:00:00');
+$mantenimiento_fin = strtotime('2026-04-29 00:00:00'); // 24 horas después
+$ahora = time();
 
-	// === MANTENIMIENTO PROGRAMADO ===
-	// Fecha de inicio: 28 de abril 2026 a las 00:00:00
-	// Duración: 24 horas
-	$mantenimiento_inicio = strtotime('2026-04-28 00:00:00');
-	$mantenimiento_fin    = strtotime('2026-04-29 00:00:00'); // 24 horas después
-	$ahora = time();
+// Se activa solo si la hora actual está dentro del rango
+$ModoMantenimiento = ($ahora >= $mantenimiento_inicio && $ahora < $mantenimiento_fin);
 
-	// Se activa solo si la hora actual está dentro del rango
-	$ModoMantenimiento = ($ahora >= $mantenimiento_inicio && $ahora < $mantenimiento_fin);
+//PARAMETROS INICIALES
+$pyme_name = "INSTITUTO TAMAULIPECO DE VIVIENDA Y URBANISMO";
+$pyme_text = "ITAVU";
+$pyme_tels = "(834) 3185506";
+$pyme_tels2 = "EXT.: 46506";
+$pyme_email = "";
+$pyme_direccion = "CALLE PINO SUÁREZ 2210 NTE. COLONIA DR. NORBERTO TREVIÑO ZAPATA";
+$pyme_direccion2 = "CIUDAD VICTORIA, TAMAULIPAS, MÉXICO, C.P. 87020";
+$pyme_colonia = "DR. NORBERTO TREVIÑO ZAPATA";
+$pyme_domicilio = "CALLE PINO SUÁREZ 2210 NTE";
+$pyme_cp = "87020";
+$pyme_ciudad = "CIUDAD VICTORIA";
+$versiondeplataforma = "1.4";
+global $pyme_name, $pyme_direction, $pyme_tels;
+$paginacion = 20;
 
 
-	//PARAMETROS INICIALES
-	$pyme_name ="INSTITUTO TAMAULIPECO DE VIVIENDA Y URBANISMO";
-	$pyme_text="ITAVU";
-	$pyme_tels="(834) 3185506";
-	$pyme_tels2 = "EXT.: 46506";
-	$pyme_email="";
-	$pyme_direccion="CALLE PINO SUÁREZ 2210 NTE. COLONIA DR. NORBERTO TREVIÑO ZAPATA";
-	$pyme_direccion2="CIUDAD VICTORIA, TAMAULIPAS, MÉXICO, C.P. 87020";
-	$pyme_colonia="DR. NORBERTO TREVIÑO ZAPATA";
-	$pyme_domicilio="CALLE PINO SUÁREZ 2210 NTE";
-	$pyme_cp = "87020";
-	$pyme_ciudad = "CIUDAD VICTORIA";
-	$versiondeplataforma ="1.4";
-	global $pyme_name, $pyme_direction, $pyme_tels;
-	$paginacion= 20;
+//configuraciones del sistema
+date_default_timezone_set('Mexico/General');
+$urlsite = 'https://plataformaitavu.tamaulipas.gob.mx';
+global $urlsite;
+$produccion = FALSE;
+global $produccion; // vpn
 
-	//configuraciones del sistema
-	date_default_timezone_set('Mexico/General');
-	$urlsite = 'https://plataformaitavu.tamaulipas.gob.mx'; global $urlsite;
-	$produccion=FALSE; 
-	global $produccion; // vpn
 
-	/* Config robusta para entorno + BD */
-	if (!function_exists('env_value')) {
-		function env_value($key, $default = '')
-		{
-			$value = getenv($key);
-			if ($value === false && isset($_ENV[$key])) {
-				$value = $_ENV[$key];
-			}
-			if ($value === false && isset($_SERVER[$key])) {
-				$value = $_SERVER[$key];
-			}
-			return ($value === false || $value === null) ? $default : trim($value);
-		}
+//Credenciales para la base de datos de Plataforma
+$dbhost = trim(getenv('DB_HOST') ?: '192.168.159.15', "'\"");
+$dbuser = trim(getenv('DB_USER') ?: 'root', "'\"");
+$dbpass = trim(getenv('DB_PASS') ?: '3L54NT0**', "'\"");
+$dbname = trim(getenv('DB_NAME') ?: 'produccion_itavu', "'\"");
+
+if (function_exists('mysqli_connect')) {
+	if (!isset($GLOBALS['conexion']) || !($GLOBALS['conexion'] instanceof mysqli)) {
+		$GLOBALS['conexion'] = new mysqli($dbhost, $dbuser, $dbpass, $dbname);
+		$GLOBALS['conexion']->query("SET NAMES 'utf8'"); // para los acentos
 	}
+	$conexion = $GLOBALS['conexion'];
+} else {
+	mensaje("ERROR: Hay un problema con la coneccion", '');
+}
 
-	if (!function_exists('load_dotenv_if_needed')) {
-		function load_dotenv_if_needed($baseDir, $appEnv)
-		{
-			// En produccion NO se usa .env
-			if ($appEnv === 'production') {
-				return;
-			}
+//Credenciales para la base de datos de Vivienda
+$Vdbhost = $dbhost;
+$Vdbuser = $dbuser;
+$Vdbpass = $dbpass;
+$Vdbname = 'produccion_vivienda';
 
-			$envPath = $baseDir . '/.env';
-			if (!is_file($envPath)) {
-				return;
-			}
-
-			$lines = file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-			if ($lines === false) {
-				return;
-			}
-
-			foreach ($lines as $line) {
-				$line = trim($line);
-				if ($line === '' || strpos($line, '#') === 0 || strpos($line, '=') === false) {
-					continue;
-				}
-
-				list($key, $value) = explode('=', $line, 2);
-				$key = trim($key);
-				$value = trim($value);
-
-				if (stripos($key, 'export ') === 0) {
-					$key = trim(substr($key, 7));
-				}
-
-				// Quitar comillas envolventes
-				if (strlen($value) >= 2) {
-					$first = $value[0];
-					$last = $value[strlen($value) - 1];
-					if (($first === '"' && $last === '"') || ($first === "'" && $last === "'")) {
-						$value = substr($value, 1, -1);
-					}
-				}
-
-				// No sobreescribir entorno existente del servidor
-				if (getenv($key) === false) {
-					putenv($key . '=' . $value);
-					$_ENV[$key] = $value;
-					$_SERVER[$key] = $value;
-				}
-			}
-		}
+if (function_exists('mysqli_connect')) {
+	if (!isset($GLOBALS['Vivienda']) || !($GLOBALS['Vivienda'] instanceof mysqli)) {
+		$GLOBALS['Vivienda'] = new mysqli($Vdbhost, $Vdbuser, $Vdbpass, $Vdbname);
+		$GLOBALS['Vivienda']->query("SET NAMES 'utf8'"); // para los acentos
 	}
+	$Vivienda = $GLOBALS['Vivienda'];
+} else {
+	mensaje("ERROR: Hay un problema con la coneccion a BD vivienda", '');
+}
 
-	if (!function_exists('require_env_vars')) {
-		function require_env_vars(array $keys)
-		{
-			$missing = array();
-
-			foreach ($keys as $key) {
-				if (env_value($key, '') === '') {
-					$missing[] = $key;
-				}
-			}
-
-			if (!empty($missing)) {
-				error_log('ITAVU config error: faltan variables: ' . implode(', ', $missing));
-				http_response_code(500);
-				exit('Error de configuracion del sistema. Contacte al administrador.');
-			}
-		}
-	}
-
-	/* 1) Resolver entorno */
-	$appEnv = env_value('APP_ENV', '');
-	if ($appEnv === '') {
-		$appEnv = is_file(__DIR__ . '/.env') ? 'development' : 'production';
-	}
-
-	/* 2) Cargar .env solo en no-produccion */
-	load_dotenv_if_needed(__DIR__, $appEnv);
-
-	/* 3) Validar variables criticas */
-	require_env_vars(array('DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASS'));
-
-	/* 4) Obtener credenciales */
-	$dbhost = env_value('DB_HOST');
-	$dbname = env_value('DB_NAME');
-	$dbuser = env_value('DB_USER');
-	$dbpass = env_value('DB_PASS');
-
-	/* 5) Conexion segura */
-	mysqli_report(MYSQLI_REPORT_OFF);
-	$conexion = @new mysqli($dbhost, $dbuser, $dbpass, $dbname);
-
-	if ($conexion->connect_errno) {
-		error_log('ITAVU DB error [' . $conexion->connect_errno . ']: ' . $conexion->connect_error);
-		http_response_code(500);
-		exit('Error de conexion al sistema. Contacte al administrador.');
-	}
-
-	$conexion->set_charset('utf8');
-	$GLOBALS['conexion'] = $conexion;
-
-	/* Si usas otra BD secundaria */
-	$Vdbname = 'produccion_vivienda';
-	$Vivienda = @new mysqli($dbhost, $dbuser, $dbpass, $Vdbname);
-
-	if ($Vivienda->connect_errno) {
-		error_log('ITAVU Vivienda DB error [' . $Vivienda->connect_errno . ']: ' . $Vivienda->connect_error);
-		http_response_code(500);
-		exit('Error de conexion al sistema. Contacte al administrador.');
-	}
-
-	$Vivienda->set_charset('utf8');
-	$GLOBALS['Vivienda'] = $Vivienda;
-
-	//PARAMETROS DE PREFERENCIA
-	$req_rezagoMax = 30;
- 	$moneda = 'MXN';
- 	$moneda_sufijo ='MXN';
- 	global $moneda, $moneda_sufijo;
- 	$fecha = date('Y-m-d');
-	$hora =  date ("H:i:s");
-	$tolerancia = "00:10:00";
-	global $fecha, $hora, $tolerancia;
-	$API_geo = TRUE; // usar Georeferencia
-	$API_msg = TRUE; // usar api de notificacines
-	$EXIGIR_geo_ini = FALSE; // no se puede accesar a la plataforma sino se aceptan los permisos de geo
-	$EXIGIR_geo_mod = TRUE; // no se puede utilizar modulos con geo sino se aceptan los permisos de geo
-	
-
-	//----------API KEY DE SERVICIOS GOOGLE CLOUD PLATAFORM---------
-	$ServiciosGoogle = FALSE;  
-	$key_geo="";
-	$key_map_static="";
-	$key_mapkmz = "";
-	$key_directions = "";
-	$key_map = "";
-	//----------------------------------------------------------------
-
-	$completar1_fecha = "2017-08-03";
+//PARAMETROS DE PREFERENCIA
+$req_rezagoMax = 30;
+$moneda = 'MXN';
+$moneda_sufijo = 'MXN';
+global $moneda, $moneda_sufijo;
+$fecha = date('Y-m-d');
+$hora = date("H:i:s");
+$tolerancia = "00:10:00";
+global $fecha, $hora, $tolerancia;
+$API_geo = TRUE; // usar Georeferencia
+$API_msg = TRUE; // usar api de notificacines
+$EXIGIR_geo_ini = FALSE; // no se puede accesar a la plataforma sino se aceptan los permisos de geo
+$EXIGIR_geo_mod = TRUE; // no se puede utilizar modulos con geo sino se aceptan los permisos de geo
 
 
-	// CONFIGURACION DEL CORREO
-	$correo_limite=1500; global $correo_limite;
-	
-	// SERVIDOR PARA DATOS SENSIBLES
-	$app_reso = "<p>
+//----------API KEY DE SERVICIOS GOOGLE CLOUD PLATAFORM---------
+$ServiciosGoogle = FALSE;
+$key_geo = "";
+$key_map_static = "";
+$key_mapkmz = "";
+$key_directions = "";
+$key_map = "";
+//----------------------------------------------------------------
+
+$completar1_fecha = "2017-08-03";
+
+
+// CONFIGURACION DEL CORREO
+$correo_limite = 1500;
+global $correo_limite;
+
+// SERVIDOR PARA DATOS SENSIBLES
+$app_reso = "<p>
 		
 		</p>
 		<p>
@@ -207,28 +112,32 @@
 		dejarla abierta, cualquier persona podrá hacer uso de él con su cuenta.</li>
 		<lu>
 		</p>";
-		global $app_reso;
-		
-		$SessionTiempo = "60:00";
-		$SessionTiempoRound = 6000;
-		$AccessIP = FALSE; // si esta en TRUE no deja entrar si no es detectada una IP por el navegador, no deja entrar si no se detecta una ip
-		$AdmisionIP = FALSE; // si esta en TRUE no deja entrar si no esta en una lista de IP del instituto (solo los titulares podran acceder desde cualquier IP)
+global $app_reso;
 
-		ini_set('max_execution_time', 0);
-		
-		if (date("l") == "Sunday"){$Domingo=TRUE;} else {$Domingo=FALSE;}
+$SessionTiempo = "60:00";
+$SessionTiempoRound = 6000;
+$AccessIP = FALSE; // si esta en TRUE no deja entrar si no es detectada una IP por el navegador, no deja entrar si no se detecta una ip
+$AdmisionIP = FALSE; // si esta en TRUE no deja entrar si no esta en una lista de IP del instituto (solo los titulares podran acceder desde cualquier IP)
 
-		$URLwebserviceVivienda = "http://192.168.159.179";
-		$URLplataforma = "http://192.168.159.15";
-		
-		$CorreoDeLaPlataforma = "plataforma.itavu@gmail.com";
-		$CorreoPass="Testing22";
-		
-		$CURP_limite = 9000;
-		$session_auto_start =0;
-		$SesionName="PlataformaITAVU";
+ini_set('max_execution_time', 0);
 
-		$CorreoFooter='
+if (date("l") == "Sunday") {
+	$Domingo = TRUE;
+} else {
+	$Domingo = FALSE;
+}
+
+$URLwebserviceVivienda = "http://192.168.159.179";
+$URLplataforma = "http://192.168.159.15";
+
+$CorreoDeLaPlataforma = "plataforma.itavu@gmail.com";
+$CorreoPass = "Testing22";
+
+$CURP_limite = 9000;
+$session_auto_start = 0;
+$SesionName = "PlataformaITAVU";
+
+$CorreoFooter = '
 		<br><br>
 		<hr><p style=color:gray; font-family:Verdana, Geneva, sans-serif; font-size:10pt;> 
 			Este correo electronico es enviado de manera automatizada mediante la Plataforma Informatica de ITAVU.<br>	
@@ -239,7 +148,7 @@
 
 		';
 
-	$PasswordCrypted = FALSE; //Usa la Colmuna hash en vez le nip
-	$ModoProduccion = TRUE; ///Ponerlo en FALSE, para que no guarde Historial de test
+$PasswordCrypted = FALSE; //Usa la Colmuna hash en vez le nip
+$ModoProduccion = TRUE; ///Ponerlo en FALSE, para que no guarde Historial de test
 
 ?>

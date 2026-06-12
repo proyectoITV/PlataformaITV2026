@@ -5,6 +5,11 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 require("config.php");
 require_once('seguridad.php');
+
+if (!defined('K_PATH_IMAGES')) {
+    define('K_PATH_IMAGES', dirname(__FILE__) . '/img/');
+}
+
 require_once('lib/funciones.php');
 require_once('pdf/tcpdf.php');
 require_once('lib/flor_funciones.php');
@@ -1125,7 +1130,10 @@ $recuperacion = $recuperacion.'
     $pdf->SetKeywords('Reporte ITAVU');
     //$link = "www.localhost:81\mandantes_pago.php?idmandante=".$idmandante."&idcolonia=".$idcolonia."&idmunicipio=".$idmunicipio."";
     //df->SetHeaderData('pdf_logo.jpg', '40','');
-    $pdf->SetHeaderData(__DIR__ . '/img/pdf_logo.jpg', 40, '', '');
+    //original-->$pdf->SetHeaderData(__DIR__ . '/img/LogotipoOficial.jpg', 40, '', '');
+
+    $pdf->SetHeaderData('LogotipoOficial.jpg', '40','', '');
+
     $link = "https://plataformaitavu.tamaulipas.gob.mx/itavu/mandantes_pago.php?idmandante=".$idmandante."&idcolonia=".$idcolonia."&idmunicipio=".$idmunicipio."";
     $link = $url."?idmandante=".$idmandante."&idcolonia=".$idcolonia."&idmunicipio=".$idmunicipio."";
     //$img = file_get_contents('C:\pdz-server\htdocs\img\regreso.png');

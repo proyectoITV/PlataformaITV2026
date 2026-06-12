@@ -221,7 +221,7 @@ function CorreoForce($IdEmpleado){
 
 
 function EnviarCorreo($Asunto, $Contenido, $CorreoDestino, $DestinoName="Plataforma ITAVU", $ResponderCorreo = "", $Responder = "", $nitavu=''){    
-    require("config.php"); require_once('mailer/PHPMailerAutoload.php'); require_once("lib/funciones.php");
+    require("config.php"); require_once("lib/funciones.php");
     date_default_timezone_set('Etc/UTC');
     EnviarNotificacion ($nitavu, $Asunto, $Contenido, $nitavu);
     return TRUE;

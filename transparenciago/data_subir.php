@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 require_once("config.php");
 require_once("funciones.php");
 
@@ -29,7 +29,34 @@ foreach ($archivos as $archivo) {
     $tipo_archivo = $archivo['type'];
 
     if ($archivo['error'] !== UPLOAD_ERR_OK) {
-        $resultados[] = htmlspecialchars($FileNombre) . ": error al recibir";
+        switch ($archivo['error']) {
+            case UPLOAD_ERR_INI_SIZE:
+                $mensajeError = "El archivo excede la directiva upload_max_filesize en php.ini.";
+                break;
+            case UPLOAD_ERR_FORM_SIZE:
+                $mensajeError = "El archivo excede el límite MAX_FILE_SIZE especificado en el formulario HTML.";
+                break;
+            case UPLOAD_ERR_PARTIAL:
+                $mensajeError = "El archivo fue subido solo parcialmente.";
+                break;
+            case UPLOAD_ERR_NO_FILE:
+                $mensajeError = "No se subió ningún archivo.";
+                break;
+            case UPLOAD_ERR_NO_TMP_DIR:
+                $mensajeError = "Falta la carpeta temporal en el servidor.";
+                break;
+            case UPLOAD_ERR_CANT_WRITE:
+                $mensajeError = "No se pudo escribir el archivo en el disco (problema de permisos).";
+                break;
+            case UPLOAD_ERR_EXTENSION:
+                $mensajeError = "Una extensión de PHP detuvo la subida del archivo.";
+                break;
+            default:
+                $mensajeError = "Error desconocido (" . $archivo['error'] . ").";
+                break;
+        }
+
+        $resultados[] = htmlspecialchars($FileNombre) . ": " . $mensajeError;
         continue;
     }
 
@@ -61,5 +88,12 @@ foreach ($archivos as $archivo) {
 
 $total_archivos = count($archivos);
 $msg = $total_ok . " de " . $total_archivos . " archivo(s) subido(s). " . implode(" | ", $resultados);
-toast($msg, 1, "");
+
+header('Content-Type: application/json');
+echo json_encode([
+    'success' => ($total_ok === $total_archivos && $total_archivos > 0),
+    'total_ok' => $total_ok,
+    'total_archivos' => $total_archivos,
+    'message' => $msg
+]);
 ?>
