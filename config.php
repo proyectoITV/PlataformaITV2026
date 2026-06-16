@@ -34,11 +34,59 @@ $produccion = FALSE;
 global $produccion; // vpn
 
 
+if (!function_exists('itavu_load_env_file')) {
+	function itavu_load_env_file($file_path)
+	{
+		if (!is_readable($file_path)) {
+			return;
+		}
+
+		$lines = file($file_path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+		if ($lines === false) {
+			return;
+		}
+
+		foreach ($lines as $line) {
+			$line = trim($line);
+			if ($line === '' || $line[0] === '#' || strpos($line, '=') === false) {
+				continue;
+			}
+
+			list($name, $value) = explode('=', $line, 2);
+			$name = trim($name);
+			$value = trim($value);
+
+			if ($name === '') {
+				continue;
+			}
+
+			$value = trim($value, " \t\n\r\0\x0B\"'");
+			if (getenv($name) === false) {
+				putenv($name . '=' . $value);
+				$_ENV[$name] = $value;
+				$_SERVER[$name] = $value;
+			}
+		}
+	}
+}
+
+if (!defined('ITAVU_ENV_LOADED')) {
+	define('ITAVU_ENV_LOADED', true);
+	$basePath = __DIR__;
+	itavu_load_env_file($basePath . DIRECTORY_SEPARATOR . '.env');
+	itavu_load_env_file($basePath . DIRECTORY_SEPARATOR . '.conf');
+}
+
+
 //Credenciales para la base de datos de Plataforma
-$dbhost = trim(getenv('DB_HOST') ?: '192.168.159.15', "'\"");
-$dbuser = trim(getenv('DB_USER') ?: 'root', "'\"");
-$dbpass = trim(getenv('DB_PASS') ?: '3L54NT0**', "'\"");
-$dbname = trim(getenv('DB_NAME') ?: 'produccion_itavu', "'\"");
+$dbhost = trim((string) getenv('DB_HOST'), "'\"");
+$dbuser = trim((string) getenv('DB_USER'), "'\"");
+$dbpass = trim((string) getenv('DB_PASS'), "'\"");
+$dbname = trim((string) getenv('DB_NAME'), "'\"");
+
+if ($dbhost === '' || $dbuser === '' || $dbpass === '' || $dbname === '') {
+	die('ERROR: Faltan variables de entorno para la conexion a base de datos (DB_HOST, DB_USER, DB_PASS, DB_NAME).');
+}
 
 if (function_exists('mysqli_connect')) {
 	if (!isset($GLOBALS['conexion']) || !($GLOBALS['conexion'] instanceof mysqli)) {
