@@ -12223,9 +12223,9 @@ require("config.php");
 if ($usuario <> ''){
 $npase = npase(FALSE);
 $sql = "INSERT INTO notificaciones
-	(nitavu, asunto, entregar_fecha, nitavu_manda, contenido, id)
+	(nitavu, asunto, entregar_fecha, nitavu_manda, contenido)
 VALUES
-	('$usuario', '$asunto', '$entregar_fecha','$itavu_manda', '$contenido', '$npase')";
+	('$usuario', '$asunto', '$entregar_fecha','$itavu_manda', '$contenido' )";
 ////echo $sql;
 if ($conexion->query($sql) == TRUE)
 {

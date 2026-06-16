@@ -196,7 +196,7 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE){
 					for($i=0; $i < sizeof($empleados); $i++){
 						if($empleados[$i]<>null || $empleados[$i]<>"" ){
 							if($nitavu <> $empleados[$i] ){
-								notificacion_add($empleados[$i],'Caso finalizado '.$id.'', $fecha,$nitavu,'Buen día. <br> Se le informa que la petición número '.$id.' ha finalizado. <br>De asunto:<b>'.asuntoCaso($id).'</b> <br>Para más información consultar en la aplicación Control Documental.');
+								notificacion_add($empleados[$i],'Caso finalizado'.$id.'', $fecha,$nitavu,'Buen día. <br> Se le informa que la petición número '.$id.' ha finalizado. <br>De asunto:<b>'.asuntoCaso($id).'</b> <br>Para más información consultar en la aplicación Control Documental.');
 							}
 
 						}
