@@ -71,13 +71,13 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE){
 				
 					$sql = "SELECT * FROM cat_gerarquia order by nombre";
 					$r = $conexion -> query($sql);
-					$t="";
+					$isFirst = true;
 					while($f3 = $r -> fetch_array())
 						{ // resultado de la busqueda.................
-							echo "<option  value='".$f3['id']."'>".$f3['nombre']. " </option>";		
-							// if ($f3['dpto']==$f3['id']){$t=$f3['nombre'];}						
+							$selected = $isFirst ? " selected='selected'" : "";
+							echo "<option".$selected." value='".$f3['id']."'>".$f3['nombre']. " </option>";
+							$isFirst = false;
 						}
-							echo "<option selected='selected'  value='".$f['dpto']."'>".$t. " </option>";								
 				
 				echo "</select>";
 				echo "</label>";
@@ -181,7 +181,13 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE){
 
 
 }
-else{echo "No tiene acceso a ".$id_aplicacion;}
+else{
+	echo "<div style='max-width:700px;margin:40px auto;padding:22px 24px;border:1px solid #f3c2c2;background:#fff7f7;border-left:6px solid #c62828;border-radius:10px;font-family:Segoe UI,Tahoma,Arial,sans-serif;box-shadow:0 6px 16px rgba(0,0,0,0.06);'>";
+	echo "<h3 style='margin:0 0 8px 0;color:#8b1e1e;font-size:22px;'>Acceso restringido</h3>";
+	echo "<p style='margin:0 0 6px 0;color:#333;font-size:15px;'>No cuenta con permisos para abrir este modulo.</p>";
+	echo "<p style='margin:0;color:#6b6b6b;font-size:13px;'>Aplicacion: <strong>".$id_aplicacion."</strong></p>";
+	echo "</div>";
+}
 
 
 

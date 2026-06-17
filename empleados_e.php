@@ -63,13 +63,13 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE){
         '        
         >";
         
-        if ($Empleado['fecha_nacimiento']=='0000-00-00'){
+        if (empty($Empleado['fecha_nacimiento']) || $Empleado['fecha_nacimiento']=='0000-00-00'){
             echo "<b style='color:red; font-size:8pt'> * No tiene fecha nacimiento registrada</b> <br>";
         }else {
             echo "Edad: ".CalcularEdad($Empleado['fecha_nacimiento'])." años<br>";
         }
 
-        if ($Empleado['iniciolaboral']=='0000-00-00'){
+        if (empty($Empleado['iniciolaboral']) || $Empleado['iniciolaboral']=='0000-00-00'){
             echo "<b style='color:red; font-size:8pt'> * No tiene registro de fecha de relacion laboral</b> <br>";
         }else {
             echo "<b style='color:gray; font-size:9pt;font-weight:normal'>Personal de ITAVU desde  ".CalcularEdad($Empleado['iniciolaboral'])." años</b><br>";
