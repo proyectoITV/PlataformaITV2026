@@ -4,48 +4,76 @@ ob_start();
 
 //archivo para recibir 
 
-$idreporte = $_GET['n'];
-$rand=(random_int(1,50));
+$idreporte = isset($_GET['n']) ? intval($_GET['n']) : 0;
+$reportTableMap = [
+    1 => 'fer_reporte',
+    5 => 'encuestas_reportes_del',
+];
 
+if ($idreporte <= 0 || !isset($reportTableMap[$idreporte])) {
+    die("ID de reporte inválido o tabla no configurada para id=" . $idreporte);
+}
 
-//obtener datos del registro reportes
- $sqldatosreg="Select * from reportes_exporta where id=".$idreporte;
+$targetTable = $reportTableMap[$idreporte];
+
+// Obtener datos del registro reportes
+$sqldatosreg="Select * from reportes_exporta where id=".$idreporte;
 $idreporte1=$conexion-> query($sqldatosreg);
+
+if(!$idreporte1) {
+    die("Error en la consulta: " . $conexion->error);
+}
+
 if($fdr = $idreporte1 -> fetch_array())
 	{
-        //$queryconcat=$fdr['queryx'].$fdr['dato1'].$fdr['dato2'];
-        $nomTabla="xxvista_reporte".$idreporte.$rand;
         $nomBD=$fdr['basededatos'];
+        $query = trim($fdr['queryx']);
+        $query = rtrim($query, ";");
 
-        //creo vista en la bd correspondiente
-       $sqlvw="CREATE VIEW ".$nomTabla." AS ".$fdr['queryx'];
-  
         if ($nomBD=='produccion_itavu'){
-            $r= $conexion -> query($sqlvw);		
-           // return true;			
+            $dbConn = $conexion;
+        } else {
+            $dbConn = $Vivienda;
         }
-        else{
-            $r= $vivienda -> query($sqlvw);					
-            //return true;
-        }          
-	} else {
 
-		return  0;
+        if (!$dbConn->select_db($nomBD)) {
+            die("Error al seleccionar la base de datos " . $nomBD . ": " . $dbConn->error);
+        }
+
+        $deleteSql = "DELETE FROM `" . $dbConn->real_escape_string($targetTable) . "`";
+        if (!$dbConn->query($deleteSql)) {
+            die("Error al vaciar la tabla " . $targetTable . ": " . $dbConn->error);
+        }
+
+        $insertSql = "INSERT INTO `" . $dbConn->real_escape_string($targetTable) . "` " . $query;
+        if (!$dbConn->query($insertSql)) {
+            die("Error al llenar la tabla " . $targetTable . ": " . $dbConn->error);
+        }
+
+        $inserted = $dbConn->affected_rows;
+        //echo "Tabla " . $targetTable . " actualizada correctamente. Filas insertadas: " . $inserted;
+        //exit;
+	} else {
+        die("Error: No se encontraron datos en reportes_exporta para id=" . $idreporte);
 	}
-    
+echo "1";    
+
 $sql="";
 $sql="SELECT `COLUMN_NAME` 
 FROM `INFORMATION_SCHEMA`.`COLUMNS` 
 WHERE `TABLE_SCHEMA`='".$nomBD."' AND 
-   `TABLE_NAME`='".$nomTabla."'";
+   `TABLE_NAME`='".$targetTable."'";
 
-$rc= $conexion -> query($sql);
+echo "SQL para obtener columnas: " . $sql . "\n";
+echo "<script>console.log('SQL para obtener columnas: " . $sql . "');</script>";
+$rc= $dbConn -> query($sql);
 $row_cnt = $rc->num_rows;
 $cont=0;
 
  
 if($row_cnt>0)
 {		
+
     $salida = "";
     $salida .= "<table>"; 
     $salida .= "<tr colspan=10>".$fdr['nombrereporte']."<tr>"; 
@@ -59,10 +87,13 @@ if($row_cnt>0)
 	}
      $salida .="</thead>";
 }
+else{
+    die("Error: No se encontraron columnas para la tabla ".$targetTable);    
+}
 
 
-$sqldatos="SELECT * FROM ".$nomTabla;
-$rcdat= $conexion -> query($sqldatos);
+$sqldatos="SELECT * FROM ".$targetTable;
+$rcdat= $dbConn -> query($sqldatos);
 
 $row_cntdat = $rcdat->num_rows;
 $contdat=0;
@@ -90,9 +121,9 @@ $contdat=0;
                 $salida .= "</tr>";
                             
             } 
-     $salida .=" </tr> </tbody>";
+     $salida .="</tr></tbody>";
 }  
-  $salida .=" </table>";
+  $salida .="</table>";
 
 /* iso-8859-1
 ISO-8859-1
@@ -105,36 +136,23 @@ header("Pragma: no-cache");
 //pruebas
   ini_set('display_errors', 1);
 error_reporting(E_ALL);
-/*
-header("Content-Type: application/vnd.ms-excel");
+
+/* header("Content-Type: application/vnd.ms-excel");
 header("Content-Disposition: attachment; filename=ejemplo.xls");
 
 echo "Nombre\tEdad\n";
 echo "Juan\t25\n";
 echo "Ana\t30\n"; 
-echo $sqlvw; *************/
+echo $sql; 
+ */
 
-header("Content-type: application/vnd.ms-excel; charset=UTF-8");
+ header("Content-type: application/vnd.ms-excel; charset=UTF-8");
 //header("Content-Disposition: attachment; filename=ExportadoExcelprueba.xls");
 header("Content-Disposition: attachment; filename=ExportadoExcel".$hora.".xls");
 header("Pragma: no-cache");
 header("Expires: 0");
 ob_end_clean();
-echo $salida;
-
-
- /* $sql="";
-$sql="drop view if exists ".$nomTabla;
-
-        if ($nomBD=='produccion_itavu'){
-            $r= $conexion -> query($sql);		
-           // return true;			
-        }
-        else{
-            $r= $vivienda -> query($sql);					
-            //return true;
-        } */
+echo $salida; 
  
-
 
 ?>
