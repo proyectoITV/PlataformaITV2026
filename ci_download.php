@@ -4,45 +4,42 @@ require("seguridad.php");
 require("var_clean.php");
 require("lib/funciones.php");
 require("vehiculos_fun.php");
-// require_once("lib/flor_funciones.php");
+
+header('Content-Type: application/json');
 
 if (isset($_GET['id'])){
     $id = $_GET['id'];
 
     $sql = "SELECT * FROM ci WHERE IdCi='".$id."'";
-    // echo $sql;
-	$rc= $conexion -> query($sql);
+	$rc = $conexion->query($sql);
 	
-	if($f = $rc -> fetch_array())	
+	if($f = $rc->fetch_array())	
     {
-    echo "<a  class='btn btn-danger' href='?='>Regresar</a>";
-    echo "<br>";
-    echo "<br>";
-    if ($f['icon']=='video.png'){
-            
-            echo "<iframe src='components_video.php?src=ci/".$f['Link']."' style='width:100%; height:80%;'>";
-
-            echo "</iframe>";
-        } else {        
-            echo "<iframe src='ci/".$f['Link']."' style='width:100%; height:80%;'>";
-
-            echo "</iframe>";
+        // Register visit
+        ciHistory($id, $nitavu);
+        
+        $localPath = "ci/" . $f['Link'];
+        $fileUrl = $localPath;
+        
+        // Fallback to production URL when running on localhost and the file is not found locally
+        if (!file_exists($localPath)) {
+            $fileUrl = "https://plataformaitavu.tamaulipas.gob.mx/ci/" . rawurlencode($f['Link']);
         }
-
-        if (ciHistory($id, $nitavu) == TRUE){
-            //Toast("Se registro tu visita al Documento ".$f['Nombre'],4,"");
-            
-        } else {
-            // Toast("hubo un problema al registrar tu visita al Documento ".$f['Nombre'],2,"");
-        }
+        
+        $response = [
+            'success' => true,
+            'nombre' => trim($f['Nombre']),
+            'link' => $fileUrl,
+            'icon' => $f['icon'],
+            'isVideo' => ($f['icon'] == 'video.png')
+        ];
+        echo json_encode($response);
     }
 	else
 	{
-        echo "Archivo no Disponible";
-    
+        echo json_encode(['success' => false, 'message' => 'Archivo no Disponible']);
     }
-
+} else {
+    echo json_encode(['success' => false, 'message' => 'ID no proporcionado']);
 }
-
-
 ?>

@@ -515,7 +515,7 @@ VALUES ("'.$CURP.'","'.$NumContrato.'", "'.$telefono.'", "'.$entidad.'", "'.$tra
     echo "</tr>";
 
         echo '<tr><td colspan="2" style="text-align:center; font-size:20px; background-color: #990000; color: white; padding: 20px;" >';
-                    echo "<b>ENCUESTA DE SATISFACCIÓN CIUDADANA A TRÁMITES Y SERVICIOS 2023.</b>";
+                    echo "<b>ENCUESTA DE SATISFACCIÓN CIUDADANA A TRÁMITES Y SERVICIOS</b>";
                     
         echo "<td></tr>";
         echo "<tr><td colspan='2'></td></tr>";
