@@ -33,41 +33,54 @@ global $urlsite;
 $produccion = FALSE;
 global $produccion; // vpn
 
-
 if (!function_exists('itavu_load_env_file')) {
-	function itavu_load_env_file($file_path)
-	{
-		if (!is_readable($file_path)) {
-			return;
-		}
+    function itavu_load_env_file($file_path)
+    {
+        // 1. Dejamos el debug en TRUE para que PHP jamás se salte el bloque
+        $debug = true; 
 
-		$lines = file($file_path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-		if ($lines === false) {
-			return;
-		}
+        if (!file_exists($file_path)) {
+            return;
+        }
 
-		foreach ($lines as $line) {
-			$line = trim($line);
-			if ($line === '' || $line[0] === '#' || strpos($line, '=') === false) {
-				continue;
-			}
+        if (!is_readable($file_path)) {
+            return;
+        }
 
-			list($name, $value) = explode('=', $line, 2);
-			$name = trim($name);
-			$value = trim($value);
+        $lines = file($file_path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        if ($lines === false) {
+            return;
+        }
 
-			if ($name === '') {
-				continue;
-			}
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if ($line === '' || $line[0] === '#' || strpos($line, '=') === false) {
+                continue;
+            }
 
-			$value = trim($value, " \t\n\r\0\x0B\"'");
-			if (getenv($name) === false) {
-				putenv($name . '=' . $value);
-				$_ENV[$name] = $value;
-				$_SERVER[$name] = $value;
-			}
-		}
-	}
+            list($name, $value) = explode('=', $line, 2);
+            $name = trim($name);
+            $value = trim($value);
+
+            if ($name === '') {
+                continue;
+            }
+
+            $value = trim($value, " \t\n\r\0\x0B\"'");
+            
+            // 2. EN LUGAR DE LOS ECHOS: Ejecutamos código real pero invisible
+            if ($debug) {
+                // Esto mantiene el "if" activo para el compilador de PHP,
+                // pero no pinta absolutamente nada en tu pantalla.
+                $ignorar_esta_linea = true; 
+            }
+
+            // Inyección segura en el entorno local
+            putenv($name . '=' . $value);
+            $_ENV[$name] = $value;
+            $_SERVER[$name] = $value;
+        }
+    }
 }
 
 if (!defined('ITAVU_ENV_LOADED')) {
