@@ -254,7 +254,9 @@ $pdf->SetFont('Helvetica','',8);
 $pdf->SetXY(25,245);
 $pdf->Cell(60,10,"LIC. OSCAR ALBERTO BAEZA FRANCO", 0,0,'C',0);
 $pdf->SetXY(25,250);
-$pdf->Cell(60,10,"JEFE DPTO. DE REC. MAT. Y SERV. GRALES.", 0,0,'C',0);
+$pdf->Cell(60,10,"ENCARGADO DEL DESPACHO DEL DEPARTAMENTO", 0,0,'C',0);
+$pdf->SetXY(25,255);
+$pdf->Cell(65,10," DE RECURSOS MATERIALES Y SERVICIOS GENERALES", 0,0,'C',0);
 
 
 $pdf->SetXY(130,235);
@@ -275,7 +277,7 @@ $pdf->Cell(60,10,"ENCARGADO DE MANTENIMIENTO VEHICULAR", 0,0,'C',0);
 
  /////////// Informacion de quien imprimio el formato
 $pdf->SetFont('Helvetica','',8);   
-$pdf->Text(20, 276, 'Impreso por :'.$nitavu); 
+$pdf->Text(20, 268, 'Impreso por :'.$nitavu); 
         
 
 
