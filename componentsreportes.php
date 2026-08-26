@@ -2166,7 +2166,6 @@ if($WSConF = $WSCon -> fetch_array())
 
 function DataFromMySQL($ClaseDiv, $ClaseTabla, $Tipo, $IdUser,$id_rep){
     require("config.php");	
-    var_dump($conexion);
     
     $Query = QueryReporte($id_rep); 
     $FixedColLeft = ReporteFixedColLeft($id_rep);
@@ -2513,7 +2512,7 @@ function DataFromMySQL($ClaseDiv, $ClaseTabla, $Tipo, $IdUser,$id_rep){
 
 
 
-include("con_close.php");
+//include("con_close.php");
 
 
 }
