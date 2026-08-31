@@ -122,6 +122,7 @@ if(isset($_GET['reactiva'])){
         }
       echo "</thead>"; */
         //FILTRAR POR DIRECCION
+       
         if(nitavu_dpto($nitavu)==1 or $nivel==2){
             //$sql ="select * from actividades_indicadores";
             $sql =" SELECT *, (CASE WHEN prioridad='A' THEN 0 WHEN prioridad='B' THEN 2 WHEN prioridad='M' THEN 1 END) as valorprioridad 
@@ -129,12 +130,12 @@ if(isset($_GET['reactiva'])){
         }else{
            // $sql ="select * from actividades_indicadores where IdDireccion = ".nitavu_dpto($nitavu)."";
             $sql =" SELECT *, (CASE WHEN prioridad='A' THEN 0 WHEN prioridad='B' THEN 2 WHEN prioridad='M' THEN 1 END) as valorprioridad 
-            FROM actividades_indicadores WHERE IdDireccion = ".nitavu_dpto($nitavu)."  ORDER BY IdDireccion, valorprioridad";
+            FROM actividades_indicadores WHERE IdDireccion = ".nitavu_dpto($nitavu)."  AND Estatus=3 ORDER BY IdDireccion, valorprioridad";
             //and Estatus!=3
         }
 
       
-//echo $sql;
+echo $sql;
         $r= $conexion -> query($sql);
         while($f = $r -> fetch_array()) {
             $color = color_catjerarquia($f['IdDireccion']);
