@@ -22017,8 +22017,8 @@ function DireccionRealizoUltimoComentario($IdActividad){
 
 function porcentajeActividad($IdActividad){
     require("config.php");
-    $sql = "SELECT avance as porce FROM historial_actividades where IdActividad = ".$IdActividad." ORDER BY Fecha DESC";
-
+    $sql = "SELECT avance as porce FROM historial_actividades where IdActividad = ".$IdActividad." ORDER BY Id DESC limit 1";
+//echo $sql;
     $rc= $conexion -> query($sql);
    
     if($f = $rc -> fetch_array()){
@@ -22030,7 +22030,7 @@ function porcentajeActividad($IdActividad){
 
 function porcentajeActividadDpto($IdActividad){
     require("config.php");
-    $sql = "SELECT avance as porce FROM historial_actividades_dpto where IdActividad = ".$IdActividad." ORDER BY Fecha DESC";
+    $sql = "SELECT avance as porce FROM historial_actividades_dpto where IdActividad = ".$IdActividad." ORDER BY Id DESC limit 1";
 
     $rc= $conexion -> query($sql);
    
@@ -22043,7 +22043,7 @@ function porcentajeActividadDpto($IdActividad){
 
 function porcentajeActividadEmpleado($IdActividad){
     require("config.php");
-    $sql = "SELECT Avance as porce FROM actividades_empleados where IdActividad = ".$IdActividad."";
+    $sql = "SELECT Avance as porce FROM actividades_empleados where IdActividad = ".$IdActividad." ORDER BY Id DESC limit 1";
 //echo $sql;
     $rc= $conexion -> query($sql);
    
