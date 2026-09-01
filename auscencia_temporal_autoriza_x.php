@@ -35,13 +35,13 @@ $rc= $conexion -> query($sql);
 			notificacion_add (pases_quien($id), "Pase de salida ".$id, date('Y-m-d'), $nitavu,$msg);	
 			//mensaje ("Rechazado correctamente",'auscencia_temporal_autoriza3.php');
 			historia ($nitavu,"Rechazo pase de  ".pase_id_nombre($id)." con id ".$id);
-			echo "Pase rechazado correctamente: ".$id;
+			echo "<div class='autoriza-card-result-error'><i class='fa-solid fa-circle-xmark'></i> Pase rechazado correctamente: ".$id."</div>";
 			// header("location:../auscencia_temporal_autoriza3.php");
 			}
 		else
 			{
 			$msg="Error inesperado ".$sql; //<-- Descripcion de error
-			echo "Hubo un error al rechazar el pase ".$id;
+			echo "<div class='autoriza-card-result-error'><i class='fa-solid fa-circle-xmark'></i> Hubo un error al rechazar el pase ".$id."</div>";
 			InformaticosGo("Error al aprobar el pase ".$_POST['id'],$msg, $nitavu);
 			//creamos un historial de error extraordinario
 				//header("location:../lib/error.php?er=".$msg);

@@ -1,227 +1,303 @@
 <?php
-$Widget_nombre = "<img src='icon/cumples.png' style='width:23px;'><b class='pc' style='color:#990000'> Cumpleaños de esta semana</b><b class='movil'>Cumples</b>";
+$Widget_nombre = "Cumpleaños de esta semana";
 $wc = "";
 $empleados_sindpto_quienes = "";
 
-//Obtiene el primer dia de la semana en curso y se proyectan los siguientes 7 dias
+// Obtiene el primer dia de la semana en curso y se proyectan los siguientes 7 dias
 $r = $conexion->query('SELECT DATE(DATE_ADD(NOW(), INTERVAL - WEEKDAY(NOW()) DAY)) primerdia;');
 while ($f = $r->fetch_array()) {
-	$dia1 = strtotime($f['primerdia']);
-	$dia2 = strtotime('+1 day', strtotime($f['primerdia']));
-	$dia3 = strtotime('+2 day', strtotime($f['primerdia']));
-	$dia4 = strtotime('+3 day', strtotime($f['primerdia']));
-	$dia5 = strtotime('+4 day', strtotime($f['primerdia']));
-	$dia6 = strtotime('+5 day', strtotime($f['primerdia']));
-	$dia7 = strtotime('+6 day', strtotime($f['primerdia']));
+    $dia1 = strtotime($f['primerdia']);
+    $dia2 = strtotime('+1 day', strtotime($f['primerdia']));
+    $dia3 = strtotime('+2 day', strtotime($f['primerdia']));
+    $dia4 = strtotime('+3 day', strtotime($f['primerdia']));
+    $dia5 = strtotime('+4 day', strtotime($f['primerdia']));
+    $dia6 = strtotime('+5 day', strtotime($f['primerdia']));
+    $dia7 = strtotime('+6 day', strtotime($f['primerdia']));
 }
-
-$wc = $wc . '<style>
-	@keyframes glow-border {
-	  0% { border-color: rgba(0, 180, 216, 0.6); box-shadow: 0 0 5px rgba(0, 180, 216, 0.3); }
-	  50% { border-color: #bc955c; box-shadow: 0 0 15px rgba(188, 149, 92, 0.8); }
-	  100% { border-color: rgba(0, 180, 216, 0.6); box-shadow: 0 0 5px rgba(0, 180, 216, 0.3); }
-	}
-
-	@keyframes shimmer-sweep {
-	  0% { left: -150%; }
-	  50% { left: -150%; }
-	  100% { left: 150%; }
-	}
-
-	@keyframes sparkle-float-1 {
-	  0% { transform: translate(0, 0) scale(0) rotate(0deg); opacity: 0; }
-	  50% { opacity: 1; }
-	  100% { transform: translate(-20px, -30px) scale(1) rotate(180deg); opacity: 0; }
-	}
-
-	@keyframes sparkle-float-2 {
-	  0% { transform: translate(0, 0) scale(0) rotate(0deg); opacity: 0; }
-	  50% { opacity: 1; }
-	  100% { transform: translate(20px, -25px) scale(1.1) rotate(-180deg); opacity: 0; }
-	}
-
-	@keyframes cake-bounce {
-	  0%, 100% { transform: translateY(0) scale(1); }
-	  50% { transform: translateY(-5px) scale(1.08); }
-	}
-
-	.cumples-informatica {
-	  position: relative !important;
-	  overflow: hidden !important;
-	  border: 2px solid rgba(0, 180, 216, 0.6) !important;
-	  border-radius: 8px !important;
-	  background: linear-gradient(135deg, #ffffff 0%, #f0faff 100%) !important;
-	  animation: glow-border 4s infinite ease-in-out !important;
-	  padding: 10px !important;
-	  margin-bottom: 12px !important;
-	  transition: all 0.3s ease !important;
-	}
-
-	.cumples-informatica.parpadear {
-	  background: linear-gradient(135deg, #e6fccf 0%, #c4f7b2 100%) !important;
-	}
-
-	.cumples-informatica::after {
-	  content: "" !important;
-	  position: absolute !important;
-	  top: 0 !important;
-	  height: 100% !important;
-	  width: 50% !important;
-	  background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0) 100%) !important;
-	  transform: skewX(-25deg) !important;
-	  animation: shimmer-sweep 3.5s infinite ease-in-out !important;
-	  pointer-events: none !important;
-	}
-
-	.sparkle-container {
-	  position: absolute !important;
-	  top: 0 !important;
-	  left: 0 !important;
-	  width: 100% !important;
-	  height: 100% !important;
-	  pointer-events: none !important;
-	  overflow: hidden !important;
-	  background: transparent !important;
-	}
-
-	.sparkle {
-	  position: absolute !important;
-	  font-size: 13px !important;
-	  color: #ffd700 !important;
-	  opacity: 0 !important;
-	  background: transparent !important;
-	  text-shadow: 0 0 3px rgba(255, 215, 0, 0.7) !important;
-	}
-
-	.sparkle.s1 { top: 15%; left: 8%; animation: sparkle-float-1 2.5s infinite ease-in-out !important; }
-	.sparkle.s2 { top: 65%; left: 82%; animation: sparkle-float-2 3s infinite ease-in-out 0.8s !important; }
-	.sparkle.s3 { top: 10%; left: 78%; animation: sparkle-float-1 3.5s infinite ease-in-out 0.4s !important; }
-	.sparkle.s4 { top: 75%; left: 12%; animation: sparkle-float-2 2.8s infinite ease-in-out 1.2s !important; }
-
-	.animated-cake {
-	  animation: cake-bounce 2.2s infinite ease-in-out !important;
-	  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.12)) !important;
-	}
-
-	.code-backdrop {
-	  position: absolute !important;
-	  font-family: Consolas, Monaco, monospace !important;
-	  font-size: 8px !important;
-	  color: rgba(0, 180, 216, 0.15) !important;
-	  background: transparent !important;
-	  bottom: 6px !important;
-	  right: 8px !important;
-	  pointer-events: none !important;
-	  user-select: none !important;
-	  text-align: right !important;
-	  line-height: 1.1 !important;
-	}
-	</style>';
-
-$wc = $wc . '<div id="slider_wid" >';
 
 $sql = "
-	SELECT * from empleados where estado = '' and 
-	(
-		month(fecha_nacimiento) = '" . date("m", $dia1) . "' and day(fecha_nacimiento) = '" . date("d", $dia1) . "'
-		or 
-		month(fecha_nacimiento) = '" . date("m", $dia2) . "' and day(fecha_nacimiento) = '" . date("d", $dia2) . "'
-		or 
-		month(fecha_nacimiento) = '" . date("m", $dia3) . "' and day(fecha_nacimiento) = '" . date("d", $dia3) . "'
-		or 
-		month(fecha_nacimiento) = '" . date("m", $dia4) . "' and day(fecha_nacimiento) = '" . date("d", $dia4) . "'
-		or 
-		month(fecha_nacimiento) = '" . date("m", $dia5) . "' and day(fecha_nacimiento) = '" . date("d", $dia5) . "'
-		or 
-		month(fecha_nacimiento) = '" . date("m", $dia6) . "' and day(fecha_nacimiento) = '" . date("d", $dia6) . "'
-		or 
-		month(fecha_nacimiento) = '" . date("m", $dia7) . "' and day(fecha_nacimiento) = '" . date("d", $dia7) . "'
-	)
-	ORDER BY  month(fecha_nacimiento), day(fecha_nacimiento), nombre
-	";
+    SELECT * from empleados where estado = '' and 
+    (
+        month(fecha_nacimiento) = '" . date("m", $dia1) . "' and day(fecha_nacimiento) = '" . date("d", $dia1) . "'
+        or 
+        month(fecha_nacimiento) = '" . date("m", $dia2) . "' and day(fecha_nacimiento) = '" . date("d", $dia2) . "'
+        or 
+        month(fecha_nacimiento) = '" . date("m", $dia3) . "' and day(fecha_nacimiento) = '" . date("d", $dia3) . "'
+        or 
+        month(fecha_nacimiento) = '" . date("m", $dia4) . "' and day(fecha_nacimiento) = '" . date("d", $dia4) . "'
+        or 
+        month(fecha_nacimiento) = '" . date("m", $dia5) . "' and day(fecha_nacimiento) = '" . date("d", $dia5) . "'
+        or 
+        month(fecha_nacimiento) = '" . date("m", $dia6) . "' and day(fecha_nacimiento) = '" . date("d", $dia6) . "'
+        or 
+        month(fecha_nacimiento) = '" . date("m", $dia7) . "' and day(fecha_nacimiento) = '" . date("d", $dia7) . "'
+    )
+    ORDER BY  month(fecha_nacimiento), day(fecha_nacimiento), nombre
+    ";
 
 $r = $conexion->query($sql);
+$has_cumples = false;
 
 while ($f = $r->fetch_array()) {
-	$fecha_cumple = date('Y') . substr($f['fecha_nacimiento'], 4);
+    $has_cumples = true;
+    $fecha_cumple = date('Y') . substr($f['fecha_nacimiento'], 4);
 
-	if ($fecha_cumple >= $fecha) {
-		$dep_name = isset($f['departamento']) ? $f['departamento'] : '';
-		$dep_clean = str_replace(
-			array('á', 'é', 'í', 'ó', 'ú', 'Á', 'É', 'Í', 'Ó', 'Ú'),
-			array('a', 'e', 'i', 'o', 'u', 'a', 'e', 'i', 'o', 'u'),
-			strtolower($dep_name)
-		);
-		$es_informatica = (
-			in_array($f['nitavu'], [1308, 1733, 1739, 2269, 2330, 2933]) ||
-			(strpos($dep_clean, 'informatica') !== false) ||
-			(isset($f['dpto']) && $f['dpto'] == 55)
-		);
+    if ($fecha_cumple >= $fecha) {
+        $dep_name = isset($f['departamento']) ? $f['departamento'] : '';
+        $dep_clean = str_replace(
+            array('á', 'é', 'í', 'ó', 'ú', 'Á', 'É', 'Í', 'Ó', 'Ú'),
+            array('a', 'e', 'i', 'o', 'u', 'a', 'e', 'i', 'o', 'u'),
+            strtolower($dep_name)
+        );
+        $es_informatica = (
+            in_array($f['nitavu'], [1308, 1733, 1739, 2269, 2330, 2933]) ||
+            (strpos($dep_clean, 'informatica') !== false) ||
+            (isset($f['dpto']) && $f['dpto'] == 55)
+        );
 
-		if ($fecha_cumple == $fecha) {
-			if ($es_informatica) {
-				$wc = $wc . '<div id="cumples" class="parpadear cumples-informatica" style="background-color:#E6FCCF;">';
-			} else {
-				$wc = $wc . '<div id="cumples" class="parpadear" style="background-color:#E6FCCF;">';
-			}
-		} else {
-			if ($es_informatica) {
-				$wc = $wc . '<div id="cumples" class="cumples-informatica">';
-			} else {
-				$wc = $wc . '<div id="cumples">';
-			}
-		}
+        $is_today = ($fecha_cumple == $fecha);
+        $row_class = "widget-cumples-row";
+        if ($is_today) {
+            $row_class .= " today";
+        }
+        if ($es_informatica) {
+            $row_class .= " cumples-informatica";
+        }
 
-		if ($es_informatica) {
-			$wc = $wc . '<div class="sparkle-container">
-					<span class="sparkle s1">✨</span>
-					<span class="sparkle s2">✦</span>
-					<span class="sparkle s3">✨</span>
-					<span class="sparkle s4">✦</span>
-				</div>';
-			$wc = $wc . '<div class="code-backdrop">&lt;code&gt;<br>Happy_Bday();<br>&lt;/code&gt;</div>';
-		}
+        $wc = $wc . '<div class="' . $row_class . '">';
 
-		$wc = $wc . "<table border=0  width=100%><tr>";
-		$wc = $wc . '<td width="50px">' . ponerfoto("fotos/" . $f['nitavu'] . ".jpg", 'cumples_img') . '</td>';
-		$wc = $wc . '<td>';
-		//$wc = $wc."<b class='tmediano normal'>".nombre_corto($f['nitavu'],0)."</b> ".nombre_corto($f['nitavu'],1)."<br>";
-		$wc = $wc . "<b style='font-size:10pt;color:black'>" . strtoupper($f['nombre']) . "<br>";
-		//$wc = $wc."<span class='tenue' style='font-size:8pt;'> ".$f['puesto']." de ".$f['departamento']."</span><br class='movil'>";	
-		$wc = $wc . "<span style='font-size:9pt;color:#606060'> " . $f['departamento'] . "</span><br class='movil'><br>";
-		//$wc = $wc."<span class='normal' style='font-size:10pt;'> ".fecha_larga($fecha_cumple)."</span><br>";
-		$wc = $wc . "<span style='font-size:9pt;color:#606060''> " . fecha_larga($fecha_cumple) . "</span><br>";
-		if ($es_informatica) {
-			$wc = $wc . "
-				<table border=0 style='margin-top: 5px; background: transparent;'>
-					<tbody>
-				  		<tr>
-							<td valign='middle' style='padding-right: 8px;'><img class='animated-cake' src='icon/pastel.png' width='45' height='45' /></td>
-							<td>
-								<span style='font-size:9.5pt; color:#ab0033; font-weight: bold;'>¡Muchas FELICIDADES!</span><br>
-								<span style='font-size:8.5pt; color:#333; line-height: 1.3;'>Que pases un excelente día. Te mandamos un fuerte abrazo de parte de tus compañeros y amigos del Departamento de Informática. 💻✨</span><br>
-								<span style='font-size:8.5pt; color:#555; font-weight: bold; font-family: monospace;'>#TeamDevs</span>
-							</td>
-				  		</tr>
-					</tbody>
-			  	</table>";
-		}
-		$wc = $wc . '</td>';
-		$wc = $wc . "</tr></table>";
-		$wc = $wc . '</div>';
-	}
+        if ($es_informatica) {
+            $wc = $wc . '<div class="sparkle-container">
+                    <span class="sparkle s1">✨</span>
+                    <span class="sparkle s2">✦</span>
+                    <span class="sparkle s3">✨</span>
+                    <span class="sparkle s4">✦</span>
+                </div>';
+            $wc = $wc . '<div class="code-backdrop">&lt;code&gt;<br>Happy_Bday();<br>&lt;/code&gt;</div>';
+        }
+
+        $photo_url = "fotos/" . $f['nitavu'] . ".jpg";
+        $photo_html = ponerfoto($photo_url, 'widget-cumples-photo');
+
+        $wc = $wc . "<div class='widget-cumples-row-content'>";
+        $wc = $wc . "<div class='widget-cumples-photo-wrapper'>" . $photo_html . "</div>";
+        $wc = $wc . "<div class='widget-cumples-info'>";
+        $wc = $wc . "<span class='widget-cumples-name'>" . strtoupper($f['nombre']) . "</span>";
+        $wc = $wc . "<span class='widget-cumples-dept'>" . $f['departamento'] . "</span>";
+        $wc = $wc . "<span class='widget-cumples-date'><i class='fa-regular fa-calendar'></i> " . fecha_larga($fecha_cumple) . "</span>";
+
+        if ($es_informatica) {
+            $wc = $wc . "
+                <div class='widget-cumples-congrats'>
+                    <img class='animated-cake' src='icon/pastel.png' width='36' height='36' />
+                    <div class='widget-cumples-congrats-text'>
+                        <span class='widget-cumples-congrats-title'>¡Muchas FELICIDADES!</span>
+                        <span class='widget-cumples-congrats-desc'>Que pases un excelente día. Un fuerte abrazo del equipo de Informática. 💻✨</span>
+                    </div>
+                </div>";
+        }
+        $wc = $wc . '</div>'; // .widget-cumples-info
+        $wc = $wc . '</div>'; // .widget-cumples-row-content
+        $wc = $wc . '</div>'; // .widget-cumples-row
+    }
 }
 
-$wc = $wc . '</div>';
-
-$tmp = "";
-$tmp = $tmp . "<section id='aplicaciones' class='widget'>";
-$tmp = $tmp . "<label>" . $Widget_nombre . "</label>";
-$tmp = $tmp . "<article >";
-//$tmp = $tmp. "<a href=''>";
-$tmp = $tmp . "<table border='0' width=100%><tr><td>";
-$tmp = $tmp . $wc . "<br>";
-$tmp = $tmp . "</td></tr></table></article>";
-
-echo $tmp . "</section>";
+if (!$has_cumples) {
+    $wc = $wc . "<div class='widget-cumples-empty'>";
+    $wc = $wc . "<i class='fa-solid fa-cake-candles'></i>";
+    $wc = $wc . "<span>No hay cumpleaños programados para esta semana.</span>";
+    $wc = $wc . "</div>";
+}
 ?>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    .widget-cumples-section {
+        font-family: 'Inter', sans-serif !important;
+        background: #ffffff !important;
+        border-radius: 16px !important;
+        border: 1.5px solid #bc955c !important;
+        box-shadow: 0 10px 25px -5px rgba(188, 149, 92, 0.05) !important;
+        width: 345px !important;
+        box-sizing: border-box !important;
+        margin: 10px !important;
+        display: inline-block !important;
+        vertical-align: top !important;
+        text-align: left !important;
+        overflow: hidden !important;
+    }
+    .widget-cumples-header {
+        padding: 18px 20px !important;
+        border-bottom: 1.5px solid #f1f5f9 !important;
+        background-color: #ffffff !important;
+    }
+    .widget-cumples-title {
+        font-size: 15px !important;
+        font-weight: 700 !important;
+        color: #0f172a !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+    }
+    .widget-cumples-title i {
+        color: #7c121d !important;
+        font-size: 16px !important;
+    }
+    .widget-cumples-body {
+        padding: 12px 20px !important;
+        box-sizing: border-box !important;
+        width: 100% !important;
+        max-height: 480px !important;
+        overflow-y: auto !important;
+    }
+    
+    /* Birthday Rows */
+    .widget-cumples-row {
+        position: relative !important;
+        padding: 16px 0 !important;
+        border-bottom: 1px solid #f1f5f9 !important;
+        box-sizing: border-box !important;
+        width: 100% !important;
+    }
+    .widget-cumples-row:last-child {
+        border-bottom: none !important;
+    }
+    .widget-cumples-row-content {
+        display: flex !important;
+        align-items: flex-start !important;
+        gap: 14px !important;
+        width: 100% !important;
+    }
+    .widget-cumples-photo-wrapper {
+        flex-shrink: 0 !important;
+    }
+    .widget-cumples-photo {
+        width: 48px !important;
+        height: 48px !important;
+        border-radius: 50% !important;
+        object-fit: cover !important;
+        border: 2px solid #e2e8f0 !important;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05) !important;
+    }
+    .widget-cumples-info {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 4px !important;
+        flex-grow: 1 !important;
+    }
+    .widget-cumples-name {
+        font-size: 13px !important;
+        font-weight: 700 !important;
+        color: #0f172a !important;
+        line-height: 1.3 !important;
+    }
+    .widget-cumples-dept {
+        font-size: 11.5px !important;
+        color: #64748b !important;
+        line-height: 1.3 !important;
+    }
+    .widget-cumples-date {
+        font-size: 11px !important;
+        color: #7c121d !important;
+        font-weight: 600 !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 4px !important;
+        margin-top: 2px !important;
+    }
+    .widget-cumples-date i {
+        font-size: 12px !important;
+    }
+
+    /* Today highlight */
+    .widget-cumples-row.today {
+        background-color: #fdf2f2 !important;
+        border-radius: 8px !important;
+        padding: 12px !important;
+        margin: 6px 0 !important;
+        border-left: 4px solid #7c121d !important;
+        border-bottom: none !important;
+    }
+    .widget-cumples-row.today .widget-cumples-photo {
+        border-color: #7c121d !important;
+    }
+
+    /* Informatica Special styling */
+    .cumples-informatica {
+        position: relative !important;
+        overflow: hidden !important;
+        border: 2.5px solid rgba(0, 180, 216, 0.4) !important;
+        border-radius: 12px !important;
+        background: linear-gradient(135deg, #ffffff 0%, #f0faff 100%) !important;
+        padding: 14px !important;
+        margin: 8px 0 !important;
+        animation: glow-border 4s infinite ease-in-out !important;
+    }
+    .cumples-informatica.parpadear {
+        background: linear-gradient(135deg, #e6fccf 0%, #c4f7b2 100%) !important;
+    }
+    .cumples-informatica::after {
+        content: "" !important;
+        position: absolute !important;
+        top: 0 !important;
+        height: 100% !important;
+        width: 50% !important;
+        background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0) 100%) !important;
+        transform: skewX(-25deg) !important;
+        animation: shimmer-sweep 3.5s infinite ease-in-out !important;
+        pointer-events: none !important;
+    }
+    .widget-cumples-congrats {
+        display: flex !important;
+        align-items: flex-start !important;
+        gap: 8px !important;
+        margin-top: 8px !important;
+        border-top: 1px dashed rgba(0, 180, 216, 0.2) !important;
+        padding-top: 8px !important;
+    }
+    .widget-cumples-congrats-text {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 2px !important;
+    }
+    .widget-cumples-congrats-title {
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        color: #0284c7 !important;
+    }
+    .widget-cumples-congrats-desc {
+        font-size: 10.5px !important;
+        color: #334155 !important;
+        line-height: 1.4 !important;
+    }
+
+    /* Empty state styling */
+    .widget-cumples-empty {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+        gap: 12px !important;
+        padding: 24px 0 !important;
+    }
+    .widget-cumples-empty i {
+        font-size: 28px !important;
+        color: #94a3b8 !important;
+    }
+    .widget-cumples-empty span {
+        font-size: 13px !important;
+        color: #64748b !important;
+    }
+</style>
+
+<section class="widget-cumples-section">
+    <div class="widget-cumples-header">
+        <span class="widget-cumples-title">
+            <i class="fa-solid fa-cake-candles"></i> <?php echo $Widget_nombre; ?>
+        </span>
+    </div>
+    <div class="widget-cumples-body">
+        <?php echo $wc; ?>
+    </div>
+</section>

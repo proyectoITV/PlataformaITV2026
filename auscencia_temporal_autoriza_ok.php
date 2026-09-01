@@ -39,7 +39,7 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE){
 				//mensaje ("Aprobado Correctamente",'auscencia_temporal_autoriza3.php');
 				// header("location:../auscencia_temporal_autoriza3.php");
 				
-				echo "Pase autorizado con exito: ".$id;
+				echo "<div class='autoriza-card-result-ok'><i class='fa-solid fa-circle-check'></i> Pase autorizado con éxito: ".$id."</div>";
 				}
 			else
 				{
@@ -47,7 +47,7 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE){
 				InformaticosGo("Error al aprobar el pase ".$_POST['id'],$msg, $nitavu);
 				//creamos un historial de error extraordinario
 					// header("location:../lib/error.php?er=".$msg);
-					echo "Fallo al utorizadar: ".$id;
+					echo "<div class='autoriza-card-result-error'><i class='fa-solid fa-circle-xmark'></i> Fallo al autorizar: ".$id."</div>";
 				}
 		}	
 	
