@@ -2566,20 +2566,74 @@ function agregarNuevoCargo($idmandante, $idcolonia, $idmunicipio, $fechaman,
     }
 }
 
-function modificarNuevoCargo($id,$idmandante, $idcolonia, $idmunicipio, $fechaman,  
+function modificarNuevoCargo($id, $idmandante, $idcolonia, $idmunicipio, $fechaman,  
             $fechaAdendum, $fechaAdendumFiniquito, $plazoCredito, $costoLotes, $LoteM2, $superficie,
             $supcomercializar, $porMan, $porItavu, $monpagar, $monpagarComer,
-            $totLotesL, $lotesConL, $lotesSinConL, $totLotesS, $lotesConS, $lotesSinConS, $tipo,$lotesareav, $lotesq, $reserva, $observaciones,$lotesXComercialzarL,$lotesXComercialzarS,$lotesdonacion,$porEsc,$amorAnt){
+            $totLotesL, $lotesConL, $lotesSinConL, $totLotesS, $lotesConS, $lotesSinConS, $tipo, $lotesareav, $lotesq, $reserva, $observaciones, $lotesXComercialzarL, $lotesXComercialzarS, $lotesdonacion, $porEsc, $amorAnt) {
+    
     require("config.php");
-    $sql = "UPDATE mandantes_cargos SET  fecha_mandato= '$fechaman', fecha_adendum='$fechaAdendum', fecha_adendumfiniquito='$fechaAdendumFiniquito', plazo_credito='$plazoCredito', costo_lotes='$costoLotes', costo_pormetro='$LoteM2', superficie='$superficie',
-    superficie_comercializar='$supcomercializar', porcentaje_mandante='$porMan', porcentaje_itavu='$porItavu', monto_pagar='$monpagar', monto_pagarcomercializacion='$monpagarComer',
-    total_lotesLotes='$totLotesL', lotes_contratadosLotes='$lotesConL', lotes_sincontratoLotes='$lotesSinConL', total_lotesSuelo='$totLotesS', lotes_contratadosSuelo='$lotesConS', lotes_sincontratoSuelo='$lotesSinConS', area_verde='$lotesareav', equi_urbano='$lotesq',
-    reserva_mandante='$reserva', observaciones='$observaciones', lotes_porcomercializarLotes='$lotesXComercialzarL',lotes_porcomercializarSuelo='$lotesXComercialzarS',donacion='$lotesdonacion',porcentaje_escrituracion='$porEsc',amortizacion_anticipo='$amorAnt'
-    WHERE id= '$id' and idmandante = '$idmandante' and idcolonia = '$idcolonia' and idmunicipio='$idmunicipio'";
-    echo $sql;
-    if ($conexion->query($sql) == TRUE){    
+
+    // 1. Tratamiento para Fecha Mandato
+    if ($fechaman === '' || $fechaman === 'NULL' || is_null($fechaman)) {
+        $fecha_mandato = "NULL"; 
+    } else {
+        $fechaLimpia = trim($fechaman, "'");
+        $fecha_mandato = "'$fechaLimpia'"; 
+    }
+
+    // 2. Tratamiento para Fecha Adendum
+    if ($fechaAdendum === '' || $fechaAdendum === 'NULL' || is_null($fechaAdendum)) {   
+        $fechaSqlAdendum = "NULL";
+    } else {
+        $fechaLimpia = trim($fechaAdendum, "'"); 
+        $fechaSqlAdendum = "'$fechaLimpia'"; 
+    }
+
+    // 3. Tratamiento para Fecha Adendum Finiquito
+    if ($fechaAdendumFiniquito === '' || $fechaAdendumFiniquito === 'NULL' || is_null($fechaAdendumFiniquito)) {   
+        $fechaSqlAdendumFiniquito = "NULL";
+    } else {
+        $fechaLimpia = trim($fechaAdendumFiniquito, "'"); 
+        $fechaSqlAdendumFiniquito = "'$fechaLimpia'"; 
+    }
+
+    // Consulta SQL con la variable correcta: $fechaSqlAdendumFiniquito
+    $sql = "UPDATE mandantes_cargos SET 
+        fecha_mandato = $fecha_mandato, 
+        fecha_adendum = $fechaSqlAdendum, 
+        fecha_adendumfiniquito = $fechaSqlAdendumFiniquito, 
+        plazo_credito = '$plazoCredito', 
+        costo_lotes = '$costoLotes', 
+        costo_pormetro = '$LoteM2', 
+        superficie = '$superficie',
+        superficie_comercializar = '$supcomercializar', 
+        porcentaje_mandante = '$porMan', 
+        porcentaje_itavu = '$porItavu', 
+        monto_pagar = '$monpagar', 
+        monto_pagarcomercializacion = '$monpagarComer',
+        total_lotesLotes = '$totLotesL', 
+        lotes_contratadosLotes = '$lotesConL', 
+        lotes_sincontratoLotes = '$lotesSinConL', 
+        total_lotesSuelo = '$totLotesS', 
+        lotes_contratadosSuelo = '$lotesConS', 
+        lotes_sincontratoSuelo = '$lotesSinConS', 
+        area_verde = '$lotesareav', 
+        equi_urbano = '$lotesq',
+        reserva_mandante = '$reserva', 
+        observaciones = '$observaciones', 
+        lotes_porcomercializarLotes = '$lotesXComercialzarL',
+        lotes_porcomercializarSuelo = '$lotesXComercialzarS',
+        donacion = '$lotesdonacion',
+        porcentaje_escrituracion = '$porEsc',
+        amortizacion_anticipo = '$amorAnt'
+        WHERE id = '$id' AND idmandante = '$idmandante' AND idcolonia = '$idcolonia' AND idmunicipio = '$idmunicipio'";
+
+    //echo $sql;
+    if ($conexion->query($sql) === TRUE) {    
+        echo "Registro actualizado correctamente";
         return TRUE;
-    }else{
+    } else {
+        echo "Error: " . $sql . "<br>" . $conexion->error;
         return FALSE;
     }
 }
@@ -21963,8 +22017,8 @@ function DireccionRealizoUltimoComentario($IdActividad){
 
 function porcentajeActividad($IdActividad){
     require("config.php");
-    $sql = "SELECT avance as porce FROM historial_actividades where IdActividad = ".$IdActividad." ORDER BY Fecha DESC";
-
+    $sql = "SELECT avance as porce FROM historial_actividades where IdActividad = ".$IdActividad." ORDER BY Id DESC limit 1";
+//echo $sql;
     $rc= $conexion -> query($sql);
    
     if($f = $rc -> fetch_array()){
@@ -21976,7 +22030,7 @@ function porcentajeActividad($IdActividad){
 
 function porcentajeActividadDpto($IdActividad){
     require("config.php");
-    $sql = "SELECT avance as porce FROM historial_actividades_dpto where IdActividad = ".$IdActividad." ORDER BY Fecha DESC";
+    $sql = "SELECT avance as porce FROM historial_actividades_dpto where IdActividad = ".$IdActividad." ORDER BY Id DESC limit 1";
 
     $rc= $conexion -> query($sql);
    
@@ -21989,7 +22043,7 @@ function porcentajeActividadDpto($IdActividad){
 
 function porcentajeActividadEmpleado($IdActividad){
     require("config.php");
-    $sql = "SELECT Avance as porce FROM actividades_empleados where IdActividad = ".$IdActividad."";
+    $sql = "SELECT Avance as porce FROM actividades_empleados where IdActividad = ".$IdActividad." ORDER BY Id DESC limit 1";
 //echo $sql;
     $rc= $conexion -> query($sql);
    

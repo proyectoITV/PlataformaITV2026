@@ -47,6 +47,7 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE){
 	';
 	//Obtencion de datos para turnar caso.
 	if(isset($_POST['idCaso']) and isset($_POST['numeroSeleccionado']) and isset($_POST['departamento'])){
+	
 		$idDocumento = $_POST['idCaso'];
 		$compartir = $_POST['compartir'];
 		historia($nitavu,'cp_Turno el caso número: '.$idDocumento);
@@ -72,6 +73,7 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE){
 						VALUES (NULL,'$numDocumento', '$idDocumento', '$doc', '$fecha', '$nitavu', '$midpto','$dptoEnviar','$num','$hora')";
 						if ($conexion->query($sql) == TRUE){ 
 							$sql2 = "UPDATE cp_nuevosdocumentos SET Turnadoa=".$dptoEnviar." WHERE id=".$idDocumento."";
+							echo $sql2;					
 							if ($conexion->query($sql2) == TRUE){ 
 								//$sql3 = "UPDATE cp_controlcorrespondencia SET utilizado=1 WHERE numdocumento='".$num."'";
 								//if ($conexion->query($sql3) == TRUE){
@@ -118,8 +120,10 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE){
 					$midpto = nitavu_dpto($nitavu);
 					$sql = "INSERT INTO cp_historialdocumentos(idInc,idDoc, NumCaso, archivo, fecha, nitavuSube, dptoSube, dptoEnviar, numOficio,hora) 
 						VALUES (NULL,NULL, '$idDocumento', '', '$fecha', '$nitavu', '$midpto','$dptoEnviar','$num','$hora')";
+						ECHO $sql;
 						if ($conexion->query($sql) == TRUE){ 
 							$sql2 = "UPDATE cp_nuevosdocumentos SET Turnadoa=".$dptoEnviar." WHERE id=".$idDocumento."";
+							echo $sql2;
 							if ($conexion->query($sql2) == TRUE){ 
 								//$sql3 = "UPDATE cp_controlcorrespondencia SET utilizado=1 WHERE numdocumento='".$num."'";
 								//if ($conexion->query($sql3) == TRUE){
@@ -178,27 +182,28 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE){
 			//$sql = "INSERT INTO cp_comentarios (CasoId, Comentario,  Nuser, Fecha, Hora) 
             //    VALUES ('".$id."', '".$_POST['comentario']."', '".$nitavu."', '".$fecha."', '".$hora."')";
 			$sql = "INSERT INTO cp_comentarios (CasoId, Comentario,  Nuser, Fecha, Hora) 
-			VALUES ('".$id."', 'COMENTARIO FINAL-".$nuevades."', '".$nitavu."', '".$fecha."', '".$hora."')";
-
+			VALUES ('".$id."', 'COMENTARIO FINAL-".$nuevades."', '".$nitavu."', '".$fecha."', '".$hora."')";		
         if ($conexion->query($sql) == TRUE)
             {
             historia($nitavu,'cp_Comentar caso: '.$id.' Agrego el comentario: '.$nuevades.' ');
             notificarParticipantes($id,$nitavu,'Se agrego un nuevo comentario al caso '.$id.'','Nuevos comentarios al caso '.$id);
             // mensaje('Comentario Guardado correctamente','cp_nuevos_oficios.php?id="'.$_GET['id']);
             unset($_POST['comentario'], $_POST['Comentar']);
-
 			//*	
 				//el estado en 1 nos dice que el caso ha sido terminado 		
 				//registro terminado el caso
 				$sql = "UPDATE cp_nuevosdocumentos SET estado=1, fecha_termino='".$fecha."' WHERE id=".$id."";
 				if ($conexion->query($sql) == TRUE) {
+					
 					$empleados = participantesDelCaso($id);
-					for($i=0; $i < sizeof($empleados); $i++){
-						if($empleados[$i]<>null || $empleados[$i]<>"" ){
-							if($nitavu <> $empleados[$i] ){
+					for($i=0; $i < sizeof($empleados); $i++){						
+						if($empleados[$i]<>null || $empleados[$i]<>"" ){							
+							if($nitavu <> $empleados[$i] ){					
+											
 								notificacion_add($empleados[$i],'Caso finalizado'.$id.'', $fecha,$nitavu,'Buen día. <br> Se le informa que la petición número '.$id.' ha finalizado. <br>De asunto:<b>'.asuntoCaso($id).'</b> <br>Para más información consultar en la aplicación Control Documental.');
-							}
-
+								return mensaje('Se ha guardado la información correctamente. El caso ha sido terminado.','cp_controldocumental.php');
+								}
+						
 						}
 					}
 					return mensaje('Se ha guardado la información correctamente. El caso ha sido terminado.','cp_controldocumental.php');
