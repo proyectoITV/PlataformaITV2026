@@ -17,7 +17,7 @@ if(isset($_POST['fecha2']) and isset($_POST['montoPagado2'])){
     $nitavu = $_POST['nitavu1']; 
 
     $sql = "INSERT INTO mandantes_abonos( idmandante, idcolonia, idmunicipio, periodopago, recuperacion, gastos, montopagar, devols, amortizacion_anticipo, monto_pagado, monto_acumulado, saldo, descuento_nomina, enganche_ahorro, transferencia, pagos_universales, escritura, derechos, pago_derechos, numero_oficio, tipoMov, periodopago2,datos_bancarios)
-    VALUES ('$idmandante', '$idcolonia', '$idmunicipio', '$fecha', '', '','', '','','$montoPagado','$montoAcumulado','$saldo','','','','','','','','$comentario','$idTipoMov','$fecha','$datosbancarios')";
+    VALUES ('$idmandante', '$idcolonia', '$idmunicipio', '$fecha', '0', '0','0', '0','0','$montoPagado','$montoAcumulado','$saldo','0','0','0','0','0','0','0','$comentario','$idTipoMov','$fecha','$datosbancarios')";
     //echo $sql;
     if ($conexion->query($sql) == TRUE){
         echo '<p>Se ha registrado con éxito la información.</p>';
@@ -145,7 +145,7 @@ if(isset($_POST['fecha2']) and isset($_POST['montoPagado2'])){
     $nitavu = $_POST['nitavu1']; 
     $sql = "INSERT INTO mandantes_abonos( idmandante, idcolonia, idmunicipio, periodopago, recuperacion, pgastos, gastos, montopagar, pdevols, devols, pamorAnt, amortizacion_anticipo, monto_pagado, monto_acumulado, saldo, recuperacion_sistema, signo1, descuento_nomina, signo2, enganche_ahorro, signo3, transferencia, signo4, pagos_universales, signo5, escritura, signo6, derechos, signo7, pago_derechos, centavo, numero_oficio, tipoMov, periodopago2, observacionPago, signo8, oxxo,datos_bancarios,signo9, pagootros,pgastosesc, gastosesc,otrosdesc)
     VALUES ('$idmandante', '$idcolonia', '$idmunicipio', '$fecha', '$recuperacion', '$pgastos', '$gastos','$montopagar', '$pdevols','$devols','$pamorAnt', '$amorAnticipo','$montoPagado','$montoAcumulado','$saldo','$sistema', '$signo1', '$desNomina','$signo2','$engancheAhorro','$signo3','$transferencia','$signo4','$pagosUniversales','$signo5','$escritura','$signo6','$derechos','$signo7','$pagoDerechos','$centavo','$comentario','$idTipoMov','$fecha2', '$observacionPago', '$signo8', '$pagooxxo','$datosbancarios','$signo9', '$pagootros','$pgastosesc', '$gastosesc','$otrosdesc')";
-  // echo $sql;
+   // echo $sql;
 
     if ($conexion->query($sql) == TRUE){
         echo '<p>Se ha registrado con éxito la información.</p>';

@@ -135,7 +135,7 @@ if(isset($_GET['reactiva'])){
         }
 
       
-echo $sql;
+//echo $sql;
         $r= $conexion -> query($sql);
         while($f = $r -> fetch_array()) {
             $color = color_catjerarquia($f['IdDireccion']);
