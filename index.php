@@ -131,44 +131,123 @@
 
 <?php
   echo "<div id='app_contenedor' style='background-color: #ccc;'>";
-    echo "<div id='aplicaciones'><center>";	
-      echo "<table width=100%><tr>";
-      echo "<td>";
-      include("widget_salidas.php");
-      echo "</td></tr></table></center>";
-    echo "</div>";
+    include("widget_salidas.php");
+    include("widget_cumples.php");
 
-    echo "<div id='aplicaciones'>";	
-        include("widget_cumples.php");
-    echo "</div>";
+    if (in_array($nitavu, [1733, 1308, 2269, 1739])) {
+        echo "<style>
+            .widget-hdd-section {
+                font-family: 'Inter', sans-serif !important;
+                background: #ffffff !important;
+                border-radius: 16px !important;
+                border: 1.5px solid #bc955c !important;
+                box-shadow: 0 10px 25px -5px rgba(188, 149, 92, 0.05) !important;
+                width: 345px !important;
+                box-sizing: border-box !important;
+                margin: 10px !important;
+                display: inline-block !important;
+                vertical-align: top !important;
+                text-align: left !important;
+                overflow: hidden !important;
+            }
+            .widget-hdd-header {
+                padding: 18px 20px !important;
+                border-bottom: 1.5px solid #f1f5f9 !important;
+                background-color: #ffffff !important;
+            }
+            .widget-hdd-title {
+                font-size: 15px !important;
+                font-weight: 700 !important;
+                color: #0f172a !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 8px !important;
+            }
+            .widget-hdd-title i {
+                color: #7c121d !important;
+                font-size: 16px !important;
+            }
+            .widget-hdd-body {
+                padding: 20px !important;
+                box-sizing: border-box !important;
+                width: 100% !important;
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 12px !important;
+            }
+            .widget-hdd-row {
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                font-size: 13.5px !important;
+                color: #475569 !important;
+            }
+            .widget-hdd-row b {
+                color: #0f172a !important;
+                font-weight: 600 !important;
+            }
+            .widget-hdd-progress-container {
+                margin-top: 6px !important;
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 6px !important;
+            }
+            .widget-hdd-progress-bar {
+                width: 100% !important;
+                background-color: #f1f5f9 !important;
+                border-radius: 9999px !important;
+                overflow: hidden !important;
+                height: 12px !important;
+            }
+            .widget-hdd-progress-fill {
+                height: 100% !important;
+                border-radius: 9999px !important;
+                transition: width 0.5s ease-in-out !important;
+            }
+            .widget-hdd-progress-fill.green {
+                background-color: #22c55e !important;
+            }
+            .widget-hdd-progress-fill.red {
+                background-color: #ef4444 !important;
+            }
+            .widget-hdd-progress-text {
+                font-size: 12px !important;
+                font-weight: 600 !important;
+                color: #64748b !important;
+                text-align: right !important;
+            }
+        </style>";
 
-    echo "<div id='aplicaciones'>";	
-      $total_space_bytes = disk_total_space("/"); // "/" refers to the root directory
-      $free_space_bytes = disk_free_space("/");
-      
-      $total_space_gb = round($total_space_bytes / (1024 * 1024 * 1024), 2);
-      $free_space_gb = round($free_space_bytes / (1024 * 1024 * 1024), 2);
-      $used_space_gb = round($total_space_gb - $free_space_gb, 2);
-      $used_percentage = round(($used_space_gb / $total_space_gb) * 100, 2);
+        $total_space_bytes = disk_total_space("/"); 
+        $free_space_bytes = disk_free_space("/");
+        
+        $total_space_gb = round($total_space_bytes / (1024 * 1024 * 1024), 2);
+        $free_space_gb = round($free_space_bytes / (1024 * 1024 * 1024), 2);
+        $used_space_gb = round($total_space_gb - $free_space_gb, 2);
+        $used_percentage = round(($used_space_gb / $total_space_gb) * 100, 2);
+        $free_percentage = round(100 - $used_percentage, 2);
 
-      echo "<div id='disk_space_info' style='border-radius: 2px; background-color: white; border: 1px #ddd solid; vertical-align: top; overflow: hidden; margin: 10px; border-radius: 4px; -webkit-box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 0.25); -moz-box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 0.25); box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 0.25); width:345px; padding: 15px; display: inline-block; /* To allow it to sit next to other widgets */ text-align: left; '>";
-        echo "<h4 style='color: #4f4f4f; margin-top: 0;'>Capacidad de HDD</h4>";
-        echo "<p style='margin-bottom: 5px;'>Espacio Total: <b>".$total_space_gb." GB</b></p>";
-        echo "<p style='margin-bottom: 5px;'>Espacio Usado: <b>".$used_space_gb." GB</b> (".$used_percentage."%)</p>";
-        echo "<p style='margin-bottom: 15px;'>Espacio Disponible: <b>".$free_space_gb." GB</b> (".(100-$used_percentage)." %) </p>";
-        echo "<div style='width: 100%; background-color: #f3f3f3; border-radius: 5px; overflow: hidden; height: 20px; /* Height of the progress bar */  '>";
-          if ($used_percentage>80) {
-            echo "<div style='width: ".(100-$used_percentage)."%; background-color: red; height: 100%; border-radius: 5px; text-align: center; color: white; line-height: 20px; font-size: 12px; '>";
-              echo "<p style='padding: 1px;'>Depurar</p>";
+        echo "<section class='widget-hdd-section'>";
+          echo "<div class='widget-hdd-header'>";
+            echo "<span class='widget-hdd-title'><i class='fa-solid fa-hard-drive'></i> Capacidad de HDD</span>";
+          echo "</div>";
+          echo "<div class='widget-hdd-body'>";
+            echo "<div class='widget-hdd-row'><span>Espacio Total:</span><b>".$total_space_gb." GB</b></div>";
+            echo "<div class='widget-hdd-row'><span>Espacio Usado:</span><b>".$used_space_gb." GB (".$used_percentage."%)</b></div>";
+            echo "<div class='widget-hdd-row'><span>Espacio Disponible:</span><b>".$free_space_gb." GB (".$free_percentage."%)</b></div>";
+            
+            echo "<div class='widget-hdd-progress-container'>";
+              if ($used_percentage > 80) {
+                echo "<div class='widget-hdd-progress-bar'><div class='widget-hdd-progress-fill red' style='width: ".$free_percentage."%;'></div></div>";
+                echo "<span class='widget-hdd-progress-text' style='color: #ef4444;'>¡Atención! Depurar espacio (".$free_percentage."% Libre)</span>";
+              } else {
+                echo "<div class='widget-hdd-progress-bar'><div class='widget-hdd-progress-fill green' style='width: ".$free_percentage."%;'></div></div>";
+                echo "<span class='widget-hdd-progress-text'>".$free_percentage."% Libre</span>";
+              }
             echo "</div>";
-          } else {
-            echo "<div style='width: ".(100-$used_percentage)."%; background-color: #4CAF50; height: 100%; border-radius: 5px; text-align: center; color: white; line-height: 20px; font-size: 12px; '>";
-            echo "<p style='padding: 1px;'>".(100-$used_percentage)." % Libre</p>";
-            echo "</div>";
-          }
-        echo "</div>";
-      echo "</div>";
-    echo "</div>";
+          echo "</div>";
+        echo "</section>";
+    }
 
     //Mes de octubre - Halloween
     //if (date("m")==10) {

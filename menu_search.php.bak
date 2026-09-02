@@ -9,209 +9,8 @@ if (isset($_POST['busqueda'])){
     $busqueda = "";
 }
 $mode = VarClean($_POST['mode']);
-?>
 
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
-    /* Category Cards Container */
-    #menu_app_contenedor {
-        display: grid !important;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
-        gap: 24px !important;
-        padding: 24px !important;
-        width: 100% !important;
-        box-sizing: border-box !important;
-        background-color: #f8fafc !important; /* Soft warm grey background for contrast */
-        border-radius: 20px !important;
-        margin-top: 10px !important;
-        border: 1px solid #e2e8f0 !important;
-    }
-    
-    #menu_app_contenedor #aplicaciones {
-        background: #ffffff !important;
-        border-radius: 16px !important;
-        border: 1.5px solid #bc955c !important; /* Defined gold border */
-        box-shadow: 0 10px 25px -5px rgba(188, 149, 92, 0.05) !important;
-        padding: 24px !important;
-        margin: 0 !important;
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 12px !important;
-        box-sizing: border-box !important;
-        width: 100% !important;
-        transition: all 0.3s ease !important;
-    }
-    #menu_app_contenedor #aplicaciones:hover {
-        box-shadow: 0 15px 35px -5px rgba(124, 18, 29, 0.1) !important;
-        border-color: #7c121d !important; /* Smooth transition to guinda on hover */
-    }
-
-    /* Category Titles */
-    #menu_app_contenedor #aplicaciones h4 {
-        font-family: 'Inter', sans-serif !important;
-        font-size: 14.5px !important;
-        font-weight: 700 !important;
-        color: #7c121d !important; /* Institutional Guinda */
-        text-align: left !important;
-        margin: 0 0 6px 0 !important;
-        text-transform: uppercase !important;
-        letter-spacing: 0.5px !important;
-        border-bottom: 2px solid #f1f5f9 !important;
-        padding-bottom: 10px !important;
-    }
-
-    /* Application Row Card */
-    #menu_app_contenedor #aplicaciones article {
-        width: 100% !important;
-        margin: 0 !important;
-        padding: 10px 14px !important;
-        background-color: #f8fafc !important;
-        border: 1.5px solid #e2e8f0 !important;
-        border-radius: 10px !important;
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        box-sizing: border-box !important;
-        display: block !important;
-    }
-    #menu_app_contenedor #aplicaciones article:hover {
-        background-color: #ffffff !important;
-        border-color: #7c121d !important;
-        transform: translateY(-2px) !important;
-        box-shadow: 0 4px 12px rgba(124, 18, 29, 0.08) !important;
-    }
-
-    /* Highlighted / Orange Favorite style */
-    #menu_app_contenedor #aplicaciones article[style*="background-color:#ffe0c5"] {
-        background-color: #fff7ed !important;
-        border-color: #fed7aa !important;
-    }
-    #menu_app_contenedor #aplicaciones article[style*="background-color:#ffe0c5"]:hover {
-        background-color: #ffffff !important;
-        border-color: #7c121d !important;
-    }
-
-    /* Layout reset inside article */
-    #menu_app_contenedor #aplicaciones article table {
-        border-collapse: collapse !important;
-        width: 100% !important;
-        margin: 0 !important;
-    }
-    #menu_app_contenedor #aplicaciones article td {
-        padding: 0 !important;
-        vertical-align: middle !important;
-        border: none !important;
-    }
-    #menu_app_contenedor #aplicaciones article td:first-child {
-        width: 36px !important;
-        text-align: center !important;
-    }
-    #menu_app_contenedor #aplicaciones article td:nth-child(2) {
-        text-align: left !important;
-        padding-left: 12px !important;
-    }
-    #menu_app_contenedor #aplicaciones article td:last-child {
-        text-align: right !important;
-        width: 24px !important;
-    }
-
-    /* Icon wrapper and image */
-    .MisApps_backgroundIcon {
-        width: 36px !important;
-        height: 36px !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        border-radius: 8px !important;
-        background-color: #ffffff !important;
-        border: 1px solid #e2e8f0 !important;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.02) !important;
-        margin-right: 12px !important;
-    }
-    .MisApps_Icon {
-        width: 20px !important;
-        height: 20px !important;
-        object-fit: contain !important;
-        transition: transform 0.2s ease !important;
-    }
-    #menu_app_contenedor #aplicaciones article:hover .MisApps_Icon {
-        transform: scale(1.1) !important;
-    }
-
-    /* Text Link and hover */
-    #menu_app_contenedor #aplicaciones article td span {
-        font-family: 'Inter', sans-serif !important;
-        font-size: 13px !important;
-        font-weight: 600 !important;
-        color: #334155 !important;
-    }
-    #menu_app_contenedor #aplicaciones article td span a {
-        color: #334155 !important;
-        text-decoration: none !important;
-        transition: color 0.2s ease !important;
-    }
-    #menu_app_contenedor #aplicaciones article:hover td span a {
-        color: #7c121d !important;
-    }
-
-    /* Favorite Star icon */
-    #menu_app_contenedor #aplicaciones article td img[src*="favorite"] {
-        width: 18px !important;
-        height: 18px !important;
-        opacity: 0.3 !important;
-        transition: all 0.2s ease !important;
-    }
-    #menu_app_contenedor #aplicaciones article td img[src*="favorite"]:hover {
-        opacity: 1 !important;
-        transform: scale(1.15) !important;
-    }
-    #menu_app_contenedor #aplicaciones article td img[src*="favorite1.png"] {
-        opacity: 1 !important;
-    }
-
-    /* Icon Grid Mode (mode 2 & 4) */
-    #app_iconos {
-        display: grid !important;
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)) !important;
-        gap: 16px !important;
-        padding: 20px !important;
-        width: 100% !important;
-        box-sizing: border-box !important;
-    }
-    #app_iconos article {
-        background: #ffffff !important;
-        border: 1px solid rgba(226, 232, 240, 0.8) !important;
-        border-radius: 12px !important;
-        padding: 16px 12px !important;
-        text-align: center !important;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.02) !important;
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        box-sizing: border-box !important;
-        width: 100% !important;
-    }
-    #app_iconos article:hover {
-        transform: translateY(-2px) !important;
-        box-shadow: 0 8px 20px rgba(124, 18, 29, 0.08) !important;
-        border-color: #7c121d !important;
-    }
-    #app_iconos article a {
-        color: #475569 !important;
-        font-family: 'Inter', sans-serif !important;
-        font-size: 11.5px !important;
-        font-weight: 600 !important;
-        text-decoration: none !important;
-        display: block !important;
-    }
-    #app_iconos article a img {
-        width: 36px !important;
-        height: 36px !important;
-        margin-bottom: 8px !important;
-    }
-    #app_iconos article:hover a {
-        color: #7c121d !important;
-    }
-</style>
-
-<?php
+// echo "mode=".$mode;
 // echo "- ".$nitavu." buscando ".$busqueda;
 if ($mode == 0){
     PreferenceUpdate('VistaMenu', $nitavu, '',0);
@@ -234,7 +33,7 @@ order by count(*) DESC
 }
 // echo $sqlCat;
 $rc = $conexion -> query($sqlCat);
-echo "<div id='menu_app_contenedor' >";
+echo "<div id='app_contenedor' >";
 $c=0;
 while($fc = $rc -> fetch_array())
 {
@@ -344,7 +143,7 @@ if ($mode == 1){
     style='color:white;'
     >Buscando ".$busqueda."</td></tr></table></h3>";
     
-    $DivApps.= "<div id='menu_app_contenedor' >";
+    $DivApps.= "<div id='app_contenedor' >";
 
     
     $DivApps.= "<div id='aplicaciones'>";
