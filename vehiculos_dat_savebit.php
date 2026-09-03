@@ -28,12 +28,29 @@ $VInfo = Vehiculo_Info($IdVehiculo);
     $Importe_factura = VarClean($_POST['Importe_factura']);
 
 $mErr="";
-if ($Descripcion==''){
-    $mErr.="Descripcion";
+    $camposRequeridos = array(
+        'Fecha de Solicitud' => $Fecha_solicitud,
+        'Fecha de ejecucion' => $Fecha_ejecucion,
+        'Km programado' => $Km_prog,
+        'Km real' => $Km_real,
+        'Numero de solicitud' => $num_solicitud,
+        'Numero de Factura' => $num_factura,
+        'Costo de mano de obra' => $Costo_mano_obra,
+        'Costo de refaccion' => $Costo_refaccion,
+        'Importe de factura' => $Importe_factura,
+        'Tipo de Servicio' => $clave_tipo_mant,
+        'Proveedor' => $clave_proveedor,
+        'Descripcion' => $Descripcion
+    );
+
+    foreach ($camposRequeridos as $nombreCampo => $valorCampo) {
+        if (trim($valorCampo) === '') {
+            $mErr .= ($mErr !== '' ? ', ' : '') . $nombreCampo;
+        }
 }
 
 if ($mErr<>''){
-    Toast("Debe llenar el campo ".$mErr,2,"");
+        Toast("Faltan campos por llenar: ".$mErr,2,"");
 } else {
 
 

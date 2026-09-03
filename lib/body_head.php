@@ -155,7 +155,6 @@ width: 100%;
 <script src="./lib/js/emoji-picker.min.js"></script>
 <!-- End emoji-picker JavaScript -->
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<!-- <script type="text/javascript" src="./lib/js/jquery.toast.js"></script>
-<link rel="stylesheet" href="./lib/css/jquery.toast.css"> -->
+<link rel="stylesheet" href="./lib/jquery.toast.min.css">
+<script src="./lib/jquery.toast.min.js"></script>
 
