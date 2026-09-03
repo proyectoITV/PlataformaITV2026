@@ -10887,151 +10887,402 @@ else
 { return FALSE;}
 }
 function pase_estado($empleado, $desde, $hasta, $todos){
-require("config.php");
-$tmp = "";
-$tmp = "<div class='normal bold grande'>Mostrando pases de ".fecha_larga($desde)." a ".fecha_larga($hasta)." </div>";
-$tmp = $tmp. "<table border='0' class='tabla'>";
-	$tmp = $tmp. "<tr class='tabla_titulo'>";
-		//echo "<td>ID</td>";
-		$tmp = $tmp. "<td>ID de Pase</td>";
-		$tmp = $tmp. "<td>SOLICITANTE</td>";
-		//$tmp = $tmp. "<td>Solicitado</td>";
-		$tmp = $tmp. "<td>DESCRIPCION</td>";
-		$tmp = $tmp. "<td width='30%'>ESTADO</td>";
-	$tmp = $tmp. "</tr>";
-	if ($todos=="TRUE"){
-			$sql = '
-			select 
-			fecha,
-			nitavu as NEmpleado, dpto,
-			(select nombre from empleados where nitavu=NEmpleado) as Nombre,
-			(select nombre from cat_gerarquia where id=dpto) as Departamento,
+    require("config.php");
+    $tmp = "";
+    
+    $tmp .= "<style>
+        .pase-history-container {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 16px !important;
+            width: 100% !important;
+            font-family: 'Inter', sans-serif !important;
+        }
+        .pase-history-meta {
+            font-size: 13.5px !important;
+            color: #475569 !important;
+            font-weight: 600 !important;
+            margin-bottom: 12px !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+        }
+        .pase-history-meta i {
+            color: #7c121d !important;
+            font-size: 16px !important;
+        }
+        .pase-history-grid {
+            display: grid !important;
+            grid-template-columns: 1fr !important;
+            gap: 20px !important;
+        }
+        @media (min-width: 768px) {
+            .pase-history-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+        }
+        .pase-history-card {
+            background: #ffffff !important;
+            border: 1.5px solid #e2e8f0 !important;
+            border-radius: 12px !important;
+            padding: 18px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 14px !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02) !important;
+            transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            position: relative !important;
+            overflow: hidden !important;
+        }
+        .pase-history-card:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.06) !important;
+            border-color: #7c121d !important;
+        }
+        
+        /* Top Header Row */
+        .pase-card-header {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            border-bottom: 1px solid #f1f5f9 !important;
+            padding-bottom: 10px !important;
+            gap: 12px !important;
+        }
+        .pase-card-id-group {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 2px !important;
+        }
+        .pase-card-id {
+            font-size: 13.5px !important;
+            font-weight: 700 !important;
+            color: #0f172a !important;
+        }
+        .pase-card-date {
+            font-size: 11px !important;
+            color: #64748b !important;
+            font-weight: 500 !important;
+        }
+        
+        /* Requester Info Row */
+        .pase-card-profile {
+            display: flex !important;
+            align-items: center !important;
+            gap: 10px !important;
+        }
+        .pase-card-photo {
+            width: 36px !important;
+            height: 36px !important;
+            border-radius: 50% !important;
+            object-fit: cover !important;
+            border: 1.5px solid #e2e8f0 !important;
+        }
+        .pase-card-user-info {
+            display: flex !important;
+            flex-direction: column !important;
+        }
+        .pase-card-user-name {
+            font-size: 12.5px !important;
+            font-weight: 700 !important;
+            color: #1e293b !important;
+        }
+        .pase-card-user-dpto {
+            font-size: 11px !important;
+            color: #64748b !important;
+            font-weight: 500 !important;
+        }
+        
+        /* Justification text */
+        .pase-card-justification {
+            background-color: #f8fafc !important;
+            border-left: 3px solid #7c121d !important;
+            padding: 8px 10px !important;
+            border-radius: 4px !important;
+            font-size: 11.5px !important;
+            color: #475569 !important;
+            line-height: 1.4 !important;
+        }
+        .pase-card-justification strong {
+            font-weight: 600 !important;
+            color: #0f172a !important;
+        }
+        
+        /* Times Table Grid */
+        .pase-card-times-grid {
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 10px !important;
+            background: #f8fafc !important;
+            padding: 10px 12px !important;
+            border-radius: 8px !important;
+            border: 1px solid #f1f5f9 !important;
+        }
+        .pase-time-item {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 2px !important;
+        }
+        .pase-time-label {
+            font-size: 8.5px !important;
+            font-weight: 700 !important;
+            text-transform: uppercase !important;
+            color: #64748b !important;
+            letter-spacing: 0.3px !important;
+        }
+        .pase-time-value {
+            font-size: 11px !important;
+            font-weight: 600 !important;
+            color: #334155 !important;
+        }
+        
+        /* Badges */
+        .pase-badge {
+            font-size: 9px !important;
+            font-weight: 700 !important;
+            text-transform: uppercase !important;
+            padding: 2.5px 7px !important;
+            border-radius: 4px !important;
+            letter-spacing: 0.3px !important;
+        }
+        .pase-badge.comida { background-color: #fee2e2 !important; color: #ef4444 !important; }
+        .pase-badge.personal { background-color: #fef3c7 !important; color: #d97706 !important; }
+        .pase-badge.oficial { background-color: #e0f2fe !important; color: #0284c7 !important; }
+        .pase-badge.otro { background-color: #f1f5f9 !important; color: #64748b !important; }
+        
+        /* Status List */
+        .pase-card-status-group {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 6px !important;
+            border-top: 1px solid #f1f5f9 !important;
+            padding-top: 10px !important;
+        }
+        .pase-status-row {
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            font-size: 11px !important;
+            color: #475569 !important;
+        }
+        .pase-status-row i {
+            font-size: 12.5px !important;
+            width: 14px !important;
+            text-align: center !important;
+        }
+        .pase-status-row.pending i { color: #d97706 !important; }
+        .pase-status-row.authorized i { color: #16a34a !important; }
+        .pase-status-row.rejected i { color: #dc2626 !important; }
+        .pase-status-row.register i { color: #6366f1 !important; }
+        
+        .pase-status-text {
+            font-weight: 500 !important;
+            line-height: 1.3 !important;
+        }
+        .pase-status-text strong {
+            color: #1e293b !important;
+            font-weight: 600 !important;
+        }
+        .pase-status-badge-inline {
+            font-size: 8.5px !important;
+            font-weight: 700 !important;
+            padding: 1.5px 5px !important;
+            border-radius: 4px !important;
+            margin-left: 6px !important;
+            text-transform: uppercase !important;
+        }
+        .pase-status-badge-inline.retraso {
+            background-color: #fee2e2 !important;
+            color: #ef4444 !important;
+        }
+        .pase-status-badge-inline.a-tiempo {
+            background-color: #dcfce7 !important;
+            color: #16a34a !important;
+        }
+    </style>";
 
-			(select comida from empleados where nitavu=NEmpleado) as TAutorizado,
-			registro_salida as TSalida,
-			registro_entrada as TEntrada,
-			(SELECT SEC_TO_TIME((TIMESTAMPDIFF(MINUTE , TSalida, TEntrada ))*60)) as TUtilizado,
-			(SELECT SEC_TO_TIME((TIMESTAMPDIFF(MINUTE , TUtilizado, TAutorizado ))*60)) as TSobrante,
-			(
-			SELECT IF(TSobrante <0,"RETRASO","")
-			) as Estado,
+    $tmp .= "<div class='pase-history-container'>";
+    $tmp .= "<div class='pase-history-meta'><i class='fa-solid fa-calendar-days'></i><span>Mostrando pases del " . fecha_larga($desde) . " al " . fecha_larga($hasta) . "</span></div>";
+    $tmp .= "<div class='pase-history-grid'>";
 
-
-
-			empleados_salidas_temporal.*
-			from 
-			empleados_salidas_temporal
-			where
-			
-			
-			 fecha>="'.$desde.'" AND fecha<="'.$hasta.'"
-			and registro_salida <> "" and registro_entrada  <>""
-
-
-			ORDER by solicito_fecha, solicito_hora';
-			
-	}
-	else
-	{
-
-			$sql = '
-			select 
-			fecha,
-			nitavu as NEmpleado, dpto,
-			(select nombre from empleados where nitavu=NEmpleado) as Nombre,
-			(select nombre from cat_gerarquia where id=dpto) as Departamento,
-
-			(select comida from empleados where nitavu=NEmpleado) as TAutorizado,
-			registro_salida as TSalida,
-			registro_entrada as TEntrada,
-			(SELECT SEC_TO_TIME((TIMESTAMPDIFF(MINUTE , TSalida, TEntrada ))*60)) as TUtilizado,
-			(SELECT SEC_TO_TIME((TIMESTAMPDIFF(MINUTE , TUtilizado, TAutorizado ))*60)) as TSobrante,
-			(
-			SELECT IF(TSobrante <0,"RETRASO","")
-			) as Estado,
-
-
-
-			empleados_salidas_temporal.*
-			from 
-			empleados_salidas_temporal
-			where 
-			
-		
-			fecha>="'.$desde.'" AND fecha<="'.$hasta.'"
-		
-			and nitavu="'.$empleado.'"
-
-			ORDER by solicito_fecha, solicito_hora';
-	}
-	$r = $conexion -> query($sql);
-	// echo $sql;
-	$aut="";
-	$m="";
-	while($f = $r -> fetch_array())
-	{ // resultado de la busqueda.................
-	if ($f['asunto']=='COMIDA'){
-		if ($f['Estado']=='RETRASO'){
-			$tmp=$tmp. "<tr class='tabla_tr tabla' style='background-color:red;'>";
-		}else {
-			$tmp=$tmp. "<tr class='tabla_tr tabla'>";
-		}
-	} else {
-		$tmp=$tmp. "<tr class='tabla_tr tabla' style='background-color:cyan;'>";
-		// $tmp=$tmp. "<tr class='tabla_tr tabla'>";
-	}
-	
-		//echo "<td>".$f['id']."</td>";
-		$tmp=$tmp. "<td><b style='color:black; font-size:12pt;'>".$f['id']."</b><br>";
-		$tmp=$tmp. "<b>Para: ".fecha_larga($f['fecha'])." para las ".$f['hora_desde']."</b><br>";
-		$tmp=$tmp. "Solicitado: ".fecha_larga($f['fecha']).""."</td>";
-		
-		$tmp=$tmp."<td> <b style='font-size:12pt;'>".$f['Nombre']."</b><br>".$f['Departamento']."</td>";
-
-		$tmp=$tmp."<td>";
-		if ($f['asunto']== 'COMIDA'){
-			$tmp=$tmp."*Tiempo Autorizado:".$f['TAutorizado']."<br>";
-		}
-
-		$tmp=$tmp."Tiempo Salida:".$f['TSalida']."<br>";
-		$tmp=$tmp."Tiempo Entrada:".$f['TEntrada']."<hr>";		
-		$tmp=$tmp."Tiempo Utilizado:".$f['TUtilizado']."<br>";
-		if ($f['asunto']== 'COMIDA'){
-		if ($f['TSobrante']<0){
-			$tmp=$tmp."<b style='background-color:red; color:white;'>Tiempo Sobrante:".$f['TSobrante']."</b><br>";
-		} else {
-			$tmp=$tmp."Tiempo Sobrante:".$f['TSobrante']."<br>";
-		}
-		}
-		if ($f['asunto']== 'COMIDA'){
-			$tmp=$tmp."Estado:".$f['Estado']."<br>";
-		}
-
-
-		$tmp=$tmp."</td>";
-
-
-		$tmp =$tmp."<td>";
-		//$tmp=$tmp. "<td>".$f['solicito_hora']."</td>";
-		
-		if ($f['autorizo_nitavu']==''){
-			$aut="PENDIENTE AUTORIZACION";
-		} else {$aut=$m."<br>Autorizado por ".nitavu_nombre($f['autorizo_nitavu'])." a las ".$f['autorizo_hora']." a ".fecha_larga($f['autorizo_fecha']);}
-
-
-		if ($f['rechazada']=='TRUE'){
-			$aut="<b class='alerta bold'>RECHAZADO </b>por ".nitavu_nombre($f['autorizo_nitavu'])." a las ".$f['autorizo_hora']." de ".fecha_larga($f['autorizo_fecha']);
-			} 
-		else {
-			$m = "<b class='normal bold'>Registro:</b>, Salida ".$f['registro_salida']." y regreso ".$f['registro_entrada'];
-			
-		}
-		
-		$tmp = $tmp. "".$f['asunto'].": ".$f['justificacion']."<br>".$aut."<br>".$m."</td>";
-	$tmp = $tmp. "</tr>";
-	}//while
-$tmp = $tmp. "</table>";
-return $tmp;
+    if ($todos == "TRUE") {
+        $sql = 'select fecha, nitavu as NEmpleado, dpto,
+                (select nombre from empleados where nitavu=NEmpleado) as Nombre,
+                (select nombre from cat_gerarquia where id=dpto) as Departamento,
+                (select comida from empleados where nitavu=NEmpleado) as TAutorizado,
+                registro_salida as TSalida,
+                registro_entrada as TEntrada,
+                (SELECT SEC_TO_TIME((TIMESTAMPDIFF(MINUTE , TSalida, TEntrada ))*60)) as TUtilizado,
+                (SELECT SEC_TO_TIME((TIMESTAMPDIFF(MINUTE , TUtilizado, TAutorizado ))*60)) as TSobrante,
+                (SELECT IF(TSobrante <0,"RETRASO","")) as Estado,
+                empleados_salidas_temporal.*
+                from empleados_salidas_temporal
+                where fecha>="' . $desde . '" AND fecha<="' . $hasta . '"
+                and registro_salida <> "" and registro_entrada <>""
+                ORDER by solicito_fecha, solicito_hora';
+    } else {
+        $sql = 'select fecha, nitavu as NEmpleado, dpto,
+                (select nombre from empleados where nitavu=NEmpleado) as Nombre,
+                (select nombre from cat_gerarquia where id=dpto) as Departamento,
+                (select comida from empleados where nitavu=NEmpleado) as TAutorizado,
+                registro_salida as TSalida,
+                registro_entrada as TEntrada,
+                (SELECT SEC_TO_TIME((TIMESTAMPDIFF(MINUTE , TSalida, TEntrada ))*60)) as TUtilizado,
+                (SELECT SEC_TO_TIME((TIMESTAMPDIFF(MINUTE , TUtilizado, TAutorizado ))*60)) as TSobrante,
+                (SELECT IF(TSobrante <0,"RETRASO","")) as Estado,
+                empleados_salidas_temporal.*
+                from empleados_salidas_temporal
+                where fecha>="' . $desde . '" AND fecha<="' . $hasta . '"
+                and nitavu="' . $empleado . '"
+                ORDER by solicito_fecha, solicito_hora';
+    }
+    
+    $r = $conexion->query($sql);
+    while($f = $r->fetch_array()) {
+        $badgeClass = strtolower($f['asunto']);
+        if (!in_array($badgeClass, ['comida', 'personal', 'oficial'])) {
+            $badgeClass = 'otro';
+        }
+        
+        $tmp .= "<div class='pase-history-card'>";
+        
+        // Header (ID & Date)
+        $tmp .= "<div class='pase-card-header'>";
+        $tmp .= "<div class='pase-card-id-group'>";
+        $tmp .= "<span class='pase-card-id'>Pase #" . $f['id'] . "</span>";
+        $tmp .= "<span class='pase-card-date'>Para el " . fecha_larga($f['fecha']) . " para las " . hora12($f['hora_desde']) . "</span>";
+        $tmp .= "</div>";
+        $tmp .= "<span class='pase-badge " . $badgeClass . "'>" . $f['asunto'] . "</span>";
+        $tmp .= "</div>";
+        
+        // Profile
+        $tmp .= "<div class='pase-card-profile'>";
+        $tmp .= ponerfoto("fotos/" . $f['nitavu'] . ".jpg", 'pase-card-photo');
+        $tmp .= "<div class='pase-card-user-info'>";
+        $tmp .= "<span class='pase-card-user-name'>" . $f['Nombre'] . "</span>";
+        $tmp .= "<span class='pase-card-user-dpto'>" . $f['Departamento'] . "</span>";
+        $tmp .= "</div>";
+        $tmp .= "</div>";
+        
+        // Justification
+        if (!empty($f['justificacion'])) {
+            $tmp .= "<div class='pase-card-justification'>";
+            $tmp .= "<strong>Motivo: </strong>" . htmlspecialchars($f['justificacion'], ENT_QUOTES);
+            $tmp .= "</div>";
+        }
+        
+        // Times Grid
+        $tmp .= "<div class='pase-card-times-grid'>";
+        
+        // Col 1: Autorizado
+        $tmp .= "<div class='pase-time-item'>";
+        $tmp .= "<span class='pase-time-label'>Autorizado</span>";
+        if ($f['asunto'] == 'COMIDA') {
+            $tmp .= "<span class='pase-time-value'>" . (!empty($f['TAutorizado']) ? $f['TAutorizado'] : '01:00:00') . "</span>";
+        } else {
+            // Calculate scheduled difference
+            $duracion = tiempo_restar_hr($f['hora_desde'], $f['hora_hasta']);
+            $tmp .= "<span class='pase-time-value'>" . $duracion . "m</span>";
+        }
+        $tmp .= "</div>";
+        
+        // Col 2: Salida Real
+        $tmp .= "<div class='pase-time-item'>";
+        $tmp .= "<span class='pase-time-label'>Salida</span>";
+        $tmp .= "<span class='pase-time-value'>" . ($f['TSalida'] != '00:00:00' ? hora12($f['TSalida']) : '---') . "</span>";
+        $tmp .= "</div>";
+        
+        // Col 3: Entrada Real
+        $tmp .= "<div class='pase-time-item'>";
+        $tmp .= "<span class='pase-time-label'>Entrada</span>";
+        $tmp .= "<span class='pase-time-value'>" . ($f['TEntrada'] != '00:00:00' ? hora12($f['TEntrada']) : '---') . "</span>";
+        $tmp .= "</div>";
+        
+        // Row 2 of grid (Utilizado & Sobrante)
+        if ($f['TSalida'] != '00:00:00' && $f['TEntrada'] != '00:00:00') {
+            $tmp .= "<div class='pase-time-item'>";
+            $tmp .= "<span class='pase-time-label'>Utilizado</span>";
+            $tmp .= "<span class='pase-time-value'>" . $f['TUtilizado'] . "</span>";
+            $tmp .= "</div>";
+            
+            if ($f['asunto'] == 'COMIDA') {
+                $tmp .= "<div class='pase-time-item'>";
+                $tmp .= "<span class='pase-time-label'>Sobrante</span>";
+                $tmp .= "<span class='pase-time-value'>" . $f['TSobrante'] . "</span>";
+                $tmp .= "</div>";
+                
+                $tmp .= "<div class='pase-time-item'>";
+                $tmp .= "<span class='pase-time-label'>Estado</span>";
+                if ($f['Estado'] == 'RETRASO') {
+                    $tmp .= "<span class='pase-time-value' style='color:#ef4444; font-weight:700;'>Retraso</span>";
+                } else {
+                    $tmp .= "<span class='pase-time-value' style='color:#16a34a; font-weight:700;'>A tiempo</span>";
+                }
+                $tmp .= "</div>";
+            } else {
+                $tmp .= "<div class='pase-time-item' style='grid-column: span 2;'></div>";
+            }
+        }
+        
+        $tmp .= "</div>";
+        
+        // Status Row
+        $tmp .= "<div class='pase-card-status-group'>";
+        
+        // Approval status
+        if ($f['rechazada'] == 'TRUE') {
+            $tmp .= "<div class='pase-status-row rejected'>";
+            $tmp .= "<i class='fa-solid fa-circle-xmark'></i>";
+            $tmp .= "<span class='pase-status-text'>Rechazado por <strong>" . nitavu_nombre($f['autorizo_nitavu']) . "</strong> a las " . $f['autorizo_hora'] . "</span>";
+            $tmp .= "</div>";
+        } else if ($f['autorizo_nitavu'] == '') {
+            $tmp .= "<div class='pase-status-row pending'>";
+            $tmp .= "<i class='fa-solid fa-clock-rotate-left'></i>";
+            $tmp .= "<span class='pase-status-text'>Pendiente de autorización del jefe</span>";
+            $tmp .= "</div>";
+        } else {
+            $tmp .= "<div class='pase-status-row authorized'>";
+            $tmp .= "<i class='fa-solid fa-circle-check'></i>";
+            $tmp .= "<span class='pase-status-text'>Autorizado por <strong>" . nitavu_nombre($f['autorizo_nitavu']) . "</strong> a las " . $f['autorizo_hora'] . "</span>";
+            $tmp .= "</div>";
+        }
+        
+        // Register details
+        if ($f['TSalida'] != '00:00:00') {
+            $tmp .= "<div class='pase-status-row register'>";
+            $tmp .= "<i class='fa-solid fa-clipboard-user'></i>";
+            $tmp .= "<span class='pase-status-text'>";
+            $tmp .= "Salida: <strong>" . hora12($f['TSalida']) . "</strong>";
+            if ($f['TEntrada'] != '00:00:00') {
+                $tmp .= " | Entrada: <strong>" . hora12($f['TEntrada']) . "</strong>";
+                if ($f['asunto'] == 'COMIDA') {
+                    if ($f['Estado'] == 'RETRASO') {
+                        $tmp .= "<span class='pase-status-badge-inline retraso'>Retraso " . $f['TSobrante'] . "</span>";
+                    } else {
+                        $tmp .= "<span class='pase-status-badge-inline a-tiempo'>A tiempo</span>";
+                    }
+                }
+            } else {
+                $tmp .= " | <span style='color:#7c121d; font-weight:600;'>Fuera del Instituto</span>";
+            }
+            $tmp .= "</span>";
+            $tmp .= "</div>";
+        } else if ($f['autorizo_nitavu'] != '' && $f['rechazada'] != 'TRUE') {
+            $tmp .= "<div class='pase-status-row pending'>";
+            $tmp .= "<i class='fa-solid fa-door-open'></i>";
+            $tmp .= "<span class='pase-status-text'>Listo para registrar salida en Caseta</span>";
+            $tmp .= "</div>";
+        }
+        
+        $tmp .= "</div>"; // .pase-card-status-group
+        
+        $tmp .= "</div>"; // .pase-history-card
+    }
+    
+    $tmp .= "</div>"; // .pase-history-grid
+    $tmp .= "</div>"; // .pase-history-container
+    
+    return $tmp;
 }
 function pases_desfase($nitavu_, $desde, $hasta, $detalles){
 require("config.php");

@@ -79,7 +79,7 @@ if ($mErr<>''){
 
     ";
     // echo $sql;
-   //  echo "<script>console.log(".$sql.");</script>";
+    //echo "<script>console.log(".$sql.");</script>";
     // $resultado = $conexion -> query($sql);
     if ($conexion->query($sql) == TRUE) {
        

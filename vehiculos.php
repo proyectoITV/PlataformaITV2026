@@ -875,9 +875,9 @@ function GuardarBit(){
                 // $('#progressbar').show();        
             },
             success: function(data){     
-                         
-                $("#RV").append(data+"");                                    
-                $('#progressbar').hide();
+                    // console.log(data);    
+             $("#RV").append(data+"");                                    
+             $('#progressbar').hide();
             }
             });
 

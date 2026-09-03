@@ -166,34 +166,37 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE)
     $direc=quienEsmiDireccion(nitavu_dpto($nitavu));
 
       
-        
-        if( (nitavu_dpto_nivel($nitavu)!='dir' and  $nivel==5) or titular(nitavu_dpto($nitavu))==$nitavu )
-        {
-           // echo "soy jefe de dpto o tengo nivel 5";
-        //    $sql="Select * from actividades_empleados INNER JOIN cat_gerarquia on actividades_empleados.IdDepartamento=cat_gerarquia.id 
-        //     where actividades_empleados.IdDepartamento=".nitavu_dpto($nitavu) ."  and (cat_gerarquia.nombre like '%".$search ."%' or actividades_empleados.Actividad like '%".$search."%' or actividades_empleados.Tema like'%".$search."%')  and Estatus not in (2,3) 
-        //     order by actividades_empleados.IdDepartamento";
+        //comentado el  18 de agosto 2026 por que no se estaba mostrando la actividad de los empleados 
+        // if( (nitavu_dpto_nivel($nitavu)!='dir' and  $nivel==5) or titular(nitavu_dpto($nitavu))==$nitavu )
+        // {
+        //    // echo "soy jefe de dpto o tengo nivel 5";
+        // //    $sql="Select * from actividades_empleados INNER JOIN cat_gerarquia on actividades_empleados.IdDepartamento=cat_gerarquia.id 
+        // //     where actividades_empleados.IdDepartamento=".nitavu_dpto($nitavu) ."  and (cat_gerarquia.nombre like '%".$search ."%' or actividades_empleados.Actividad like '%".$search."%' or actividades_empleados.Tema like'%".$search."%')  and Estatus not in (2,3) 
+        // //     order by actividades_empleados.IdDepartamento";
 
-            $sql="Select * from actividades_empleados INNER JOIN cat_gerarquia on actividades_empleados.IdDepartamento=cat_gerarquia.id 
-            where( actividades_empleados.IdDepartamento=".nitavu_dpto($nitavu) ." or  actividades_empleados.IdDepartamento in (select id from cat_gerarquia 
-            where dependencia in(".misdptos($nitavu).") ) ) and (cat_gerarquia.nombre like '%".$search ."%' or actividades_empleados.Actividad like '%".$search."%' or actividades_empleados.Tema like'%".$search."%')  and Estatus not in (2,3) 
-            order by actividades_empleados.IdDepartamento, actividades_empleados.nitavu";
+        //     $sql="Select * from actividades_empleados INNER JOIN cat_gerarquia on actividades_empleados.IdDepartamento=cat_gerarquia.id 
+        //     where( actividades_empleados.IdDepartamento=".nitavu_dpto($nitavu) ." or  actividades_empleados.IdDepartamento in (select id from cat_gerarquia 
+        //     where dependencia in(".misdptos($nitavu).") ) ) and (cat_gerarquia.nombre like '%".$search ."%' or actividades_empleados.Actividad like '%".$search."%' or actividades_empleados.Tema like'%".$search."%')  and Estatus not in (2,3) 
+        //     order by actividades_empleados.IdDepartamento, actividades_empleados.nitavu";
 
-        }
-        else if (nitavu_dpto_nivel($nitavu)=='dir' or  $nivel==5){       
-            $sql="Select * from actividades_empleados INNER JOIN cat_gerarquia on actividades_empleados.IdDepartamento=cat_gerarquia.id 
-            where( actividades_empleados.IdDepartamento=".nitavu_dpto($nitavu) ." or  actividades_empleados.IdDepartamento in (select id from cat_gerarquia 
-            where dependencia in(".misdptos($nitavu).") ) ) and (cat_gerarquia.nombre like '%".$search ."%' or actividades_empleados.Actividad like '%".$search."%' or actividades_empleados.Tema like'%".$search."%')  and Estatus not in (2,3) 
-            order by actividades_empleados.IdDepartamento, actividades_empleados.nitavu";
-            //echo "soy direccion o tengo nivel 5";
+        // }
+        // else if (nitavu_dpto_nivel($nitavu)=='dir' or  $nivel==5){       
+        //     $sql="Select * from actividades_empleados INNER JOIN cat_gerarquia on actividades_empleados.IdDepartamento=cat_gerarquia.id 
+        //     where( actividades_empleados.IdDepartamento=".nitavu_dpto($nitavu) ." or  actividades_empleados.IdDepartamento in (select id from cat_gerarquia 
+        //     where dependencia in(".misdptos($nitavu).") ) ) and (cat_gerarquia.nombre like '%".$search ."%' or actividades_empleados.Actividad like '%".$search."%' or actividades_empleados.Tema like'%".$search."%')  and Estatus not in (2,3) 
+        //     order by actividades_empleados.IdDepartamento, actividades_empleados.nitavu";
+        //     //echo "soy direccion o tengo nivel 5";
 
-        }
-        else{
-            //echo "soy un emplado normal";
-            $sql="Select * from  actividades_empleados where nitavu=".$nitavu." and IdDepartamento=".nitavu_dpto($nitavu) ." and Estatus not in (2,3)  ORDER BY IdActividad";
+        // }
+        // else{
+        //     //echo "soy un emplado normal";
+        //     $sql="Select * from  actividades_empleados where nitavu=".$nitavu." and IdDepartamento=".nitavu_dpto($nitavu) ." and Estatus not in (2,3)  ORDER BY IdActividad";
          
-        } 
+        // } 
 
+
+        //liena para mostrar todas las actividades del empleado que se esta logueado y que no esten eliminadas ni archivadas
+        $sql="Select * from  actividades_empleados where nitavu=".$nitavu." and IdDepartamento=".nitavu_dpto($nitavu) ." and Estatus not in (2,3)  ORDER BY IdActividad";
 
         $conexion->set_charset('utf8mb4');
         $r= $conexion -> query($sql);        
