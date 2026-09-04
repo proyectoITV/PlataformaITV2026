@@ -39,6 +39,7 @@
 		<link rel="stylesheet" href="lib/slider.css">
 		<link rel="stylesheet" href="lib/buscar.css">
 		<link rel="stylesheet" href="lib/flow.css">
+		<link rel="stylesheet" href="lib/plataforma_modern.css" />
 		<link rel="shortcut icon" href="4t.ico" />
 
 

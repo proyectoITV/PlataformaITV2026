@@ -70,40 +70,52 @@
 
 <?php
     $dpto = nitavu_dpto($nitavu);
-
     //------------------- Inicia carrusel  -------------------//
     $script = "select * from ControlDeCarrusel where IdEstatus = 0 and archivophp = 'index.php' order by OrdenVisual DESC";
-    $result = $conexion -> query($script);
+    $result = $conexion->query($script);
     $row_cnt = $result->num_rows;
 
-    $secuencia = 0;
-    $carouselindicators = "";
-    $carouselinner = "";
+    if ($row_cnt > 0) {
+      $secuencia = 0;
+      $carouselindicators = "";
+      $carouselinner = "";
 
-    if ($row_cnt>0) {
-      while($valor = $result -> fetch_array()){
-        if ($secuencia == 0) {
-          $carouselindicators = $carouselindicators."<button type='button' data-bs-target='#carouselExampleCaptions' data-bs-slide-to='".$secuencia."' class='active' aria-current='true' aria-label='Slide ".$secuencia."'></button>";
-          $carouselinner = $carouselinner."<div class='carousel-item active'> <img src='".$valor["rutadelarchivo"]."' class='d-block w-100' style='height:450px;'> <div class='carousel-caption d-none d-md-block'> <p style='color: ".$valor["colordetexto"].";'>".strtoupper($valor["comentariopiedefoto"])." | PUBLICADO ".date("d/m/Y H:i:s", strtotime($valor["ultimoacceso"]))."</p></div> </div>";
-        }
-        else {
-          $carouselindicators = $carouselindicators."<button type='button' data-bs-target='#carouselExampleCaptions' data-bs-slide-to='".$secuencia."' aria-label='Slide ".$secuencia."'></button>";
-          $carouselinner = $carouselinner."<div class='carousel-item'> <img src='".$valor["rutadelarchivo"]."' class='d-block w-100' style='height:450px;'> <div class='carousel-caption d-none d-md-block'> <b><p style='color: ".$valor["colordetexto"].";'>".strtoupper($valor["comentariopiedefoto"])." | PUBLICADO ".date("d/m/Y H:i:s", strtotime($valor["ultimoacceso"]))."</p></b></div> </div>";
-        }
-        $secuencia = $secuencia + 1;
+      while ($valor = $result->fetch_array()) {
+        $activeClass = ($secuencia == 0) ? "active" : "";
+        $ariaCurrent = ($secuencia == 0) ? "aria-current='true'" : "";
+        $pieFoto = !empty($valor["comentariopiedefoto"]) ? mb_strtoupper($valor["comentariopiedefoto"], 'UTF-8') : "COMUNICACIÓN INSTITUCIONAL";
+        $fechaPub = date("d/m/Y H:i", strtotime($valor["ultimoacceso"]));
+        $rutaArchivo = htmlspecialchars($valor["rutadelarchivo"]);
+
+        $carouselindicators .= "<button type='button' data-bs-target='#carouselExampleCaptions' data-bs-slide-to='" . $secuencia . "' class='" . $activeClass . "' " . $ariaCurrent . " aria-label='Diapositiva " . ($secuencia + 1) . "'></button>";
+
+        $carouselinner .= "<div class='carousel-item " . $activeClass . "'>";
+        $carouselinner .= "<img src='" . $rutaArchivo . "' class='d-block w-100' alt='" . htmlspecialchars($pieFoto) . "' onerror=\"this.style.display='none'; this.nextElementSibling.style.display='flex';\" />";
+        $carouselinner .= "<div class='cd-carousel-fallback' style='display:none;'>";
+        $carouselinner .= "<i class='fa-solid fa-building-columns cd-carousel-fallback-icon'></i>";
+        $carouselinner .= "<h2 class='cd-carousel-fallback-title'>" . htmlspecialchars($pieFoto) . "</h2>";
+        $carouselinner .= "<p class='cd-carousel-fallback-subtitle'><i class='fa-solid fa-bullhorn' style='color:var(--cd-gold);'></i> Información Destacada Plataforma ITAVU 2026</p>";
+        $carouselinner .= "</div>";
+        $carouselinner .= "<div class='cd-carousel-badge'><i class='fa-regular fa-clock'></i> " . $fechaPub . "</div>";
+        $carouselinner .= "</div>";
+
+        $secuencia++;
       }
-      echo "
-        <div id='ControlDeCarrusel'>
-          <div id='carouselExampleCaptions' class='carousel slide' data-bs-ride='carousel'>
-            <div class='carousel-indicators'>".$carouselindicators."</div>
-            <div class='carousel-inner'> ".$carouselinner."</div>
-            <button class='carousel-control-prev' type='button' data-bs-target='#carouselExampleCaptions' data-bs-slide='prev'> <span class='carousel-control-prev-icon' aria-hidden='true'></span> <span class='visually-hidden'>Previous</span> </button>
-            <button class='carousel-control-next' type='button' data-bs-target='#carouselExampleCaptions' data-bs-slide='next'> <span class='carousel-control-next-icon' aria-hidden='true'></span> <span class='visually-hidden'>Next</span> </button>
-          </div>
-        </div>
-      ";
+
+      echo "<div id='ControlDeCarrusel' class='cd-carousel-container'>";
+      echo "<div id='carouselExampleCaptions' class='carousel slide' data-bs-ride='carousel' data-bs-interval='5000'>";
+      echo "<div class='carousel-indicators'>" . $carouselindicators . "</div>";
+      echo "<div class='carousel-inner'>" . $carouselinner . "</div>";
+      echo "<button class='carousel-control-prev' type='button' data-bs-target='#carouselExampleCaptions' data-bs-slide='prev'>";
+      echo "<span class='carousel-control-prev-icon' aria-hidden='true'></span><span class='visually-hidden'>Anterior</span>";
+      echo "</button>";
+      echo "<button class='carousel-control-next' type='button' data-bs-target='#carouselExampleCaptions' data-bs-slide='next'>";
+      echo "<span class='carousel-control-next-icon' aria-hidden='true'></span><span class='visually-hidden'>Siguiente</span>";
+      echo "</button>";
+      echo "</div>";
+      echo "</div>";
     }
-    //------------------- Termina carrusel  -------------------//
+    //------------------- Termina carrusel  -------------------///
 
 
     //--------------------- Inicia menu ----------------------//

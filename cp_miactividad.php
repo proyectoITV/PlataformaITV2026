@@ -1,714 +1,515 @@
-<?php include ("./lib/body_head.php");
-include ("./lib/body_menu.php"); ?>
 <?php
-$idDepartamento=nitavu_dpto($nitavu);
-$id_aplicacion ="ap66";
-$nivel =aplicacion_nivel($id_aplicacion, $nitavu);
-echo "<br><br>";
-if (sanpedro($id_aplicacion, $nitavu)==TRUE){
-    echo "<div id='AppDetalle'>".app_detalle($id_aplicacion, $nitavu)."</div>";
-    echo "<div id='pesta_elementos'>";
-    $mas="";
-    if (isset($_GET['n'])){
-            $mas="&n=";
-    }
-    if (isset($_GET['pes'])) {
-            if ($_GET['pes']=='finalizados'){
-                echo "<a class='seleccionada' href='?pes=finalizados".$mas."'>Finalizados</a>";	
-                echo "<a class='sinseleccion' href='?pes=creados".$mas."'>Creados por mí</a>";				
-                echo "<a class='sinseleccion' href='?pes=participe".$mas."'>Participé</a>";	
-            }	
-        }
+include("./lib/body_head.php");
+include("./lib/body_menu.php");
 
-    if (isset($_GET['pes'])) {
-            if ($_GET['pes']=='creados'){
-                echo "<a class='sinseleccion' href='?pes=finalizados".$mas."'>Finalizados</a>";	
-                echo "<a class='seleccionada' href='?pes=creados".$mas."'>Creados por mí</a>";				
-                echo "<a class='sinseleccion' href='?pes=participe".$mas."'>Participé</a>";	
-            }	
-        }
+$idDepartamento = nitavu_dpto($nitavu);
+$id_aplicacion = "ap66";
+$nivel = aplicacion_nivel($id_aplicacion, $nitavu);
 
+if (sanpedro($id_aplicacion, $nitavu) == TRUE) {
+	echo "<div id='AppDetalle'>" . app_detalle($id_aplicacion, $nitavu) . "</div>";
 
-    if (isset($_GET['pes'])) {
-            if ($_GET['pes']=='participe'){
-                echo "<a class='sinseleccion' href='?pes=finalizados".$mas."'>Finalizados</a>";	
-                echo "<a class='sinseleccion' href='?pes=creados".$mas."'>Creados por mí</a>";	
-                echo "<a class='seleccionada' href='?pes=participe".$mas."'>Participé</a>";	
-            }	
-        }
+	$pes = isset($_GET['pes']) ? $_GET['pes'] : 'finalizados';
+	$mas = isset($_GET['n']) ? "&n=" : "";
+	?>
 
-    echo "</div>";
+	<div class="cd-wrapper">
+		<!-- Hero Header -->
+		<div class="cd-hero">
+			<div>
+				<h1 class="cd-hero-title">
+					<i class="fa-solid fa-clock-rotate-left"></i> Historial de Actividad
+				</h1>
+				<div class="cd-hero-dept">
+					<i class="fa-solid fa-building-columns"></i> Departamento:
+					<span><?php echo nitavu_dpto_nombre($nitavu); ?></span>
+				</div>
+			</div>
+			<div class="cd-top-links">
+				<a href="cp_controldocumental.php" class="cd-top-link-btn">
+					<i class="fa-solid fa-arrow-left"></i> Volver a Control Documental
+				</a>
+			</div>
+		</div>
 
-     //DIV CASOS FINALIZADOS
-    if (isset($_GET['pes'])) {
-        if ($_GET['pes']=='finalizados'){echo "<div id='pesta1' class='pesta visible' style='width:100%;'>";	}
-        else
-        {echo "<div id='pesta1' class='pesta invisible'>";}
-    }
-   
-	echo "<div style='width:100%;'>";
-    $dpto = nitavu_dpto($nitavu);
-    
-    echo "<div>";
-	echo "<label for='dptos'>Filtrar por departamento (Quien los tiene):";
-	echo "<select id='dptos' name='dptos' onchange='filtroDpto(".$nitavu.",1);'>";
-    echo "<option value='1000'>Todos</option>";
-        //$sql = "SELECT * FROM cat_gerarquia where id in (".misdptos($nitavu).")";
-    $sql = "SELECT * FROM cat_gerarquia";
-        //echo $sql;
-		$r = $conexion -> query($sql);
-		while($f = $r -> fetch_array())
-			{ // resultado de la busqueda.................
-				echo "<option value='".$f['id']."'>".$f['nombre']. "</option>";
+		<!-- Tab Navigation Toolbar -->
+		<div class="cd-toolbar-card">
+			<div class="cd-toolbar-group">
+				<a href="?pes=finalizados<?php echo $mas; ?>" class="cd-btn <?php echo ($pes == 'finalizados') ? 'cd-btn-primary' : 'cd-btn-light'; ?>">
+					<i class="fa-solid fa-circle-check"></i> Finalizados
+				</a>
+				<a href="?pes=creados<?php echo $mas; ?>" class="cd-btn <?php echo ($pes == 'creados') ? 'cd-btn-primary' : 'cd-btn-light'; ?>">
+					<i class="fa-solid fa-user-pen"></i> Creados por Mí
+				</a>
+				<a href="?pes=participe<?php echo $mas; ?>" class="cd-btn <?php echo ($pes == 'participe') ? 'cd-btn-primary' : 'cd-btn-light'; ?>">
+					<i class="fa-solid fa-handshake"></i> Participé
+				</a>
+			</div>
+		</div>
+
+		<?php
+		// =========================================================================
+		// TAB 1: CASOS FINALIZADOS
+		// =========================================================================
+		if ($pes == 'finalizados') {
+			$dpto = nitavu_dpto($nitavu);
+
+			if ($nivel == 1 || soytitular($nitavu) != 'FALSE') {
+				$query = "SELECT DISTINCT * FROM cp_nuevosdocumentos 
+				WHERE (nitavuCaptura = " . $nitavu . " OR idDptoCrea = " . nitavu_dpto($nitavu) . " OR id IN (SELECT numcaso FROM cp_colaboradores WHERE nitavu=" . $nitavu . ") OR id IN (SELECT NumCaso FROM cp_historialdocumentos WHERE nitavuSube=" . $nitavu . ") OR turnadoa = " . nitavu_dpto($nitavu) . " OR id IN (SELECT CasoId FROM cp_comentarios WHERE Nuser = " . $nitavu . "))
+				AND estado = 1 AND YEAR(fecha)>=2023 ORDER BY id DESC";
+			} else {
+				$query = "SELECT DISTINCT * FROM cp_nuevosdocumentos 
+				WHERE (nitavuCaptura = " . $nitavu . " OR id IN (SELECT numcaso FROM cp_colaboradores WHERE nitavu=" . $nitavu . ") OR id IN (SELECT NumCaso FROM cp_historialdocumentos WHERE nitavuSube=" . $nitavu . ") OR id IN (SELECT CasoId FROM cp_comentarios WHERE Nuser = " . $nitavu . "))
+				AND estado = 1 AND YEAR(fecha)>=2023 ORDER BY id DESC";
 			}
-	
-	echo "</select>";
-	echo "</label>";
-	echo "</div>";
-  
-    if ($nivel==1 || soytitular($nitavu)!='FALSE'){
-        $query = "SELECT DISTINCT * FROM cp_nuevosdocumentos 
-    WHERE (nitavuCaptura = ".$nitavu." OR idDptoCrea = ".nitavu_dpto($nitavu)."  OR id IN (SELECT numcaso FROM cp_colaboradores WHERE nitavu=".$nitavu.") OR id IN (SELECT NumCaso FROM cp_historialdocumentos WHERE nitavuSube=".$nitavu.") OR turnadoa = ".nitavu_dpto($nitavu)." OR id IN (SELECT CasoId FROM cp_comentarios WHERE Nuser = ".$nitavu."))
-    AND estado = 1 AND YEAR(fecha)>=2023 ORDER BY id DESC";
-    //AND estado = 1 --ORIGINAL
-    //echo $query;
-    }else{
-        $query = "SELECT DISTINCT * FROM cp_nuevosdocumentos 
-    WHERE (nitavuCaptura = ".$nitavu." OR id IN (SELECT numcaso FROM cp_colaboradores WHERE nitavu=".$nitavu.") OR id IN (SELECT NumCaso FROM cp_historialdocumentos WHERE nitavuSube=".$nitavu.") OR id IN (SELECT CasoId FROM cp_comentarios WHERE Nuser = ".$nitavu."))
-    AND estado = 1 AND YEAR(fecha)>=2023 ORDER BY id DESC";
-    //echo $query;
-    }
 
- //**********DIV PARA IMPRIMIR****************/
- echo "<div id='imprimir1' style='display:none;'>";
- echo "<h1>Casos Finalizados en los que participe:</h1>";
- echo "<table class='tabla'>";
- echo "<tr>";
- echo "<th width='20%' COLSPAN='2'>Fecha</th>"; 
- echo "<th width='70%'>Asunto</th>";
- echo "</tr>";
- $r = $conexion -> query($query);
- while($f = $r -> fetch_array()){
-     
-     
-     echo "<tr>";
-         echo "<td  style='text-align: center;'><span style='background-color:gray; color:white;padding:5px; border-radius:50%;font-size:10pt'>".$f['id']."</span></td>";
-         echo "<td  style='text-align: center;'>".fecha_larga($f['fecha'])."</td>";              
-         echo "<td><div style='width:100%;'><b>".$f['asunto']."</b><span style='font-size:7pt'><br>".$f['descripcion']."</span><br>
-         <span style='color:blue;'>Creado por: ".nombreDepartamento($f['idDptoCrea'])."<br>";
-         
-         if(ultimoColaborador($f['id']) != 'FALSE'){
-             echo '<b style="color: #000; font-size:8pt;">Ultimo colaborador: '.nitavu_nombre(ultimoColaborador($f['id'])).'</b>';
-           }else{
-             if(personasConNivelUno($f['id']) != 'FALSE'){
-               echo '<b style="color: #000; font-size:8pt;">Ultimo colaborador: '.nitavu_nombre(personasConNivelUno($f['id'])).'</b>';
-             }else{
-               if(buscoalTitulardelCaso($f['id']) != 'FALSE'){
-                 echo '<b style="color: #000; font-size:8pt;">Ultimo colaborador: '.nitavu_nombre(buscoalTitulardelCaso($f['id'])).'</b>';
-               }else{
-                 echo '<b style="color: #000; font-size:8pt;">No definido</b>';
-               }
-             }
-           }
-         
-         
-         
-         echo "</span></div>";
-         echo "</td>";
-
-     echo "</tr>";
-    
- } 
- echo "</table>";
- echo "</div>";
-
-
-
-
-    echo "<center>";
-        echo "<h1 style='font-size: 26px;'>Casos Finalizados de mi departamento y en los que participé :</h1>";
-
-        echo "<div id='resconsulta'  style='width:100%;'></div>";
-        echo "<div id='primeraFinalizados' style='width:100%;'>";
-        echo '<a style="position: absolute; top: 50; right: 0;" type="button" id="btn" value="Print" onclick="printDiv(1)" ><img src="icon/pdf.png" style="width:25px;"></a>';
-        echo "<table class='tabla' style='width:100%;'>";
-    $r= $conexion -> query($query); 
-   
-    $r_count = $r -> num_rows;
-
-    if ($r_count>0){ 
-        
-    
-         /// PARA PAGINAR
-        //Comprueba si está seteado el GET de HTTP
-        if (isset($_GET["p"])) {
-            //Si el GET de HTTP SÍ es una string / cadena, procede
-            if (is_string($_GET["p"])) {
-                //Si la string es numérica, define la variable 'pagina'
-                if (is_numeric($_GET["p"])) {
-                    //Si la petición desde la paginación es la página uno
-                    //en lugar de ir a 'index.php?pagina=1' se iría directamente a 'index.php'
-                        $pagina = $_GET["p"];
-                    
-                } else { //Si la string no es numérica, redirige al index (por ejemplo: index.php?pagina=AAA)
-                    header("Location: ./index.php");
-                    die();
-                };
-            };
-        } else { //Si el GET de HTTP no está seteado, lleva a la primera página (puede ser cambiado al index.php o lo que sea)
-            $pagina = 1;
-        };
-        //Define el número 0 para empezar a paginar multiplicado por la cantidad de resultados por página
-        $empezar_desde = ($pagina-1) * $paginacion;
-        //echo $paginacion;
-        // agregamos limite a la consulta
-        $query = $query." LIMIT ".$empezar_desde.", ".$paginacion;
-        //echo $sql;
-        $r = $conexion -> query($query);
-        
-        $paginas = ceil(($r_count / $paginacion));
-        //historia($nitavu,'cp_Busqueda de '.$search);
-        
-        
-        $cont=0;
-        
-        echo "<th width='10%' COLSPAN='2'>Fecha</th>"; 
-        echo "<th width='70%'>Asunto</th>";
-        echo "<th >Ver</th>";
-        
-        while($f = $r -> fetch_array()){
-            
-            
-            echo "<tr>";
-                echo "<td  style='text-align: center;'><span style='background-color:gray; color:white;padding:5px; border-radius:50%;font-size:10pt'>".$f['id']."</span></td>";
-                echo "<td  style='text-align: center;'>".fecha_larga($f['fecha'])."</td>";              
-                echo "<td><div style='width:100%;'><b>".$f['asunto']."</b><span style='font-size:7pt'><br>".$f['descripcion']."</span><br>
-                <span style='color:blue;'>Creado por: ".nombreDepartamento($f['idDptoCrea'])."<br>";
-                
-                if(ultimoColaborador($f['id']) != 'FALSE'){
-                    echo '<b style="color: #000; font-size:8pt;">Ultimo colaborador: '.nitavu_nombre(ultimoColaborador($f['id'])).'</b>';
-                  }else{
-                    if(personasConNivelUno($f['id']) != 'FALSE'){
-                      echo '<b style="color: #000; font-size:8pt;">Ultimo colaborador: '.nitavu_nombre(personasConNivelUno($f['id'])).'</b>';
-                    }else{
-                      if(buscoalTitulardelCaso($f['id']) != 'FALSE'){
-                        echo '<b style="color: #000; font-size:8pt;">Ultimo colaborador: '.nitavu_nombre(buscoalTitulardelCaso($f['id'])).'</b>';
-                      }else{
-                        echo '<b style="color: #000; font-size:8pt;">No definido</b>';
-                      }
-                    }
-                  }
-                
-                
-                
-                echo "</span></div>";
-
-
-                echo "</td>";
-                echo "<td>";
-                echo '<center><div id="cont2">
-                    <div id="contenidos2">
-                        <center>
-                        <div id="colum1">';
-                            echo "<form action='cp_nuevos_oficios.php' method='GET'>";
-                            echo "<input type='hidden' value=".$f['id']." name='id'>";
-                            echo "<input type='hidden' name='txtplus' value=1>";
-                            echo "<input type='hidden' name='pv' value=1>";
-                            echo "<button type='submit' class='Mbtn btn-default' title='Haga clic para ver el historial del archivo' onclick=''> <img src='icon/ojo1.png' style='width:20px; height:20px;'> </button>"; 
-                            echo "</form>";
-                        echo '</div>';
-                    echo '</center>
-                    </div>
-                    </div>
-                    </center>
-                </td>';
-            echo "</tr>";
-           
-        } 
-        echo "</table>";
-        
-    }else{
-        echo "<label>Nada por el momento....</label>";
-    }
-
-
-    if ($r_count >= $paginacion)
-	{
-	echo "<center><div id='barra_paginacion'>";
-		echo "Páginas: ";
-			//Crea un bucle donde $i es igual 1, y hasta que $i sea menor o igual a X, a sumar (1, 2, 3, etc.)
-			//Nota: X = $total_paginas
-			for ($i=1; $i<=$paginas; $i++) {
-				//En el bucle, muestra la paginación
-				if ($pagina==$i){
-					echo "<span id='pagina_actual'>".$pagina."</span>"; //para el CSS span = a pagina actual
-				}else{
-				//	echo "<span id='pagina_proxima'><a href='?search=".$search."&p=".$i."'>".$i."</a></span>"; //CSS span a = link a paginas
-					echo "<span id='pagina_proxima'><a href='?p=".$i."&pes=finalizados'>".$i."</a></span>"; //CSS span a = link a paginas
-				}
+			// Hidden print div
+			echo "<div id='imprimir1' style='display:none;'>";
+			echo "<h1>Casos Finalizados en los que participé:</h1>";
+			echo "<table class='tabla'><tr><th width='20%' COLSPAN='2'>Fecha</th><th width='70%'>Asunto</th></tr>";
+			$r_print = $conexion->query($query);
+			while ($f_p = $r_print->fetch_array()) {
+				echo "<tr><td>" . $f_p['id'] . "</td><td>" . fecha_larga($f_p['fecha']) . "</td><td><b>" . htmlspecialchars($f_p['asunto']) . "</b><br>" . htmlspecialchars($f_p['descripcion']) . "</td></tr>";
 			}
-	echo "</div></center>";
-    }
-    
-    echo "</div>";
-    echo "</div>";
-    echo "</div></center>";
-    
-    //DIV CASOS QUE YO CREE
-    if (isset($_GET['pes'])) {
-        if ($_GET['pes']=='creados'){echo "<div id='pesta1' class='pesta visible' style='width:100%;'>";	}
-        else
-        {echo "<div id='pesta1' class='pesta invisible'>";}
-    }
-	echo "<div style='width:100%;'>";
-	$dpto = nitavu_dpto($nitavu);
-    
-    $pags=20;
-    $query1 = "SELECT DISTINCT * FROM cp_nuevosdocumentos WHERE nitavuCaptura = ".$nitavu." ORDER BY id DESC";
-    //echo $query;
+			echo "</table></div>";
 
-     //**********DIV PARA IMPRIMIR****************/
-     echo "<div id='imprimir2' style='display:none;'>";
-     echo "<h1>Casos que registré:</h1>";
-     echo "<table class='tabla'>";
-     echo "<tr>";
-     echo "<th width='20%' COLSPAN='2'>Fecha</th>"; 
-     echo "<th width='70%'>Asunto</th>";
-     echo "</tr>";
-     $r = $conexion -> query($query1);
-     while($f = $r -> fetch_array()){
-         
-         
-         echo "<tr>";
-             echo "<td  style='text-align: center;'><span style='background-color:gray; color:white;padding:5px; border-radius:50%;font-size:10pt'>".$f['id']."</span></td>";
-             echo "<td  style='text-align: center;'>".fecha_larga($f['fecha'])."</td>";              
-             echo "<td><div style='width:100%;'><b>".$f['asunto']."</b><span style='font-size:7pt'><br>".$f['descripcion']."</span><br>
-             <span style='color:blue;'>Creado por: ".nombreDepartamento($f['idDptoCrea'])."<br>";
-             
-             if(ultimoColaborador($f['id']) != 'FALSE'){
-                 echo '<b style="color: #000; font-size:8pt;">Ultimo colaborador: '.nitavu_nombre(ultimoColaborador($f['id'])).'</b>';
-               }else{
-                 if(personasConNivelUno($f['id']) != 'FALSE'){
-                   echo '<b style="color: #000; font-size:8pt;">Ultimo colaborador: '.nitavu_nombre(personasConNivelUno($f['id'])).'</b>';
-                 }else{
-                   if(buscoalTitulardelCaso($f['id']) != 'FALSE'){
-                     echo '<b style="color: #000; font-size:8pt;">Ultimo colaborador: '.nitavu_nombre(buscoalTitulardelCaso($f['id'])).'</b>';
-                   }else{
-                     echo '<b style="color: #000; font-size:8pt;">No definido</b>';
-                   }
-                 }
-               }
-             
-             
-             
-             echo "</span></div>";
-             echo "</td>";
+			$r = $conexion->query($query);
+			$r_count = $r ? $r->num_rows : 0;
+			?>
 
-         echo "</tr>";
-        
-     } 
-     echo "</table>";
-     echo "</div>";
-    
-    $r1= $conexion -> query($query1); 
-    $r_count1 = $r1 -> num_rows;
+			<!-- Filter toolbar card -->
+			<div class="cd-search-card" style="margin-bottom:20px;">
+				<div class="cd-search-form">
+					<div class="cd-search-label">
+						<i class="fa-solid fa-filter" style="color:var(--cd-gold-dark);"></i>
+						<span>Filtrar por Departamento (Quien los tiene):</span>
+					</div>
+					<div class="cd-input-group">
+						<select id="dptos" name="dptos" class="cd-form-select" onchange="filtroDpto(<?php echo $nitavu; ?>, 1);">
+							<option value="1000" selected>Todos los Departamentos</option>
+							<?php
+							$sqlD = "SELECT * FROM cat_gerarquia ORDER BY nombre";
+							$rD = $conexion->query($sqlD);
+							while ($fD = $rD->fetch_array()) {
+								echo "<option value='" . $fD['id'] . "'>" . htmlspecialchars($fD['nombre']) . "</option>";
+							}
+							?>
+						</select>
+						<button type="button" onclick="printDiv(1)" class="cd-btn cd-btn-gold">
+							<i class="fa-solid fa-file-pdf"></i> Exportar PDF
+						</button>
+					</div>
+				</div>
+			</div>
 
-  
-    if ($r_count1>0){ 
-         /// PARA PAGINAR
-        //Comprueba si está seteado el GET de HTTP
-        if (isset($_GET["p1"])) {
-            //Si el GET de HTTP SÍ es una string / cadena, procede
-            if (is_string($_GET["p1"])) {
-                //Si la string es numérica, define la variable 'pagina'
-                if (is_numeric($_GET["p1"])) {
-                    //Si la petición desde la paginación es la página uno
-                    //en lugar de ir a 'index.php?pagina=1' se iría directamente a 'index.php'
-                        $pagina1 = $_GET["p1"];
-                    
-                } else { //Si la string no es numérica, redirige al index (por ejemplo: index.php?pagina=AAA)
-                    header("Location: ./index.php");
-                    die();
-                };
-            };
-        } else { //Si el GET de HTTP no está seteado, lleva a la primera página (puede ser cambiado al index.php o lo que sea)
-            $pagina1 = 1;
-        };
-        //Define el número 0 para empezar a paginar multiplicado por la cantidad de resultados por página
-       
-      
-        $empezar_desde1 = ($pagina1-1) * $pags;
-        // agregamos limite a la consulta
-        $query1 = $query1." LIMIT ".$empezar_desde1.", ".$pags;
-        //echo $sql;
-        $r1 = $conexion -> query($query1);
-        //echo $r_count1;
-        $paginas1 = ceil(($r_count1 / $pags));
-        //echo $paginas1;
-        //historia($nitavu,'cp_Busqueda de '.$search);
-        
-        
-        $cont=0;
-        echo "<center>";
-        echo "<h1>Casos que registré:</h1>";
-        echo '<a style="position: absolute; top: 50; right: 0;" type="button" id="btn" value="Print" onclick="printDiv(2)" ><img src="icon/pdf.png" style="width:25px;"></a>';
+			<div id="resconsulta" style="width:100%; display:none;"></div>
 
-        echo "<div style='width:100%;'><table class='tabla' style='width:100%;'>";
-        echo "<th width='10%' COLSPAN='2'>Fecha</th>"; 
-        echo "<th width='70%'>Asunto</th>";
-        echo "<th >Ver</th>";
-        
-        while($f1 = $r1 -> fetch_array()){
-            
-            
-            echo "<tr>";
-                echo "<td  style='text-align: center;'><span style='background-color:gray; color:white;padding:5px; border-radius:50%;font-size:10pt'>".$f1['id']."</span></td>";
-                echo "<td  style='text-align: center;'>".fecha_larga($f1['fecha'])."</td>";              
-                echo "<td><div style='width:100%;'><b>".$f1['asunto']."</b><span style='font-size:7pt'><br>".$f1['descripcion']."</span><br>
-                <span style='color:blue;'>Creado por: ".nombreDepartamento($f1['idDptoCrea'])."<br>";
-                
-                if(ultimoColaborador($f1['id']) != 'FALSE'){
-                    echo '<b style="color: #000; font-size:8pt;">Ultimo colaborador: '.nitavu_nombre(ultimoColaborador($f1['id'])).'</b>';
-                  }else{
-                    if(personasConNivelUno($f1['id']) != 'FALSE'){
-                      echo '<b style="color: #000; font-size:8pt;">Ultimo colaborador: '.nitavu_nombre(personasConNivelUno($f1['id'])).'</b>';
-                    }else{
-                      if(buscoalTitulardelCaso($f1['id']) != 'FALSE'){
-                        echo '<b style="color: #000; font-size:8pt;">Ultimo colaborador: '.nitavu_nombre(buscoalTitulardelCaso($f1['id'])).'</b>';
-                      }else{
-                        echo '<b style="color: #000; font-size:8pt;">No definido</b>';
-                      }
-                    }
-                  }
-                
-                
-                
-                echo "</span></div>";
-                echo "</td>";
-                echo "<td>";
-                echo '<center><div id="cont2">
-                    <div id="contenidos2">
-                        <center>
-                        <div id="colum1">';
-                            echo "<form action='cp_nuevos_oficios.php' method='GET'>";
-                            echo "<input type='hidden' value=".$f1['id']." name='id'>";
-                            echo "<input type='hidden' name='txtplus' value=1>";
-                            echo "<input type='hidden' name='pv' value=1>";
-                            echo "<button type='submit' class='Mbtn btn-default' title='Haga clic para ver el historial del archivo' onclick=''> <img src='icon/ojo1.png' style='width:20px; height:20px;'> </button>"; 
-                            echo "</form>";
-                        echo '</div>';
-                    echo '</center>
-                    </div>
-                    </div>
-                    </center>
-                </td>';
-            echo "</tr>";
-           
-        } 
-        echo "</table>";
-        echo "</div></center>";
-    }
+			<div id="primeraFinalizados" class="cd-card-section">
+				<div class="cd-card-header cd-card-header-primary">
+					<h3 class="cd-card-title">
+						<i class="fa-solid fa-circle-check"></i> Casos Finalizados en los que Participé
+					</h3>
+					<span class="cd-badge cd-badge-info"><?php echo $r_count; ?> Registros</span>
+				</div>
+				<div class="cd-card-body" style="padding:0;">
+					<?php if ($r_count > 0): 
+						$pagina = (isset($_GET["p"]) && is_numeric($_GET["p"])) ? (int)$_GET["p"] : 1;
+						$empezar_desde = ($pagina - 1) * $paginacion;
+						$query_lim = $query . " LIMIT " . $empezar_desde . ", " . $paginacion;
+						$r_lim = $conexion->query($query_lim);
+						$paginas = ceil(($r_count / $paginacion));
+					?>
+						<div class="cd-table-container">
+							<table class="cd-table">
+								<thead>
+									<tr>
+										<th style="width:75px; text-align:center;">ID</th>
+										<th style="width:140px;">Fecha</th>
+										<th>Asunto & Descripción</th>
+										<th>Último Colaborador</th>
+										<th style="width:90px; text-align:center;">Acciones</th>
+									</tr>
+								</thead>
+								<tbody>
+									<?php while ($f = $r_lim->fetch_array()): ?>
+										<tr>
+											<td style="text-align:center;"><span class="cd-badge-id"><?php echo $f['id']; ?></span></td>
+											<td><span style="font-weight:600; color:var(--cd-dark);"><?php echo fecha_corta($f['fecha']); ?></span></td>
+											<td>
+												<div>
+													<b style="color:var(--cd-primary); text-transform:uppercase;"><?php echo mb_strtoupper(htmlspecialchars($f['asunto']), 'UTF-8'); ?></b><br>
+													<span style="font-size:0.82rem; color:var(--cd-gray-dark);"><?php echo htmlspecialchars($f['descripcion']); ?></span><br>
+													<span style="font-size:0.78rem; color:var(--cd-gray-mid);"><i class="fa-solid fa-building-user"></i> Creado por: <?php echo nombreDepartamento($f['idDptoCrea']); ?></span>
+												</div>
+											</td>
+											<td>
+												<?php
+												$ultColab = ultimoColaborador($f['id']);
+												if ($ultColab != 'FALSE') {
+													echo "<b style='font-size:0.82rem; color:var(--cd-dark);'>" . htmlspecialchars(nitavu_nombre($ultColab)) . "</b>";
+												} else if (personasConNivelUno($f['id']) != 'FALSE') {
+													echo "<b style='font-size:0.82rem; color:var(--cd-dark);'>" . htmlspecialchars(nitavu_nombre(personasConNivelUno($f['id']))) . "</b>";
+												} else if (buscoalTitulardelCaso($f['id']) != 'FALSE') {
+													echo "<b style='font-size:0.82rem; color:var(--cd-dark);'>" . htmlspecialchars(nitavu_nombre(buscoalTitulardelCaso($f['id']))) . "</b>";
+												} else {
+													echo "<span style='font-size:0.82rem; color:var(--cd-gray-mid);'>No definido</span>";
+												}
+												?>
+											</td>
+											<td style="text-align:center;">
+												<form action="cp_nuevos_oficios.php" method="GET" style="margin:0;">
+													<input type="hidden" value="<?php echo $f['id']; ?>" name="id">
+													<input type="hidden" name="txtplus" value="1">
+													<input type="hidden" name="pv" value="1">
+													<button type="submit" class="cd-icon-btn view" title="Ver Historial del Caso">
+														<i class="fa-solid fa-eye"></i>
+													</button>
+												</form>
+											</td>
+										</tr>
+									<?php endwhile; ?>
+								</tbody>
+							</table>
+						</div>
 
+						<?php if ($r_count >= $paginacion): ?>
+							<div class="cd-pagination">
+								<?php for ($i = 1; $i <= $paginas; $i++): ?>
+									<?php if ($pagina == $i): ?>
+										<span class="active"><?php echo $i; ?></span>
+									<?php else: ?>
+										<a href="?p=<?php echo $i; ?>&pes=finalizados"><?php echo $i; ?></a>
+									<?php endif; ?>
+								<?php endfor; ?>
+							</div>
+						<?php endif; ?>
 
-    if ($r_count1 >= $pags)
-	{
-	echo "<center><div id='barra_paginacion'>";
-		echo "Paginas: ";
-			//Crea un bucle donde $i es igual 1, y hasta que $i sea menor o igual a X, a sumar (1, 2, 3, etc.)
-			//Nota: X = $total_paginas
-			for ($i1=1; $i1<=$paginas1; $i1++) {
-				//En el bucle, muestra la paginación
-				if ($pagina1==$i1){
-					echo "<span id='pagina_actual'>".$pagina1."</span>"; //para el CSS span = a pagina actual
-				}else{
-				//	echo "<span id='pagina_proxima'><a href='?search=".$search."&p=".$i."'>".$i."</a></span>"; //CSS span a = link a paginas
-					echo "<span id='pagina_proxima'><a href='?p1=".$i1."&pes=creados'>".$i1."</a></span>"; //CSS span a = link a paginas
-				}
+					<?php else: ?>
+						<div style="padding:30px; text-align:center; color:var(--cd-gray-mid);">
+							<i class="fa-solid fa-folder-open" style="font-size:2rem; margin-bottom:10px;"></i>
+							<p>No existen registros de casos finalizados en esta sección.</p>
+						</div>
+					<?php endif; ?>
+				</div>
+			</div>
+		<?php } ?>
+
+		<?php
+		// =========================================================================
+		// TAB 2: CASOS CREADOS POR MÍ
+		// =========================================================================
+		if ($pes == 'creados') {
+			$pags = 20;
+			$query1 = "SELECT DISTINCT * FROM cp_nuevosdocumentos WHERE nitavuCaptura = " . $nitavu . " ORDER BY id DESC";
+
+			echo "<div id='imprimir2' style='display:none;'>";
+			echo "<h1>Casos que registré:</h1>";
+			echo "<table class='tabla'><tr><th width='20%' COLSPAN='2'>Fecha</th><th width='70%'>Asunto</th></tr>";
+			$r_print2 = $conexion->query($query1);
+			while ($f_p2 = $r_print2->fetch_array()) {
+				echo "<tr><td>" . $f_p2['id'] . "</td><td>" . fecha_larga($f_p2['fecha']) . "</td><td><b>" . htmlspecialchars($f_p2['asunto']) . "</b><br>" . htmlspecialchars($f_p2['descripcion']) . "</td></tr>";
 			}
-	echo "</div></center>";
-    }
-    
-    echo "</div>";
-    echo "</div>";
+			echo "</table></div>";
 
-    //DIV EN LOS QUE PARTICIPE
-    if (isset($_GET['pes'])) {
-        if ($_GET['pes']=='participe'){echo "<div id='pesta1' class='pesta visible' style='width:100%;'> ";	}
-        else
-        {echo "<div id='pesta1' class='pesta invisible'>";}
-    }
+			$r1 = $conexion->query($query1);
+			$r_count1 = $r1 ? $r1->num_rows : 0;
+			?>
 
-    echo "<div style='width:100%;'>";
-    $dpto = nitavu_dpto($nitavu);
-    
-    echo "<div>";
-	echo "<label for='dptos1'>Filtrar por departamento (Quien los tiene):";
-	echo "<select id='dptos1' name='dptos1' onchange='filtroDpto1(".$nitavu.",2);'>";
-	echo "<option value='1000'>Todos</option>";
-    //$sql = "SELECT * FROM cat_gerarquia where id in (".misdptos($nitavu).")";
-    $sql = "SELECT * FROM cat_gerarquia ORDER BY nombre";
-		$r = $conexion -> query($sql);
-		while($f = $r -> fetch_array())
-			{ // resultado de la busqueda.................
-				echo "<option value='".$f['id']."'>".$f['nombre']. "</option>";
+			<div class="cd-card-section">
+				<div class="cd-card-header cd-card-header-gold">
+					<h3 class="cd-card-title">
+						<i class="fa-solid fa-user-pen" style="color:var(--cd-gold-dark);"></i> Casos Creados por Mí
+					</h3>
+					<div style="display:flex; align-items:center; gap:10px;">
+						<span class="cd-badge cd-badge-warning"><?php echo $r_count1; ?> Registros</span>
+						<button type="button" onclick="printDiv(2)" class="cd-btn cd-btn-gold" style="padding:6px 12px; font-size:0.82rem;">
+							<i class="fa-solid fa-file-pdf"></i> PDF
+						</button>
+					</div>
+				</div>
+				<div class="cd-card-body" style="padding:0;">
+					<?php if ($r_count1 > 0): 
+						$pagina1 = (isset($_GET["p1"]) && is_numeric($_GET["p1"])) ? (int)$_GET["p1"] : 1;
+						$empezar_desde1 = ($pagina1 - 1) * $pags;
+						$query1_lim = $query1 . " LIMIT " . $empezar_desde1 . ", " . $pags;
+						$r1_lim = $conexion->query($query1_lim);
+						$paginas1 = ceil(($r_count1 / $pags));
+					?>
+						<div class="cd-table-container">
+							<table class="cd-table">
+								<thead>
+									<tr>
+										<th style="width:75px; text-align:center;">ID</th>
+										<th style="width:140px;">Fecha</th>
+										<th>Asunto & Descripción</th>
+										<th>Último Colaborador</th>
+										<th style="width:90px; text-align:center;">Acciones</th>
+									</tr>
+								</thead>
+								<tbody>
+									<?php while ($f1 = $r1_lim->fetch_array()): ?>
+										<tr>
+											<td style="text-align:center;"><span class="cd-badge-id"><?php echo $f1['id']; ?></span></td>
+											<td><span style="font-weight:600; color:var(--cd-dark);"><?php echo fecha_corta($f1['fecha']); ?></span></td>
+											<td>
+												<div>
+													<b style="color:var(--cd-primary); text-transform:uppercase;"><?php echo mb_strtoupper(htmlspecialchars($f1['asunto']), 'UTF-8'); ?></b><br>
+													<span style="font-size:0.82rem; color:var(--cd-gray-dark);"><?php echo htmlspecialchars($f1['descripcion']); ?></span><br>
+													<span style="font-size:0.78rem; color:var(--cd-gray-mid);"><i class="fa-solid fa-building-user"></i> Creado por: <?php echo nombreDepartamento($f1['idDptoCrea']); ?></span>
+												</div>
+											</td>
+											<td>
+												<?php
+												$ultColab = ultimoColaborador($f1['id']);
+												if ($ultColab != 'FALSE') {
+													echo "<b style='font-size:0.82rem; color:var(--cd-dark);'>" . htmlspecialchars(nitavu_nombre($ultColab)) . "</b>";
+												} else if (personasConNivelUno($f1['id']) != 'FALSE') {
+													echo "<b style='font-size:0.82rem; color:var(--cd-dark);'>" . htmlspecialchars(nitavu_nombre(personasConNivelUno($f1['id']))) . "</b>";
+												} else if (buscoalTitulardelCaso($f1['id']) != 'FALSE') {
+													echo "<b style='font-size:0.82rem; color:var(--cd-dark);'>" . htmlspecialchars(nitavu_nombre(buscoalTitulardelCaso($f1['id']))) . "</b>";
+												} else {
+													echo "<span style='font-size:0.82rem; color:var(--cd-gray-mid);'>No definido</span>";
+												}
+												?>
+											</td>
+											<td style="text-align:center;">
+												<form action="cp_nuevos_oficios.php" method="GET" style="margin:0;">
+													<input type="hidden" value="<?php echo $f1['id']; ?>" name="id">
+													<input type="hidden" name="txtplus" value="1">
+													<input type="hidden" name="pv" value="1">
+													<button type="submit" class="cd-icon-btn view" title="Ver Historial del Caso">
+														<i class="fa-solid fa-eye"></i>
+													</button>
+												</form>
+											</td>
+										</tr>
+									<?php endwhile; ?>
+								</tbody>
+							</table>
+						</div>
+
+						<?php if ($r_count1 >= $pags): ?>
+							<div class="cd-pagination">
+								<?php for ($i1 = 1; $i1 <= $paginas1; $i1++): ?>
+									<?php if ($pagina1 == $i1): ?>
+										<span class="active"><?php echo $i1; ?></span>
+									<?php else: ?>
+										<a href="?p1=<?php echo $i1; ?>&pes=creados"><?php echo $i1; ?></a>
+									<?php endif; ?>
+								<?php endfor; ?>
+							</div>
+						<?php endif; ?>
+
+					<?php else: ?>
+						<div style="padding:30px; text-align:center; color:var(--cd-gray-mid);">
+							<i class="fa-solid fa-folder-open" style="font-size:2rem; margin-bottom:10px;"></i>
+							<p>No ha registrado documentos aún.</p>
+						</div>
+					<?php endif; ?>
+				</div>
+			</div>
+		<?php } ?>
+
+		<?php
+		// =========================================================================
+		// TAB 3: CASOS EN LOS QUE PARTICIPÉ (ACTIVOS)
+		// =========================================================================
+		if ($pes == 'participe') {
+			$dpto = nitavu_dpto($nitavu);
+
+			if ($nivel == 1 || soytitular($nitavu) != 'FALSE') {
+				$query = "SELECT DISTINCT * FROM cp_nuevosdocumentos 
+				WHERE (nitavuCaptura = " . $nitavu . " OR idDptoCrea = " . nitavu_dpto($nitavu) . " OR id IN (SELECT numcaso FROM cp_colaboradores WHERE nitavu=" . $nitavu . ") OR id IN (SELECT NumCaso FROM cp_historialdocumentos WHERE nitavuSube=" . $nitavu . ") OR turnadoa = " . nitavu_dpto($nitavu) . " OR id IN (SELECT CasoId FROM cp_comentarios WHERE Nuser = " . $nitavu . "))
+				AND estado = 0 ORDER BY id DESC";
+			} else {
+				$query = "SELECT DISTINCT * FROM cp_nuevosdocumentos 
+				WHERE (nitavuCaptura = " . $nitavu . " OR id IN (SELECT numcaso FROM cp_colaboradores WHERE nitavu=" . $nitavu . ") OR id IN (SELECT NumCaso FROM cp_historialdocumentos WHERE nitavuSube=" . $nitavu . ") OR id IN (SELECT CasoId FROM cp_comentarios WHERE Nuser = " . $nitavu . "))
+				AND estado = 0 ORDER BY id DESC";
 			}
-	
-	echo "</select>";
-	echo "</label>";
-	echo "</div>";
-  
-    if ($nivel==1 || soytitular($nitavu)!='FALSE'){
-        $query = "SELECT DISTINCT * FROM cp_nuevosdocumentos 
-    WHERE (nitavuCaptura = ".$nitavu." OR idDptoCrea = ".nitavu_dpto($nitavu)."  OR id IN (SELECT numcaso FROM cp_colaboradores WHERE nitavu=".$nitavu.") OR id IN (SELECT NumCaso FROM cp_historialdocumentos WHERE nitavuSube=".$nitavu.") OR turnadoa = ".nitavu_dpto($nitavu)." OR id IN (SELECT CasoId FROM cp_comentarios WHERE Nuser = ".$nitavu."))
-    AND estado = 0 ORDER BY id DESC";
-  
-    }else{
-        $query = "SELECT DISTINCT * FROM cp_nuevosdocumentos 
-    WHERE (nitavuCaptura = ".$nitavu." OR id IN (SELECT numcaso FROM cp_colaboradores WHERE nitavu=".$nitavu.") OR id IN (SELECT NumCaso FROM cp_historialdocumentos WHERE nitavuSube=".$nitavu.") OR id IN (SELECT CasoId FROM cp_comentarios WHERE Nuser = ".$nitavu."))
-    AND estado = 0 ORDER BY id DESC";
- 
-    }
 
-    
-     //**********DIV PARA IMPRIMIR****************/
-     echo "<div id='imprimir3' style='display:none;'>";
-     echo "<h1>Casos en los que participé que aun no han finalizado:</h1>";
-     echo "<table class='tabla'>";
-     echo "<tr>";
-     echo "<th width='20%' COLSPAN='2'>Fecha</th>"; 
-     echo "<th width='70%'>Asunto</th>";
-     echo "</tr>";
-     $r = $conexion -> query($query);
-     while($f = $r -> fetch_array()){
-         
-         
-         echo "<tr>";
-             echo "<td  style='text-align: center;'><span style='background-color:gray; color:white;padding:5px; border-radius:50%;font-size:10pt'>".$f['id']."</span></td>";
-             echo "<td  style='text-align: center;'>".fecha_larga($f['fecha'])."</td>";              
-             echo "<td><div style='width:100%;'><b>".$f['asunto']."</b><span style='font-size:7pt'><br>".$f['descripcion']."</span><br>
-             <span style='color:blue;'>Creado por: ".nombreDepartamento($f['idDptoCrea'])."<br>";
-             
-             if(ultimoColaborador($f['id']) != 'FALSE'){
-                 echo '<b style="color: #000; font-size:8pt;">Ultimo colaborador: '.nitavu_nombre(ultimoColaborador($f['id'])).'</b>';
-               }else{
-                 if(personasConNivelUno($f['id']) != 'FALSE'){
-                   echo '<b style="color: #000; font-size:8pt;">Ultimo colaborador: '.nitavu_nombre(personasConNivelUno($f['id'])).'</b>';
-                 }else{
-                   if(buscoalTitulardelCaso($f['id']) != 'FALSE'){
-                     echo '<b style="color: #000; font-size:8pt;">Ultimo colaborador: '.nitavu_nombre(buscoalTitulardelCaso($f['id'])).'</b>';
-                   }else{
-                     echo '<b style="color: #000; font-size:8pt;">No definido</b>';
-                   }
-                 }
-               }
-             
-             
-             
-             echo "</span></div>";
-             echo "</td>";
-
-         echo "</tr>";
-        
-     } 
-     echo "</table>";
-     echo "</div>";
-   
-    echo "<center>";
-    echo "<h1>Casos en los que participé que aun no han finalizado:</h1>";
-
-    echo "<div id='resconsulta1'  style='width:100%;'></div>";
-    echo "<div id='primeraParticipe' style='width:100%;'> ";
-    
-    echo '<a style="position: absolute; top: 50; right: 0;" type="button" id="btn" value="Print" onclick="printDiv(3)" ><img src="icon/pdf.png" style="width:25px;"></a>';
-    echo "<table class='tabla' style='width:100%;'>";
-
-
-
-    $r_count = $r -> num_rows;
-
-    
-    if ($r_count>0){ 
-         /// PARA PAGINAR
-        //Comprueba si está seteado el GET de HTTP
-        if (isset($_GET["p"])) {
-            //Si el GET de HTTP SÍ es una string / cadena, procede
-            if (is_string($_GET["p"])) {
-                //Si la string es numérica, define la variable 'pagina'
-                if (is_numeric($_GET["p"])) {
-                    //Si la petición desde la paginación es la página uno
-                    //en lugar de ir a 'index.php?pagina=1' se iría directamente a 'index.php'
-                        $pagina = $_GET["p"];
-                    
-                } else { //Si la string no es numérica, redirige al index (por ejemplo: index.php?pagina=AAA)
-                    header("Location: ./index.php");
-                    die();
-                };
-            };
-        } else { //Si el GET de HTTP no está seteado, lleva a la primera página (puede ser cambiado al index.php o lo que sea)
-            $pagina = 1;
-        };
-        //Define el número 0 para empezar a paginar multiplicado por la cantidad de resultados por página
-        $empezar_desde = ($pagina-1) * $paginacion;
-        //echo $paginacion;
-        // agregamos limite a la consulta
-        $query = $query." LIMIT ".$empezar_desde.", ".$paginacion;
-        //echo $sql;
-        $r = $conexion -> query($query);
-        //echo $paginacion;
-       
-        $paginas = ceil(($r_count / $paginacion));
-        //echo $paginas;
-        //historia($nitavu,'cp_Busqueda de '.$search);
-        
-        
-        $cont=0;
-        
-        echo "<th width='10%' COLSPAN='2'>Fecha</th>"; 
-        echo "<th width='70%'>Asunto</th>";
-        echo "<th >Ver</th>";
-        
-        while($f = $r -> fetch_array()){
-            
-            
-            echo "<tr>";
-                echo "<td  style='text-align: center;'><span style='background-color:gray; color:white;padding:5px; border-radius:50%;font-size:10pt'>".$f['id']."</span></td>";
-                echo "<td  style='text-align: center;'>".fecha_larga($f['fecha'])."</td>";              
-                echo "<td><div style='width:100%;'><b>".$f['asunto']."</b><span style='font-size:7pt'><br>".$f['descripcion']."</span><br>
-                <span style='color:blue;'>Creado por: ".nombreDepartamento($f['idDptoCrea'])."<br>";
-                
-                if(ultimoColaborador($f['id']) != 'FALSE'){
-                    echo '<b style="color: #000; font-size:8pt;">Ultimo colaborador: '.nitavu_nombre(ultimoColaborador($f['id'])).'</b>';
-                  }else{
-                    if(personasConNivelUno($f['id']) != 'FALSE'){
-                      echo '<b style="color: #000; font-size:8pt;">Ultimo colaborador: '.nitavu_nombre(personasConNivelUno($f['id'])).'</b>';
-                    }else{
-                      if(buscoalTitulardelCaso($f['id']) != 'FALSE'){
-                        echo '<b style="color: #000; font-size:8pt;">Ultimo colaborador: '.nitavu_nombre(buscoalTitulardelCaso($f['id'])).'</b>';
-                      }else{
-                        echo '<b style="color: #000; font-size:8pt;">No definido</b>';
-                      }
-                    }
-                  }
-                
-                
-                
-                echo "</span></div>";
-                echo "</td>";
-                echo "<td>";
-                echo '<center><div id="cont2">
-                    <div id="contenidos2">
-                        <center>
-                        <div id="colum1">';
-                            echo "<form action='cp_nuevos_oficios.php' method='GET'>";
-                            echo "<input type='hidden' value=".$f['id']." name='id'>";
-                            echo "<input type='hidden' name='txtplus' value=1>";
-                            echo "<input type='hidden' name='pv' value=1>";
-                            echo "<button type='submit' class='Mbtn btn-default' title='Haga clic para ver el historial del archivo' onclick=''> <img src='icon/ojo1.png' style='width:20px; height:20px;'> </button>"; 
-                            echo "</form>";
-                        echo '</div>';
-                    echo '</center>
-                    </div>
-                    </div>
-                    </center>
-                </td>';
-            echo "</tr>";
-           
-        } 
-        echo "</table>";
-
-       
-    }else{
-        echo "<label>Nada por el momento....</label>";
-    }
-
-
-    if ($r_count >= $paginacion)
-	{
-	echo "<center><div id='barra_paginacion'>";
-		echo "Páginas: ";
-			//Crea un bucle donde $i es igual 1, y hasta que $i sea menor o igual a X, a sumar (1, 2, 3, etc.)
-			//Nota: X = $total_paginas
-			for ($i=1; $i<=$paginas; $i++) {
-				//En el bucle, muestra la paginación
-				if ($pagina==$i){
-					echo "<span id='pagina_actual'>".$pagina."</span>"; //para el CSS span = a pagina actual
-				}else{
-				//	echo "<span id='pagina_proxima'><a href='?search=".$search."&p=".$i."'>".$i."</a></span>"; //CSS span a = link a paginas
-					echo "<span id='pagina_proxima'><a href='?p=".$i."&pes=participe'>".$i."</a></span>"; //CSS span a = link a paginas
-				}
+			echo "<div id='imprimir3' style='display:none;'>";
+			echo "<h1>Casos en los que participé (Activos):</h1>";
+			echo "<table class='tabla'><tr><th width='20%' COLSPAN='2'>Fecha</th><th width='70%'>Asunto</th></tr>";
+			$r_print3 = $conexion->query($query);
+			while ($f_p3 = $r_print3->fetch_array()) {
+				echo "<tr><td>" . $f_p3['id'] . "</td><td>" . fecha_larga($f_p3['fecha']) . "</td><td><b>" . htmlspecialchars($f_p3['asunto']) . "</b><br>" . htmlspecialchars($f_p3['descripcion']) . "</td></tr>";
 			}
-	echo "</div></center>";
-    }
-    
-    echo "</div>";
-    echo "</div>";
-    echo "</div></center>";
+			echo "</table></div>";
+
+			$r = $conexion->query($query);
+			$r_count = $r ? $r->num_rows : 0;
+			?>
+
+			<!-- Filter toolbar card -->
+			<div class="cd-search-card" style="margin-bottom:20px;">
+				<div class="cd-search-form">
+					<div class="cd-search-label">
+						<i class="fa-solid fa-filter" style="color:var(--cd-gold-dark);"></i>
+						<span>Filtrar por Departamento (Quien los tiene):</span>
+					</div>
+					<div class="cd-input-group">
+						<select id="dptos1" name="dptos1" class="cd-form-select" onchange="filtroDpto1(<?php echo $nitavu; ?>, 2);">
+							<option value="1000" selected>Todos los Departamentos</option>
+							<?php
+							$sqlD = "SELECT * FROM cat_gerarquia ORDER BY nombre";
+							$rD = $conexion->query($sqlD);
+							while ($fD = $rD->fetch_array()) {
+								echo "<option value='" . $fD['id'] . "'>" . htmlspecialchars($fD['nombre']) . "</option>";
+							}
+							?>
+						</select>
+						<button type="button" onclick="printDiv(3)" class="cd-btn cd-btn-gold">
+							<i class="fa-solid fa-file-pdf"></i> Exportar PDF
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<div id="resconsulta1" style="width:100%; display:none;"></div>
+
+			<div id="primeraParticipe" class="cd-card-section">
+				<div class="cd-card-header cd-card-header-info">
+					<h3 class="cd-card-title">
+						<i class="fa-solid fa-handshake" style="color:#2563eb;"></i> Casos en los que Participé (Activos)
+					</h3>
+					<span class="cd-badge cd-badge-info"><?php echo $r_count; ?> Registros</span>
+				</div>
+				<div class="cd-card-body" style="padding:0;">
+					<?php if ($r_count > 0): 
+						$pagina = (isset($_GET["p"]) && is_numeric($_GET["p"])) ? (int)$_GET["p"] : 1;
+						$empezar_desde = ($pagina - 1) * $paginacion;
+						$query_lim = $query . " LIMIT " . $empezar_desde . ", " . $paginacion;
+						$r_lim = $conexion->query($query_lim);
+						$paginas = ceil(($r_count / $paginacion));
+					?>
+						<div class="cd-table-container">
+							<table class="cd-table">
+								<thead>
+									<tr>
+										<th style="width:75px; text-align:center;">ID</th>
+										<th style="width:140px;">Fecha</th>
+										<th>Asunto & Descripción</th>
+										<th>Último Colaborador</th>
+										<th style="width:90px; text-align:center;">Acciones</th>
+									</tr>
+								</thead>
+								<tbody>
+									<?php while ($f = $r_lim->fetch_array()): ?>
+										<tr>
+											<td style="text-align:center;"><span class="cd-badge-id"><?php echo $f['id']; ?></span></td>
+											<td><span style="font-weight:600; color:var(--cd-dark);"><?php echo fecha_corta($f['fecha']); ?></span></td>
+											<td>
+												<div>
+													<b style="color:var(--cd-primary); text-transform:uppercase;"><?php echo mb_strtoupper(htmlspecialchars($f['asunto']), 'UTF-8'); ?></b><br>
+													<span style="font-size:0.82rem; color:var(--cd-gray-dark);"><?php echo htmlspecialchars($f['descripcion']); ?></span><br>
+													<span style="font-size:0.78rem; color:var(--cd-gray-mid);"><i class="fa-solid fa-building-user"></i> Creado por: <?php echo nombreDepartamento($f['idDptoCrea']); ?></span>
+												</div>
+											</td>
+											<td>
+												<?php
+												$ultColab = ultimoColaborador($f['id']);
+												if ($ultColab != 'FALSE') {
+													echo "<b style='font-size:0.82rem; color:var(--cd-dark);'>" . htmlspecialchars(nitavu_nombre($ultColab)) . "</b>";
+												} else if (personasConNivelUno($f['id']) != 'FALSE') {
+													echo "<b style='font-size:0.82rem; color:var(--cd-dark);'>" . htmlspecialchars(nitavu_nombre(personasConNivelUno($f['id']))) . "</b>";
+												} else if (buscoalTitulardelCaso($f['id']) != 'FALSE') {
+													echo "<b style='font-size:0.82rem; color:var(--cd-dark);'>" . htmlspecialchars(nitavu_nombre(buscoalTitulardelCaso($f['id']))) . "</b>";
+												} else {
+													echo "<span style='font-size:0.82rem; color:var(--cd-gray-mid);'>No definido</span>";
+												}
+												?>
+											</td>
+											<td style="text-align:center;">
+												<form action="cp_nuevos_oficios.php" method="GET" style="margin:0;">
+													<input type="hidden" value="<?php echo $f['id']; ?>" name="id">
+													<input type="hidden" name="txtplus" value="1">
+													<input type="hidden" name="pv" value="1">
+													<button type="submit" class="cd-icon-btn view" title="Ver Historial del Caso">
+														<i class="fa-solid fa-eye"></i>
+													</button>
+												</form>
+											</td>
+										</tr>
+									<?php endwhile; ?>
+								</tbody>
+							</table>
+						</div>
+
+						<?php if ($r_count >= $paginacion): ?>
+							<div class="cd-pagination">
+								<?php for ($i = 1; $i <= $paginas; $i++): ?>
+									<?php if ($pagina == $i): ?>
+										<span class="active"><?php echo $i; ?></span>
+									<?php else: ?>
+										<a href="?p=<?php echo $i; ?>&pes=participe"><?php echo $i; ?></a>
+									<?php endif; ?>
+								<?php endfor; ?>
+							</div>
+						<?php endif; ?>
+
+					<?php else: ?>
+						<div style="padding:30px; text-align:center; color:var(--cd-gray-mid);">
+							<i class="fa-solid fa-folder-open" style="font-size:2rem; margin-bottom:10px;"></i>
+							<p>No participa en casos activos actualmente.</p>
+						</div>
+					<?php endif; ?>
+				</div>
+			</div>
+		<?php } ?>
+	</div>
+
+	<script>
+		function filtroDpto(nitavu, caso) {
+			var dpto = $("#dptos option:selected").val();
+			if (dpto == 1000) {
+				$("#resconsulta").css({ 'display': 'none' });
+				$("#primeraFinalizados").css({ 'display': 'block' });
+			} else {
+				$.ajax({
+					url: "cp_consultapordpto.php",
+					type: "get",
+					data: { dpto: dpto, nitavu: nitavu, caso: caso },
+					success: function (data) {
+						$("#primeraFinalizados").css({ 'display': 'none' });
+						$('#resconsulta').html(data + "\n").css({ 'display': 'block' });
+					}
+				});
+			}
+		}
+
+		function filtroDpto1(nitavu, caso) {
+			var dpto = $("#dptos1 option:selected").val();
+			if (dpto == 1000) {
+				$("#resconsulta1").css({ 'display': 'none' });
+				$("#primeraParticipe").css({ 'display': 'block' });
+			} else {
+				$.ajax({
+					url: "cp_consultapordpto.php",
+					type: "get",
+					data: { dpto: dpto, nitavu: nitavu, caso: caso },
+					success: function (data) {
+						$("#primeraParticipe").css({ 'display': 'none' });
+						$('#resconsulta1').html(data + "\n").css({ 'display': 'block' });
+					}
+				});
+			}
+		}
+
+		function printDiv(id) {
+			var divToPrint = document.getElementById('imprimir' + id);
+			var newWin = window.open('', 'Print-Window');
+			newWin.document.open();
+			newWin.document.write('<html><body onload="window.print()">' + divToPrint.innerHTML + '</body></html>');
+			newWin.document.close();
+			setTimeout(function () { newWin.close(); }, 10);
+		}
+	</script>
+
+	<br><br>
+	<?php
+	include("./lib/body_footer.php");
+} else {
+	mensaje("ERROR: no tiene acceso a esta aplicacion", './index.php?home=');
 }
 ?>
-<script>
-    
-function filtroDpto(nitavu,caso){
-    var dpto = $("#dptos option:selected").val();
-    if(dpto == 1000){
-        $("#resconsulta").css({'display':'none',});
-        $("#primeraFinalizados").css({'display':'inline-block',});
-    }else{
-        $("#preloader").css({'display':'inline-block',});
-        $.ajax({
-            url: "cp_consultapordpto.php",
-            type: "get",
-            data: {dpto: dpto, nitavu:nitavu, caso: caso},
-            success: function(data){
-                $("#preloader").css({'display':'none',});
-                $("#primeraFinalizados").css({'display':'none',});
-                $('#resconsulta').html(data+"\n");      
-                $("#resconsulta").css({'display':'inline-block',});         
-            }
-        });
-
-    }
-}
-
-function filtroDpto1(nitavu,caso){
-    var dpto = $("#dptos1 option:selected").val();
-    if(dpto == 1000){
-        $("#resconsulta1").css({'display':'none',});
-        $("#primeraParticipe").css({'display':'inline-block',});
-    }else{
-        $("#preloader").css({'display':'inline-block',});
-        $.ajax({
-            url: "cp_consultapordpto.php",
-            type: "get",
-            data: {dpto: dpto, nitavu:nitavu, caso: caso},
-            success: function(data){
-                $("#preloader").css({'display':'none',});
-                $("#primeraParticipe").css({'display':'none',});
-                
-                $('#resconsulta1').html(data+"\n");     
-                $("#resconsulta1").css({'display':'inline-block',});      
-            }
-        });
-
-    }
-}
-
-function printDiv(id) 
-{
-
-  var divToPrint=document.getElementById('imprimir'+id);
-
-  var newWin=window.open('','Print-Window');
-
-  newWin.document.open();
-
-  newWin.document.write('<html><body onload="window.print()">'+divToPrint.innerHTML+'</body></html>');
-
-  newWin.document.close();
-
-  setTimeout(function(){newWin.close();},10);
-
-}
-</script>
-
-<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-<?php include ("./lib/body_footer.php"); ?>
