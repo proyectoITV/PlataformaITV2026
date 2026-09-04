@@ -6,8 +6,7 @@
 
 <script>
     function CargaReporte(Post,id_rep){
-        if (Post=1){
-            
+        if (Post == 1){
             var1_str = $('#var1_str').val();
             var2_str = $('#var2_str').val();
             var3_str = $('#var3_str').val();
@@ -22,7 +21,6 @@
                             var3_str:var3_str,
                             id_rep:id_rep,
                             Post:Post
-                            
                         },
                         success: function(data) {
                             $('#DivReporte').html(data);
@@ -37,12 +35,10 @@
                     $.ajax({
                         url: 'r_data.php',
                         type: 'post',
-                        data: {                    
+                        data: {
                             id_rep:id_rep,
                             Post:Post
-                            
                         },
-                        
                         success: function(data) {
                             console.log("Respuesta del servidor (data):", data);
                             $('#DivReporte').html(data);
@@ -155,8 +151,7 @@ $ClaseDiv  = "ContenedorDeReporte"; $ClaseTabla = "";
                 }
 
 
-                echo "<br><br><buttom 'Preparar Reporte' class=' btn btn-success' name='btnReporte' onclick='CargaReporte(1,".$id_rep.");'>Preparar Reporte<buttom>";
-                
+                echo "<br><br><button type='button' class='btn btn-success' name='btnReporte' onclick='CargaReporte(1,".$id_rep.");'>Preparar Reporte</button>";
 
                 echo "</form>";
 
@@ -186,9 +181,9 @@ $ClaseDiv  = "ContenedorDeReporte"; $ClaseTabla = "";
 
 
             if ($Parametros == ''){
-                historia_rintera($nitavu, "Reporte", "No encontro informacion del reporte ".$id_rep."");
+               // historia_rintera($nitavu, "Reporte", "No encontro informacion del reporte ".$id_rep."");
             } else {
-                historia_rintera($nitavu, "Reporte", "No encontro informacion del reporte ".$id_rep." con los parametros: ".$Parametros);
+                //historia_rintera($nitavu, "Reporte", "No encontro informacion del reporte ".$id_rep." con los parametros: ".$Parametros);
             }
         }
         

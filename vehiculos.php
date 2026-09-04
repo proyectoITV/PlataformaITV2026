@@ -828,6 +828,54 @@ function ActualizaFoto(){
 
 
 function GuardarBit(){		            
+    var camposRequeridos = [
+        {id: 'Fecha_solicitud', nombre: 'Fecha de Solicitud'},
+        {id: 'Fecha_ejecucion', nombre: 'Fecha de ejecucion'},
+        {id: 'Km_prog', nombre: 'Km programado'},
+        {id: 'Km_real', nombre: 'Km real'},
+        {id: 'num_solicitud', nombre: 'Numero de solicitud'},
+        {id: 'num_factura', nombre: 'Numero de Factura'},
+        {id: 'Costo_mano_obra', nombre: 'Costo de mano de obra'},
+        {id: 'Costo_refaccion', nombre: 'Costo de refaccion'},
+        {id: 'Importe_factura', nombre: 'Importe de factura'},
+        {id: 'clave_tipo_mant', nombre: 'Tipo de Servicio'},
+        {id: 'clave_proveedor', nombre: 'Proveedor'},
+        {id: 'Descripcion', nombre: 'Descripcion'}
+    ];
+    var camposFaltantes = [];
+
+    camposRequeridos.forEach(function(campo){
+        var elemento = document.getElementById(campo.id);
+        if (!elemento || elemento.value.trim() === '') {
+            camposFaltantes.push(campo.nombre);
+            if (elemento) {
+                $(elemento).addClass('is-invalid');
+            }
+        } else {
+            $(elemento).removeClass('is-invalid');
+        }
+    });
+
+    if (camposFaltantes.length > 0) {
+        $.toast({
+            heading: 'Campos incompletos',
+            text: camposFaltantes,
+            showHideTransition: 'slide',
+            icon: 'warning',
+            position: 'top-center',
+            allowToastClose: true,
+            hideAfter: 6000
+        });
+        var primerCampo = document.getElementById(camposRequeridos.find(function(campo){
+            var elemento = document.getElementById(campo.id);
+            return !elemento || elemento.value.trim() === '';
+        }).id);
+        if (primerCampo) {
+            primerCampo.focus();
+        }
+        return false;
+    }
+
     IdVehiculo = "<?php if (isset($IdVehiculo)) {echo $IdVehiculo;} else {}?>";            
     VTipo = $('#VTipo').val();
     Clave_servicio = $('#Clave_servicio').val();

@@ -744,7 +744,7 @@ $conexion->set_charset('utf8mb4');
         echo "<tr>";        
         echo "<td><label style='font-size: 12; '>Informe de gobierno</label></td>";
         echo "<td><select id='informegob' name='informegob' class='form-select' aria-label='Default select example'  style='width: 130px; font-size: 12;'>
-                <option value=1>1</option>
+                <option value=5>5</option>
                 </select></td>";
         echo "</tr>";
         /* echo "<tr>";
