@@ -113,6 +113,36 @@ include("body_footer_acuerdo.php");
 </div>
 
 
+<script>
+// Navegación con la tecla ENTER entre campos de formulario (salvo textareas y submit)
+document.addEventListener('keydown', function(e) {
+	if (e.key === 'Enter') {
+		var target = e.target;
+		if (!target || !target.tagName) return;
+		var tagName = target.tagName.toLowerCase();
+		if (tagName === 'textarea' || (tagName === 'button' && target.type === 'submit')) {
+			return;
+		}
+		if (tagName === 'input' || tagName === 'select') {
+			if (target.type === 'submit' || target.type === 'button') return;
+			
+			e.preventDefault();
+			var form = target.form;
+			if (!form) return;
+			
+			var focusable = Array.from(form.querySelectorAll('input:not([type="hidden"]):not([disabled]), select:not([disabled]), textarea:not([disabled]), button[type="submit"]'));
+			var index = focusable.indexOf(target);
+			
+			if (index > -1 && index < focusable.length - 1) {
+				focusable[index + 1].focus();
+				if (typeof focusable[index + 1].select === 'function' && focusable[index + 1].tagName.toLowerCase() === 'input' && focusable[index + 1].type !== 'date' && focusable[index + 1].type !== 'file') {
+					focusable[index + 1].select();
+				}
+			}
+		}
+	}
+});
+</script>
 
 </body>
 

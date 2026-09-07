@@ -1,4 +1,5 @@
 <?php include ("./lib/body_head.php"); include ("./lib/body_menu.php");?>
+<link rel="stylesheet" href="lib/plataforma_modern.css" />
 
 <script>
   $(document).on("change", "#asunto", function(event) {
@@ -284,657 +285,409 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE)
 
             echo "</form>";
         echo "</div>";
-                    
+                          // INICIO CONTENEDOR PRINCIPAL MODERNO
+            echo "<div class='cd-wrapper'>";
 
-            //LA PRIMER PANTALLA QUE SALE
-            echo "<div id='peticiones'>";  
-              echo "<h1 style='font-family:ExtraBold; font-size:15pt;' class='normal'>Petición ".$id."-".asuntoCaso($id)."</h1>";
-              echo "<h1 style='font-family:ExtraBold; font-size:10pt;' class='normal'>Número de Oficio : ".oficioCaso($id)."</h1>";
-              //if (estaFinalizadoCaso($_GET['id'])==0){
-              if (estaFinalizadoCaso($_GET['id'])==2){
-                echo "<b style='color:green;'>Caso en proceso de atención </b>";
-                //faltan los botones
-                // echo "no finalizo";
-              } else {
-                if (estaFinalizadoCaso($_GET['id'])==1){
-                    echo "<b style='color:red;'>Caso finalizado </b>";
-                    $query = "SELECT * FROM cp_nuevosdocumentos WHERE id=".$_GET['id']."";
-                    $descripcion = '';
-                    $rs = $conexion -> query($query);
-                    while($f = $rs -> fetch_array()){ // resultado de la busqueda.................
-                        echo "Este caso solo puede reactivarlo ".nitavu_nombre($f['nitavuCaptura'])." quien fue quien lo inicio.";
-                        if ($f['nitavuCaptura'] == $nitavu){
-                          echo "<br><a href='?reactivar=".$_GET['id']."&id=".$_GET['id']."' class='Mbtn btn-cancel'>Reactivar</a>";
-                        }
-                      if (isset($_GET['reactivar'])){
-                        $sql="UPDATE cp_nuevosdocumentos SET Estado='0', Turnadoa=IdDptoCrea WHERE id='".$_GET['reactivar']."'";
-                        if ($conexion->query($sql) == TRUE)
-                        {
-                          historia($nitavu, "Reactivo el caso ".$_GET['id']."");
-                          mensaje("Caso reactivado con exito",'cp_nuevos_oficios.php?id='.$_GET['id']);
-                        }
-                        else {mensaje("ERROR al activar el caso. ".$sql,'cp_controldocumental.php');}
+            // HERO BANNER DEL CASO
+            echo "<div class='cd-case-hero'>";
+              echo "<div class='cd-case-hero-content'>";
+                echo "<span class='cd-case-oficio-badge'><i class='fa-solid fa-file-signature'></i> Oficio: " . oficioCaso($id) . "</span>";
+                echo "<h1 class='cd-case-title'><i class='fa-solid fa-folder-open'></i> Petición #" . $id . " — " . asuntoCaso($id) . "</h1>";
 
+                echo "<div class='cd-case-status-bar'>";
+                if (estaFinalizadoCaso($_GET['id']) == 2) {
+                  echo "<span class='cd-status-pill in-progress'><i class='fa-solid fa-spinner fa-spin'></i> En proceso de atención</span>";
+                } else if (estaFinalizadoCaso($_GET['id']) == 1) {
+                  echo "<span class='cd-status-pill finished'><i class='fa-solid fa-circle-check'></i> Caso Finalizado</span>";
+                  $query = "SELECT * FROM cp_nuevosdocumentos WHERE id=" . $_GET['id'] . "";
+                  $rs = $conexion->query($query);
+                  while ($f = $rs->fetch_array()) {
+                    echo "<span style='font-size:0.82rem; color:#fca5a5; margin-left:8px;'>Solo " . nitavu_nombre($f['nitavuCaptura']) . " puede reactivarlo.</span>";
+                    if ($f['nitavuCaptura'] == $nitavu) {
+                      echo " <a href='?reactivar=" . $_GET['id'] . "&id=" . $_GET['id'] . "' class='cd-btn cd-btn-light' style='padding:4px 10px; font-size:0.78rem;'><i class='fa-solid fa-power-off'></i> Reactivar</a>";
+                    }
+                    if (isset($_GET['reactivar'])) {
+                      $sql = "UPDATE cp_nuevosdocumentos SET Estado='0', Turnadoa=IdDptoCrea WHERE id='" . $_GET['reactivar'] . "'";
+                      if ($conexion->query($sql) == TRUE) {
+                        historia($nitavu, "Reactivo el caso " . $_GET['id'] . "");
+                        mensaje("Caso reactivado con exito", 'cp_nuevos_oficios.php?id=' . $_GET['id']);
+                      } else {
+                        mensaje("ERROR al activar el caso. " . $sql, 'cp_controldocumental.php');
                       }
                     }
-                }  
-              }
-              $query = "SELECT * FROM cp_nuevosdocumentos WHERE id=".$id."";
-              $descripcion = '';
-              $r = $conexion -> query($query);
-              while($f = $r -> fetch_array()){ // resultado de la busqueda.................
-                  $descripcion = $f['descripcion'];
-              }
-              // echo "<label>Descripción</label>";
-              echo "<div id='LaDescripcion' >";
-              echo "<b style='font-size:7pt; margin:0px;'>DESCRIPCION Y COMENTARIOS:</b>";
-              echo "<br>".$descripcion."<br><br>";
-
-
-              //Comentarios:
-              if (isset($_GET['comentall'])){
-                $sqlc = "SELECT * FROM cp_comentarios where CasoId='".$id."' ORDER by fecha desc,Hora DESC";
-              } else {$sqlc = "SELECT * FROM cp_comentarios where CasoId='".$id."' ORDER by fecha desc,Hora DESC limit 3";}
-              
-            
-              $rco = $conexion -> query($sqlc);
-              echo "<table class='tabla' style='background-color: white;
-              padding: 5px; border-radius: 4px;'>";
-              
-              while($Cm = $rco -> fetch_array())
-                { 
-                  echo "<tr>";
-                  echo "<td width=30px>";
-                  echo "<span title='".nitavu_nombre($Cm['Nuser'])." de ".nitavu_dpto_nombre($Cm['Nuser'])."'>";
-                  echo ponerfoto("fotos/".$Cm['Nuser'].".jpg",'FotoComentario');
-                  echo "</span>";
-                  echo "</td>";
-                  echo "<td>";
-                  echo "<span style='font-size:8pt;' >".$Cm['Comentario']."</span>";
-                  echo "<br><span style='font-size:7pt;' >".fecha_larga($Cm['Fecha'])."|".hora12($Cm['Hora'])."</span>";
-                // echo "<span style='font-size:8pt;' title='".fecha_larga($Cm['Fecha'])."|".hora12($Cm['Hora'])."'>".$Cm['Comentario']."</span>";
-                  echo "</td>";
-                  echo "</tr>";
+                  }
+                } else {
+                  echo "<span class='cd-status-pill pending'><i class='fa-solid fa-clock'></i> Pendiente / Activo</span>";
                 }
-              echo "</table>";
-              if (isset($_GET['comentall'])){
-              } else {echo "<a href='?comentall=&id=".$_GET['id']."' class='btn-identidad-color1' style='color:white;font-weight:bold;'>Ver todos los comentarios</a>";}
 
-              if (estaFinalizadoCaso($_GET['id'])==0){
-              echo "<table width=100%><tr><td align=right>";
-              echo "<a href='#AgregarComentario' rel='MyModal:open' title='Agregar un comentario' class='btn-comentario'><img src='icon/bcomentario.png' style='width:40px;'></a>";
-              echo "</td></tr></table>";
-              }
-              echo "</div>";
-              
+                echo "<span class='cd-status-pill dept-holder'><i class='fa-solid fa-building-columns'></i> Actualmente en: <b>" . dpto_id($turnadoami) . "</b></span>";
+                echo "</div>"; // .cd-case-status-bar
+              echo "</div>"; // .cd-case-hero-content
+              echo "<img src='img/doc_header_banner.png' alt='Banner' class='cd-case-hero-gfx' />";
+            echo "</div>"; // .cd-case-hero
 
-              echo "<div id='AgregarComentario' class='MyModal'>";
-              echo "<form action='cp_nuevos_oficios.php?id=".$id."' method='POST'  enctype='multipart/form-data'>";
-              echo "<label style='color:brown;'>Comentario al Caso Actual:</label><br>";      
-              echo "<textarea style='width:80%; height:35%;font-size: 14px;' name='comentario'></textarea><br>";      
-              echo "<br><button type='submit' name='Comentar' class='Mbtn btn-danger' title='Haga clic aqui para comentar'> Comentar </button>";
-              echo "</form>"; 
-              echo "</div>";
-              if (isset($_POST['Comentar'])){
-                $sql = "INSERT INTO cp_comentarios (CasoId, Comentario,  Nuser, Fecha, Hora) 
-                VALUES ('".$id."', '".$_POST['comentario']."', '".$nitavu."', '".$fecha."', '".$hora."')";
-                if ($conexion->query($sql) == TRUE)
-                    {
-                      historia($nitavu,'cp_Comentar caso: '.$id.' Agrego el comentario: '.$_POST['comentario'].' ');
-                      notificarParticipantes($id,$nitavu,'Se agrego un nuevo comentario al caso '.$id.'','Nuevos comentarios al caso '.$id);
-                      // mensaje('Comentario Guardado correctamente','cp_nuevos_oficios.php?id="'.$_GET['id']);
-                      unset($_POST['comentario'], $_POST['Comentar']);
-                    }
-                else {
-                  mensaje('ERROR al guardar el comentario','cp_nuevos_oficios.php?id="'.$_GET['id']);
+            // BARRA DE HERRAMIENTAS Y ACCIONES
+            echo "<div class='cd-toolbar-card'>";
+              echo "<div class='cd-toolbar-group'>";
+                echo "<a href='cp_controldocumental.php' class='cd-btn cd-btn-light' title='Volver al Control Documental'><i class='fa-solid fa-arrow-left'></i> Regresar</a>";
+                if ($nivel == 1 || soytitular($nitavu) != 'FALSE' || ($nivel == 3 and estaActivalaColaboracion($nitavu, $id) == 0)) {
+                  if (($finalizado == 0 and $turnadoami == $dpto) or ($finalizado == 2 and $turnadoami == $dpto)) {
+                    echo "<a href='#modalTurnar' rel='MyModal:open' class='cd-btn cd-btn-primary' title='Turnar Caso'><i class='fa-solid fa-share'></i> Turnar Caso</a>";
+                    echo "<a href='cp_nuevos_oficios.php?enproceso=" . $id . "' class='cd-btn cd-btn-gold' title='Marcar en proceso de atención'><i class='fa-solid fa-spinner'></i> En proceso</a>";
+                    echo "<a href='#modalFinalizar' rel='MyModal:open' class='cd-btn cd-btn-danger' title='Finalizar el caso'><i class='fa-solid fa-circle-check'></i> Finalizar Caso</a>";
+                  }
                 }
+                if ($nivel == 1 || soytitular($nitavu) != 'FALSE') {
+                  if ($finalizado == 0 and $turnadoami == $dpto) {
+                    echo "<a href='#modalCompartir' rel='MyModal:open' class='cd-btn cd-btn-dark' title='Compartir el caso'><i class='fa-solid fa-users-gear'></i> Compartir Caso</a>";
+                  }
+                }
+              echo "</div>"; // .cd-toolbar-group
+            echo "</div>"; // .cd-toolbar-card
+
+            // TARJETA DE DESCRIPCIÓN Y COMENTARIOS
+            $query = "SELECT * FROM cp_nuevosdocumentos WHERE id=" . $id . "";
+            $descripcion = '';
+            $r = $conexion->query($query);
+            while ($f = $r->fetch_array()) {
+              $descripcion = $f['descripcion'];
+            }
+
+            // Sanitizar y limpiar saltos de línea excesivos en la descripción
+            $descripcion_clean = trim($descripcion);
+            $descripcion_clean = preg_replace("/(\r?\n){3,}/", "\n\n", $descripcion_clean);
+
+            // Contar comentarios del caso
+            $sqlc_total = "SELECT COUNT(*) as total FROM cp_comentarios WHERE CasoId='" . $id . "'";
+            $r_tot = $conexion->query($sqlc_total);
+            $total_comentarios = 0;
+            if ($r_tot && $f_tot = $r_tot->fetch_array()) {
+              $total_comentarios = (int)$f_tot['total'];
+            }
+
+            echo "<div class='cd-comments-card'>";
+              echo "<div class='cd-comments-card-header'>";
+                echo "<h3 class='cd-comments-card-title'><i class='fa-solid fa-align-left' style='color:var(--cd-gold-dark);'></i> Descripción y Comentarios del Caso</h3>";
+                if (estaFinalizadoCaso($_GET['id']) == 0) {
+                  echo "<a href='#AgregarComentario' rel='MyModal:open' class='cd-btn cd-btn-primary' style='padding:6px 14px; font-size:0.82rem;'><i class='fa-solid fa-comment-plus'></i> Agregar Comentario</a>";
+                }
+              echo "</div>";
+
+              if (!empty($descripcion_clean)) {
+                $margin_bottom = ($total_comentarios > 0) ? '16px' : '0px';
+                echo "<div style='background:#f8fafc; border:1px solid var(--cd-border); border-radius:var(--cd-radius-sm); padding:14px 16px; margin-bottom:" . $margin_bottom . "; font-size:0.9rem; color:var(--cd-dark); line-height:1.5;'>";
+                  echo "<b style='color:var(--cd-primary);'><i class='fa-solid fa-file-lines'></i> Descripción Inicial:</b><br>" . nl2br(htmlspecialchars($descripcion_clean));
+                echo "</div>";
               }
-          
-              // echo "<br><br>";
-          echo "<div id='req_menu'>"; 
-          if ($nivel==1 || soytitular($nitavu)!='FALSE' || ($nivel==3 and estaActivalaColaboracion($nitavu,$id)==0)){
-            // echo $finalizado;
-            echo "<b style='color:#54565a; font-size:10pt;'>* Actualmente lo tiene el Departamento ".dpto_id($turnadoami)."</b><br>";
-              //****** */
-          if(($finalizado ==  0 and $turnadoami==$dpto) or ($finalizado==2 and $turnadoami==$dpto)){
-              //BOTONES MENU
-            
-                echo "<a href='#modalTurnar' rel='MyModal:open' class='btn-identidad-color1' title='Clic para turnar Caso'>";
-                  echo "<table  width='100%'><tr ><td width=40px valign='middle' align='center'>";
-                  echo "<img src='icon/turnar.png' style='width:25px; height:25px;'>";
-                  echo "</td>";
-                  echo "<td valign='middle'  align='center' style='color:white;' class=''>";
-                  echo "Turnar Caso";
-                  echo "</td></tr></table>";
-                echo "</a>";	
-                /** boton en proceso */
-                //echo "<a href='#enproceso' rel='MyModal:open' class='btn-identidad-color1' title='Puede marcarlo en proceso de atención, si esta esperando alguna respuesta o tardará su proceso'>";
-                echo "<a href='cp_nuevos_oficios.php?enproceso=".$id."'  class='btn-identidad-color1' title='Puede marcarlo en proceso de atención, si esta esperando alguna respuesta o tardará su proceso'>";
-                //href='indicadores_deptos_dir.php?idactividad=".$f['IdActividad']."'
-                  echo "<table  width='100%'><tr><td width=40px valign='middle' align='center'>";
-                  //echo "<a href='#modalHistorial".$f['IdActividad']."' rel='MyModal:open' style='font-size:11px;'>Historial actividades";
-                  echo "<img src='icon/correcto1.png' style='width:25px; height:25px;'>";
-                  echo "</td>";
-                  echo "<td valign='middle' align='center' style='color:white;' class=''>";
-                  echo "En proceso";
-                  echo "</td></tr></table>";
-                echo "</a>";
-                /* */
-                echo "<a href='#modalFinalizar' rel='MyModal:open' class='btn-identidad-color1' title='Clic para finalizar el caso'>";
-                  echo "<table  width='100%'><tr><td width=40px valign='middle' align='center'>";
-                  echo "<img src='icon/correcto1.png' style='width:25px; height:25px;'>";
-                  echo "</td>";
-                  echo "<td valign='middle' align='center' style='color:white;' class=''>";
-                  echo "Finalizar Caso";
-                  echo "</td></tr></table>";
-                echo "</a>";
-                  
-          
-            }
-          }   
-        if ($nivel==1 || soytitular($nitavu)!='FALSE'){
-          if($finalizado ==  0 and $turnadoami==$dpto){
-          echo "<a href='#modalCompartir' rel='MyModal:open' class='Mbtn btn-tercero' title='Clic para compartir el caso'>";
-                  echo "<table  width='100%'><tr><td width=25px valign='middle' align='center'>";
-                  echo "<img src='icon/compartir.png' style='width:25px; height:25px;'>";
-                  echo "</td>";
-                  echo "<td valign='middle' align='center' style='color:white;' class=''>";
-                  echo "Compartir Caso";
-                  echo "</td></tr></table>";
-                echo "</a>";
-            }
-          } 
+
+              if ($total_comentarios > 0) {
+                if (isset($_GET['comentall'])) {
+                  $sqlc = "SELECT * FROM cp_comentarios WHERE CasoId='" . $id . "' ORDER BY fecha DESC, Hora DESC";
+                } else {
+                  $sqlc = "SELECT * FROM cp_comentarios WHERE CasoId='" . $id . "' ORDER BY fecha DESC, Hora DESC LIMIT 3";
+                }
+
+                $rco = $conexion->query($sqlc);
+                echo "<div class='cd-comments-list'>";
+                while ($Cm = $rco->fetch_array()) {
+                  echo "<div class='cd-comment-item'>";
+                    echo "<img src='fotos/" . $Cm['Nuser'] . ".jpg' class='cd-comment-avatar' onerror=\"this.src='icon/default-avatar.png'\" alt='Foto' />";
+                    echo "<div class='cd-comment-body'>";
+                      echo "<div class='cd-comment-meta'>";
+                        echo "<span class='cd-comment-author'>" . nitavu_nombre($Cm['Nuser']) . " <span style='font-weight:normal; color:var(--cd-gray-mid);'>(" . nitavu_dpto_nombre($Cm['Nuser']) . ")</span></span>";
+                        echo "<span class='cd-comment-date'><i class='fa-regular fa-clock'></i> " . fecha_larga($Cm['Fecha']) . " | " . hora12($Cm['Hora']) . "</span>";
+                      echo "</div>";
+                      echo "<div class='cd-comment-text'>" . htmlspecialchars($Cm['Comentario']) . "</div>";
+                    echo "</div>";
+                  echo "</div>";
+                }
+                echo "</div>";
+
+                if (!isset($_GET['comentall']) && $total_comentarios > 3) {
+                  echo "<div style='margin-top:14px; text-align:right;'><a href='?comentall=&id=" . $_GET['id'] . "' class='cd-btn cd-btn-outline-gold' style='padding:6px 12px; font-size:0.82rem;'><i class='fa-solid fa-comments'></i> Ver todos los comentarios (" . $total_comentarios . ")...</a></div>";
+                }
+              } else if (empty($descripcion_clean)) {
+                echo "<div style='text-align:center; padding:16px; color:var(--cd-gray-mid); font-style:italic; font-size:0.88rem;'><i class='fa-regular fa-comment-dots'></i> Este caso no tiene descripción inicial ni comentarios guardados.</div>";
+              }
+            echo "</div>"; // .cd-comments-card
+
+            // MODAL AGREGAR COMENTARIO
+            echo "<div id='AgregarComentario' class='MyModal'>";
+              echo "<form action='cp_nuevos_oficios.php?id=" . $id . "' method='POST' enctype='multipart/form-data'>";
+                echo "<h3><i class='fa-solid fa-comment-dots'></i> Agregar Comentario al Caso</h3>";
+                echo "<div class='cd-form-group'>";
+                  echo "<label class='cd-form-label'>Comentario o Nota:</label>";
+                  echo "<textarea class='cd-form-control' style='height:120px;' name='comentario' placeholder='Escriba aquí su comentario...' required></textarea>";
+                echo "</div>";
+                echo "<button type='submit' name='Comentar' class='cd-btn cd-btn-primary'><i class='fa-solid fa-paper-plane'></i> Publicar Comentario</button>";
+              echo "</form>";
             echo "</div>";
 
-        //MODAL PARA AGREGAR COLABORADORES
-          echo "<div id='agregar_colaboradores' class='MyModal'>";
-          echo "<form action='cp_nuevos_oficios.php?id=".$id."' method='POST'>";
-          echo "<input type='hidden' name='nitavu_' value='".$nitavu."'>";
-          echo "<span>";
-          echo "<label for='empleado'>Seleccione con quien compartirá el caso:";
-          echo "<select name='empleado'>";
-          
-            $sql = "SELECT * FROM empleados ORDER by nombre ASC";
-            $r = $conexion -> query($sql);
-            while($f = $r -> fetch_array())
-              { // resultado de la busqueda.................
-                echo "<option value='".$f['nitavu']."'>".$f['nombre']. " (".$f['puesto']." de ".$f['departamento'].")</option>";
+            if (isset($_POST['Comentar'])) {
+              $sql = "INSERT INTO cp_comentarios (CasoId, Comentario, Nuser, Fecha, Hora) 
+              VALUES ('" . $id . "', '" . $_POST['comentario'] . "', '" . $nitavu . "', '" . $fecha . "', '" . $hora . "')";
+              if ($conexion->query($sql) == TRUE) {
+                historia($nitavu, 'cp_Comentar caso: ' . $id . ' Agrego el comentario: ' . $_POST['comentario'] . ' ');
+                notificarParticipantes($id, $nitavu, 'Se agrego un nuevo comentario al caso ' . $id . '', 'Nuevos comentarios al caso ' . $id);
+                unset($_POST['comentario'], $_POST['Comentar']);
+              } else {
+                mensaje('ERROR al guardar el comentario', 'cp_nuevos_oficios.php?id=' . $_GET['id']);
               }
-          
-          echo "</select>";
-          echo "</label>";
-          echo "</span>";
-          echo "<button type='submit' class='Mbtn btn-default' title='Haga clic para subir el archivo'> Agregar </button>";
-          echo "</form>"; 
-          echo "</div>";
+            }
 
+            // TIMELINE / SEGUIMIENTO DE DOCUMENTOS
+            echo "<div class='cd-timeline-container'>";
+              echo "<h3 class='cd-timeline-title'><i class='fa-solid fa-route' style='color:var(--cd-primary);'></i> Seguimiento de Documentos</h3>";
 
-            //DIBUJAR GRÁFICA 
-          echo "<br><br><br>";
-          echo "<div id='peticiones'>";
-            echo "<h1 style= 'color:#54565a;';>Seguimiento de Documentos</h1>";
-            $grafica = "SELECT count(*) as n from cp_historialdocumentos where numcaso = ".$id." and activo=0 ";
-            // $grafica = "SELECT * from cp_historialdocumentos where numcaso = ".$id." and activo = 0 and tipo=0 ORDER BY idinc DESC";
-            //echo $grafica;
-            $fechas = fechas($id);
-            $rc= $conexion -> query($grafica); 
-            if($f = $rc -> fetch_array())
-            { $count = $f['n'];} else {$count=0;}
-            // echo $grafica;
-            $tope = $count;
-            if ($count>0){
-                $grafica = "SELECT * from cp_historialdocumentos where NumCaso = ".$id." and activo=0  ORDER BY idinc DESC";
-                //echo $grafica;
-                $rc2= $conexion -> query($grafica); 
-                // echo $grafica;
-              //echo '<div class="grid-container" >';
-              echo '<div class ="grid-container">';
+              $grafica = "SELECT count(*) as n from cp_historialdocumentos where numcaso = " . $id . " and activo=0 ";
+              $fechas = fechas($id);
+              $rc = $conexion->query($grafica);
+              $count = ($f = $rc->fetch_array()) ? $f['n'] : 0;
+              $tope = $count;
+
+              if ($count > 0) {
+                $grafica = "SELECT * from cp_historialdocumentos where NumCaso = " . $id . " and activo=0 ORDER BY idinc DESC";
+                $rc2 = $conexion->query($grafica);
                 $vuelta = $tope;
-                echo "<table>";
-                echo "<tr>";
-                while($r = $rc2 -> fetch_array())    
-                {
-                  //and ($vuelta!=3)
-                  
-                  if($vuelta == 1){
 
-                      if($vuelta == $tope){
-                        
-                        //ULTIMO EN LA GRAFICA-INFORMACION DE QUIEN LO TIENE
-                        echo '<th><div class ="grid-itemUltimo">
-                        <div class="circulito" style="visibility:hidden;"> </div>';
-                        echo '<div><b style="color: #fff; font-size: 8pt;">ACTUALMENTE EN</b><br>';
-                        echo '<b style="color: #E3D79F">'.dpto_id($turnadoami).'</b><br>';
-                        $sqlTiempo = "SELECT fecha as FechaDesde, 
-                        (SELECT DATEDIFF(CURDATE(),FechaDesde)) as Retraso 
-                        FROM cp_historialdocumentos WHERE NumCaso=".$id." order by idinc Desc limit 1";
-                        $rc= $conexion -> query($sqlTiempo); 
-                        //echo $sqlTiempo;
-                        while($rT = $rc -> fetch_array()){
-                          echo '<b style="color: #B1B1B1; font-size:6pt;">'.$rT['Retraso'].' días aquí.</b><br>';
-                          
-                        }	
-                        if(ultimoColaborador($id) != 'FALSE'){
-                          echo '<b style="color: #B1B1B1; font-size:6pt;">Ultimo colaborador: '.nitavu_nombre(ultimoColaborador($id)).'</b>';
-                        }else{
-                          // if(personasConNivelUno($id) != 'FALSE'){
-                          //   echo '<b style="color: #B1B1B1; font-size:6pt;">Ultimo colaborador: '.nitavu_nombre(personasConNivelUno($id)).'</b>';
-                          // }else{
-                            if(buscoalTitulardelCaso($id) != 'FALSE'){
-                              echo '<b style="color: #B1B1B1; font-size:6pt;">Ultimo colaborador: '.nitavu_nombre(buscoalTitulardelCaso($id)).'</b>';
-                            }else{
-                              echo '<b style="color: #B1B1B1; font-size:6pt;">Sin colaborador</b>';
-                            }
-                          }
-                      //  }
-                        
-                        echo ' </div></div></th>';
-                        echo '<th><div class ="grid-flecha"><img src="icon/flecha01.png" style="width: 60px;" "></div></th>';
-                      }
-                    
+                echo "<div class='cd-timeline-track'>";
+                while ($r = $rc2->fetch_array()) {
+                  $is_latest = ($vuelta == $tope);
 
-                      //------------------------------------------
+                  if ($is_latest) {
+                    echo "<div class='cd-timeline-step'>";
+                      echo "<div class='cd-timeline-card active-dept'>";
+                        echo "<div class='cd-step-header'>";
+                          echo "<span class='cd-step-num'><i class='fa-solid fa-location-dot'></i></span>";
+                          echo "<span class='cd-step-oficio' style='color:#ffffff;'>Ubicación Actual</span>";
+                        echo "</div>";
+                        echo "<div class='cd-step-dept'>" . dpto_id($turnadoami) . "</div>";
 
-                    
-
-                      echo '<th><div class ="grid-item1">
-                      <div class="circulito">
-                      '.$vuelta.'
-                      </div>
-                      <div><b style="color: #fff; font-size: 8pt;">'.$r['numOficio'].'</b><br>
-                      <b style="color: #E3D79F">'.nombreDepartamento($r['dptoSube']).'</b><br>
-                      <b style="color: #B1B1B1; font-size:6pt;">'.fecha_larga($r['fecha']).' <br>- por '.nitavu_nombre($r['nitavuSube']).'</b>
-                      ';
-                      
-                      if ($r['activo']=='1'){
-                        echo "<b style='color:#FFCCCC; font-size:7pt;'><br>* Se marco como eliminado un <a href='' style='text-decoration: none; color: chartreuse; 'title='".$r['archivo']."'>archivo "."</a></b> ";
-                      }
-                      echo ' </div></div></th>';
-
-                  
-                  
-                    
-                }else if($vuelta == $tope){
-                    $dias = diastranscurridos($id);
-
-                    //ULTIMO EN LA GRAFICA-INFORMACION DE QUIEN LO TIENE
-                    echo '<th><div class ="grid-itemUltimo">
-                    <div class="circulito" style="visibility:hidden;"> </div>';
-                    echo '<div><b style="color: #fff; font-size: 8pt;">ACTUALMENTE EN</b><br>';
-                    echo '<b style="color: #E3D79F">'.dpto_id($turnadoami).'</b><br>';
-                    $sqlTiempo = "SELECT fecha as FechaDesde, 
-                    (SELECT DATEDIFF(CURDATE(),FechaDesde)) as Retraso 
-                    FROM cp_historialdocumentos WHERE NumCaso=".$id." order by idinc Desc limit 1";
-                    $rc= $conexion -> query($sqlTiempo); 
-                      while($rT1 = $rc -> fetch_array()){
-                        echo '<b style="color: #B1B1B1; font-size:6pt;">'.$rT1['Retraso'].' días aquí.</b><br>';
-                        
-                      }	
-                    if(ultimoColaborador($id) != 'FALSE'){
-                      echo '<b style="color: #B1B1B1; font-size:6pt;">Ultimo colaborador: '.nitavu_nombre(ultimoColaborador($id)).'</b>';
-                    }else{
-                      // if(personasConNivelUno($id) != 'FALSE'){
-                      //   echo '<b style="color: #B1B1B1; font-size:6pt;">Ultimo colaborador: '.nitavu_nombre(personasConNivelUno($id)).'</b>';
-                      // }else{
-                        if(buscoalTitulardelCaso($id) != 'FALSE'){
-                          echo '<b style="color: #B1B1B1; font-size:6pt;">Ultimo colaborador: '.nitavu_nombre(buscoalTitulardelCaso($id)).'</b>';
-                        }else{
-                          echo '<b style="color: #B1B1B1; font-size:6pt;">No definido</b>';
+                        $sqlTiempo = "SELECT fecha as FechaDesde, (SELECT DATEDIFF(CURDATE(),FechaDesde)) as Retraso FROM cp_historialdocumentos WHERE NumCaso=" . $id . " order by idinc Desc limit 1";
+                        $rcT = $conexion->query($sqlTiempo);
+                        if ($rT = $rcT->fetch_array()) {
+                          echo "<div class='cd-step-sub'><i class='fa-regular fa-clock'></i> " . $rT['Retraso'] . " días en esta área</div>";
                         }
+                        $colab = ultimoColaborador($id);
+                        if ($colab != 'FALSE') {
+                          echo "<div class='cd-step-sub'><i class='fa-solid fa-user-gear'></i> Colaborador: " . nitavu_nombre($colab) . "</div>";
+                        } else if (buscoalTitulardelCaso($id) != 'FALSE') {
+                          echo "<div class='cd-step-sub'><i class='fa-solid fa-user'></i> Titular: " . nitavu_nombre(buscoalTitulardelCaso($id)) . "</div>";
+                        } else {
+                          echo "<div class='cd-step-sub'><i class='fa-solid fa-user'></i> Sin colaborador</div>";
+                        }
+                      echo "</div>"; // .cd-timeline-card
+                      echo "<div class='cd-timeline-arrow'><i class='fa-solid fa-chevron-right'></i></div>";
+                    echo "</div>"; // .cd-timeline-step
+                  }
+
+                  echo "<div class='cd-timeline-step'>";
+                    echo "<div class='cd-timeline-card'>";
+                      echo "<div class='cd-step-header'>";
+                        echo "<span class='cd-step-num'>" . $vuelta . "</span>";
+                        echo "<span class='cd-step-oficio'>" . htmlspecialchars($r['numOficio']) . "</span>";
+                      echo "</div>";
+                      echo "<div class='cd-step-dept'>" . nombreDepartamento($r['dptoSube']) . "</div>";
+                      echo "<div class='cd-step-sub'><i class='fa-regular fa-calendar'></i> " . fecha_larga($r['fecha']) . "</div>";
+                      echo "<div class='cd-step-sub'><i class='fa-solid fa-user'></i> por " . nitavu_nombre($r['nitavuSube']) . "</div>";
+                      if ($r['activo'] == '1') {
+                        echo "<div class='cd-step-sub' style='color:#dc2626;'><i class='fa-solid fa-trash'></i> Archivo eliminado</div>";
                       }
-                    //}
-                      
-                    echo ' </div></div></th>';
-                    echo '<th><div class ="grid-flecha"><img src="icon/flecha01.png" style="width: 60px;" "></div></th>';
+                    echo "</div>"; // .cd-timeline-card
 
-
-                  // echo '<th><div class ="grid-flecha"><img src="icon/flecha.png" style="width: 60px;" "></div></th>';
-                  //--------------------------------------------------------------------
-                  
-                      echo '<th><div class ="grid-item1">
-                      <div class="circulito">
-                      '.$vuelta.'
-                      </div>
-                      <div><b style="color: #fff; font-size: 8pt;">'.$r['numOficio'].'</b><br>
-                      <b style="color: #E3D79F">'.nombreDepartamento($r['dptoSube']).'</b><br>
-                      <b style="color: #B1B1B1; font-size:6pt;">'.$r['fecha'].' <br>- por '.nitavu_nombre($r['nitavuSube']).'</b>
-                      ';
-                      
-                      if ($r['activo']=='1'){
-                        echo "<b style='color:#FFCCCC; font-size:7pt;'><br>* Se marco como eliminado un <a href='' style='text-decoration: none; color: chartreuse; 'title='".$r['archivo']."'>archivo "."</a></b> ";
-                      }
-                      echo '
-
-                      </div>
-                      </div></th>';
-                      $datetime1 = new DateTime($fechas[$vuelta-1]);
-                      $datetime2 = new DateTime($fechas[$vuelta-2]);
-                      $interval = $datetime1->diff($datetime2);
-                      echo '<th><div class ="grid-flecha"><img src="icon/flecha01.png" style="width: 60px;" title="Transcurrio '.$interval->format('%d días').' de la última subida""></div></th>';
-                    }else{
-                      
-                      echo '<th><div class ="grid-item1">
-                      <div class="circulito">
-                      '.$vuelta.'
-                      </div>
-                      <div><b style="color: #fff; font-size: 8pt;">'.$r['numOficio'].'</b><br>
-                      <b style="color: #E3D79F">'.nombreDepartamento($r['dptoSube']).'</b><br>
-                      <b style="color: #B1B1B1; font-size:6pt;">'.$r['fecha'].' <br>- por '.nitavu_nombre($r['nitavuSube']).'</b>
-                      ';
-                      
-                      if ($r['activo']=='1'){
-                        echo "<b style='color:#FFCCCC; font-size:7pt;'><br>* Se marco como eliminado un <a href='' style='text-decoration: none; color: chartreuse; 'title='".$r['archivo']."'>archivo "."</a></b> ";
-                      }
-                      echo '
-
-                      </div>
-                      </div></th>';
-                      $datetime1 = new DateTime($fechas[$vuelta-1]);
-                      $datetime2 = new DateTime($fechas[$vuelta-2]);
-                      $interval = $datetime1->diff($datetime2);
-                      echo '<th><div class ="grid-flecha"><img src="icon/flecha01.png" style="width: 60px;" title="Transcurrio '.$interval->format('%d días').' de la última subida""></div></th>';
+                    if ($vuelta > 1) {
+                      echo "<div class='cd-timeline-arrow'><i class='fa-solid fa-chevron-right'></i></div>";
                     }
+                  echo "</div>"; // .cd-timeline-step
 
-                  $vuelta --;
+                  $vuelta--;
                 }
-              
-                echo "</tr>";
-                echo "</table>";
-              }  
-            echo "</div>"; 
-          echo "</div>";
-
-          //ESTRUCTURA DE DIVS
-          // echo "<div id='bloque'>";   
-          // echo "<div class='tituloHistorial'>";
-          //   echo "<h1>Historial de Documentos</h1>";
-          // echo "</div>";
-          // echo "<div class='tituloHistoriaCaso'>";
-          //  echo "<h1>Actividad del caso</h1>";
-          // echo "</div>";
-          // echo "</div>";
-
-          
-            echo "<div id='bloque'>";  
-          echo "<div class='tablaHistorial' style='background-color: #f7ffdc;
-            padding: 10px;
-            margin-top: 10px;
-            border-radius: 8px;
-            width: 101%;
-            border: 1px solid #dae89d;'>";
-          //Filtro de si soy colaborador y soy del departamento entonces solo puedo agregar anexos.
-          
-
-
-
-          $sql = "SELECT * FROM cp_historialdocumentos WHERE numcaso=".$id." and tipo=0";
-          $rc= $conexion -> query($sql); 
-          if ($rc->num_rows>0){
-            echo "<h1 style='color:#54565a;'>Historial de archivos</h1>";
-            echo "<table id='historialTabla' class='tabla' >";
-            echo "<th class='pc'>Oficio Número</th>";
-            echo "<th >Nombre Archivo</th>";
-            echo "<th class='pc'>Fecha</th><th class='pc'></th>";
-            
-            //echo "<th style='width:10%'></th>";
-            while($r = $rc -> fetch_array())    
-            {
-              if ($r['activo']=='1') { // si esta inactivo
-                echo "<tr style='background-color:red; '>";
+                echo "</div>"; // .cd-timeline-track
               } else {
-                echo "<tr>";
+                echo "<p style='color:var(--cd-gray-mid); font-style:italic; margin:0;'>No hay registro de movimientos para este caso.</p>";
+              }
+            echo "</div>"; // .cd-timeline-container
+
+            // HISTORIAL DE ARCHIVOS PRINCIPALES
+            $sql = "SELECT * FROM cp_historialdocumentos WHERE numcaso=" . $id . " and tipo=0";
+            $rc = $conexion->query($sql);
+            echo "<div class='cd-card-section'>";
+              echo "<div class='cd-card-header cd-card-header-primary'>";
+                echo "<h3 class='cd-card-title'><i class='fa-solid fa-folder-closed'></i> Historial de Archivos del Caso</h3>";
+              echo "</div>";
+              echo "<div class='cd-card-body' style='padding:0;'>";
+
+              if ($rc->num_rows > 0) {
+                echo "<div class='cd-table-container'>";
+                  echo "<table class='cd-table'>";
+                    echo "<thead><tr>";
+                      echo "<th style='width:160px;'>Oficio Número</th>";
+                      echo "<th>Nombre del Archivo</th>";
+                      echo "<th style='width:180px;'>Fecha y Hora</th>";
+                      echo "<th style='width:80px; text-align:center;'>Acción</th>";
+                    echo "</tr></thead>";
+                    echo "<tbody>";
+                    while ($r = $rc->fetch_array()) {
+                      echo "<tr>";
+                        echo "<td><b>" . htmlspecialchars($r['numOficio']) . "</b>";
+                        if ($r['activo'] == '1') {
+                          echo "<br><span class='cd-badge cd-badge-danger'><i class='fa-solid fa-trash'></i> Eliminado</span>";
+                        }
+                        echo "</td>";
+
+                        $archivo = "peticiones/" . $r['idDoc'] . '_' . $r['NumCaso'] . '_' . $r['archivo'] . "";
+                        $link = "<a id=" . $r['idDoc'] . " name='$archivo' href='cp_descargar.php?nombre=" . $archivo . "' target='_self' style='font-weight:700; color:var(--cd-primary); text-decoration:none;' title='Clic para descargar'><i class='fa-solid fa-file-pdf' style='color:#dc2626; margin-right:6px;'></i>" . htmlspecialchars($r['archivo']) . "</a>";
+                        echo "<td>" . $link;
+                          echo "<br><span style='font-size:0.78rem; color:var(--cd-gray-mid);'>por " . nitavu_nombre($r['nitavuSube']) . " (" . nitavu_dpto_nombre($r['nitavuSube']) . ")</span>";
+                        echo "</td>";
+
+                        echo "<td>" . fecha_larga($r['fecha']) . "<br><span style='font-size:0.78rem; color:var(--cd-gray-mid);'>" . hora12($r['hora']) . "</span></td>";
+
+                        echo "<td style='text-align:center;'>";
+                        if (($r['nitavuSube'] == $nitavu) and (estaFinalizadoCaso($r['NumCaso']) == 0) and $r['activo'] <> '1' and $r['archivo'] <> "") {
+                          echo "<form action='cp_nuevos_oficios.php?id=" . $id . "' method='POST' style='margin:0;'>";
+                            echo '<input type="hidden" name="id" value=' . $id . '>';
+                            echo '<input type="hidden" name="idDoc" value=' . $r['idDoc'] . '>';
+                            echo '<input type="hidden" name="numDoc" value=' . $r['numOficio'] . '>';
+                            echo "<button type='submit' class='cd-icon-btn delete' title='Eliminar este archivo'><i class='fa-solid fa-trash-can'></i></button>";
+                          echo "</form>";
+                        }
+                        echo "</td>";
+                      echo "</tr>";
+                    }
+                    echo "</tbody>";
+                  echo "</table>";
+                echo "</div>"; // .cd-table-container
               }
 
-              
-              echo "<td class='pc'>".$r['numOficio'];
-              if ($r['activo']=='1'){
-                echo "<span style='font-size:7pt;'><br>* Este archivo ha sido marcado como eliminado</span>";
-              }
-              echo "</td>";
-              $archivo = "peticiones/".$r['idDoc'].'_'.$r['NumCaso'].'_'.$r['archivo']."";
-              //href='cp_descarga_archivo.php?ruta=".$archivo."'
-              //echo $archivo; 
-              $link = "<a id=".$r['idDoc']." name='$archivo' href='cp_descargar.php?nombre=".$archivo."' target='_self'  class='digitalizados_vinculos' onclick =''  title='Haga click aqui para descargar'>".$r['archivo']."</a>";
-              echo "<td >".$link;
-              //echo $archivo; 
-              echo "<span style='font-size:7pt;'>por ".nitavu_nombre($r['nitavuSube'])." de ".nitavu_dpto_nombre($r['nitavuSube'])."</span>";
-              echo "</td>";//archivo
-
-              echo "<td class='pc' style='font-family:Compacta;font-size:12px;'>".$r['fecha']." | ".hora12($r['hora'])."</td>";
-
-              if(($r['nitavuSube']==$nitavu) and (estaFinalizadoCaso($r['NumCaso'])==0) and $r['activo']<>'1' and $r['archivo']<>""){
-                echo "<td class='pc'>";
-                echo "<form action='cp_nuevos_oficios.php?id=".$id."' method='POST'>";
-                echo '<input type="hidden" name="id" value='.$id.'>';
-                echo '<input type="hidden" name="idDoc" value='.$r['idDoc'].'>';
-                echo '<input type="hidden" name="numDoc" value='.$r['numOficio'].'>';
-                echo "<button type='submit' class='Mbtn btn-cancel' title='Haga clic para eliminar el archivo'> <img src='icon/delete.png' style='width:20px; '> </button>";
-                echo "</form>";
-                echo "</td>";
-              }
-            }
-            
-          }
-
-        echo '</tr>';
-        $arr = revisarMisColaboraciones($nitavu);
-        $dibuje=0;
-        for ($i=0; $i < count($arr) ; $i++) {
-            if(($nivel==3 and estaActivalaColaboracion($nitavu,$id)==0 and $dibuje==0) || ((soyColaborador($nitavu)=='TRUE') and (soyDptoturnado($arr[$i] ,$dpto)=='FALSE') and $dibuje==0) 
-            || (soyDptoturnado($id,$dpto)=='TRUE') and $dibuje==0 ){
-
-            //if( ($nivel==1 and $dibuje==0) || ($nivel==2 and $dibuje==0) || ($nivel==3 and estaActivalaColaboracion($nitavu,$id)==0 and $dibuje==0)|| (soytitular($nitavu)!='FALSE'  and $dibuje==0) || ((soyColaborador($nitavu)=='TRUE') and (soyDptoturnado($arr[$i] ,$dpto)=='FALSE') and $dibuje==0) ){
-              if($finalizado ==0){
-                $dibuje=1;
-                echo '<tr class="pc">';
-                echo "<form action='cp_nuevos_oficios.php?id=".$id."' method='POST' enctype='multipart/form-data'>"; 
-                echo '<input type="hidden" name="id" value='.$id.'>';
-                echo '<input type="hidden" name="subirHistorial" value="1">';
-                echo '<td>';
-                  
-                  echo "<input type='text' id='oficioNombre' name='oficioNombre'>";
-                  echo "<input type='hidden' name='idCaso' value= ".$id.">";
-                /*echo "<table>";
-                echo "<tr>";
-                echo "<td>";
-                //echo '<input name="oficioNombre" type="text" required>';
-                $dpto = nitavu_dpto($nitavu);
-                echo "<select id='oficioNombre' name='oficioNombre' required>";
-                echo "<option value='' disabled selected>Seleccione un asunto...</option>";
-                $sql = "SELECT * FROM cp_controlcorrespondencia WHERE IdDptoCrea=".$dpto." and Utilizado = 0 and NumDocumento <> '' ORDER BY FechaCrea ";
-                // echo $sql;
-                $r = $conexion -> query($sql);
-                while($f = $r -> fetch_array())
-                { // resultado de la busqueda.................
-                  echo "<option value='".$f['NumDocumento']."'>".$f['NumDocumento']. "</option>";
+              // FORMULARIO PARA AGREGAR NUEVO DOCUMENTO AL HISTORIAL
+              $arr = revisarMisColaboraciones($nitavu);
+              $dibuje = 0;
+              for ($i = 0; $i < count($arr); $i++) {
+                if (($nivel == 3 and estaActivalaColaboracion($nitavu, $id) == 0 and $dibuje == 0) || ((soyColaborador($nitavu) == 'TRUE') and (soyDptoturnado($arr[$i], $dpto) == 'FALSE') and $dibuje == 0) || (soyDptoturnado($id, $dpto) == 'TRUE') and $dibuje == 0) {
+                  if ($finalizado == 0) {
+                    $dibuje = 1;
+                    echo "<div style='padding:16px 20px; background:#f8fafc; border-top:1px solid var(--cd-border);'>";
+                      echo "<h4 style='margin:0 0 10px 0; font-size:0.92rem; color:var(--cd-dark);'><i class='fa-solid fa-cloud-arrow-up' style='color:var(--cd-gold-dark);'></i> Agregar Documento al Historial</h4>";
+                      echo "<form action='cp_nuevos_oficios.php?id=" . $id . "' method='POST' enctype='multipart/form-data' class='cd-form-grid' style='margin:0;'>";
+                        echo '<input type="hidden" name="id" value=' . $id . '>';
+                        echo '<input type="hidden" name="subirHistorial" value="1">';
+                        echo '<input type="hidden" name="idCaso" value= ' . $id . '>';
+                        echo "<div class='cd-form-group'>";
+                          echo "<label class='cd-form-label'>Referencia / Nombre Oficio:</label>";
+                          echo "<input type='text' id='oficioNombre' name='oficioNombre' class='cd-form-control' placeholder='Ej. OFICIO-2026-001' required>";
+                        echo "</div>";
+                        echo "<div class='cd-form-group'>";
+                          echo "<label class='cd-form-label'>Archivo PDF (*):</label>";
+                          echo "<input name='nuevoDoc' type='file' accept='.pdf' class='cd-form-control' required>";
+                        echo "</div>";
+                        echo "<div class='cd-form-group'>";
+                          echo "<label class='cd-form-label'>Fecha:</label>";
+                          echo '<input type="date" id="fechaOficio" name="fechaOficio" class="cd-form-control" value=' . $fecha . ' required>';
+                        echo "</div>";
+                        echo "<div class='cd-form-group' style='justify-content:flex-end;'>";
+                          echo "<label class='cd-form-label'>&nbsp;</label>";
+                          echo "<button type='submit' class='cd-btn cd-btn-primary'><i class='fa-solid fa-upload'></i> Subir Documento</button>";
+                        echo "</div>";
+                      echo "</form>";
+                    echo "</div>";
+                  }
                 }
-                echo "</select>";
-                echo "</td>";
-                echo "<td>";
-                echo "<a href='#myModalaAgregar' rel='MyModal:open' class='Mbtn btn-default' title='Nuevo Número'> <img src='icon/nuevoNumero.png'  style='width:20px; '> </a>";
-                echo "</td>";
-                echo "</tr>";
-                echo "</table>";*/
-                echo '</td>';
-                echo '<td>';
-                  echo '<input name="nuevoDoc" type="file" accept=".pdf">';
-                echo '</td>';
-                echo '<td>';
-                  echo '<input type="date" id="fechaOficio" name="fechaOficio" value='.$fecha.' required>';
-                //echo '<input type="hidden" id="fechaOficio" name="fechaOficio" value='.$fecha.' required>';
-                echo '</td>';
-                echo "<td><button type='submit' class='btn-identidad-color1' title='Haga clic para subir el archivo'> <img src='icon/subirDoc.png' style='width:20px; '> </button></td>";
-                echo "</form>";
-                echo '</tr>';    
               }
-            }
-          
-            
-          
-        }
-        echo "</table>";
-        echo "</div>";
-        echo "<br><br>";
-        
+            echo "</div>"; // .cd-card-section (Historial de archivos)
 
-        echo "<div id='anexos'>";
-                                                                                                                                                                                                                                                                  
-        $anexos = "SELECT * FROM cp_historialdocumentos WHERE numcaso=".$id." and tipo=1";
-        $rc= $conexion -> query($anexos); 
-        if ($rc->num_rows>0){
-          echo "<center>";
-          echo "<div style='width:100%;' id='divAnexos'>";
-          echo "<h1>Anexos</h1>";
-          echo "<table id='historialTabla' class='tabla' style=''>";
-          echo "<th>Nombre Archivo</th>";
-          echo "<th>Fecha</th>";
-          
-          //echo "<th style='width:10%'></th>";
-          while($r = $rc -> fetch_array())    
-          {
-            if ($r['activo']=='1') { // si esta inactivo
-                echo "<tr style='background-color:red; '>";
-              } else {
-                echo "<tr>";
-              }
-              
-                $archivo = "peticiones/".$r['idDoc'].'_'.$r['NumCaso'].'_'.$r['archivo']."";
-                //href='cp_descarga_archivo.php?ruta=".$archivo."' 
-                $link = "<a id=".$r['idDoc']." name='$archivo' href='cp_descargar.php?nombre=".$archivo."' target='_self'  class='digitalizados_vinculos' onclick =''  title='Haga click aqui para descargar'>".$r['archivo']."</a>";
-                echo "<td>".$link;
-                echo "<span style='font-size:7pt;'>por ".nitavu_nombre($r['nitavuSube'])." de ".nitavu_dpto_nombre($r['nitavuSube'])."</span>";
-                echo "</td>";//archivo
-              
-            
-            echo "<td style='font-family:Compacta;font-size:15px;'>".$r['fecha']."</td>";
-            
-            // if(($r['nitavuSube']==$nitavu) and (estaFinalizadoCaso($r['NumCaso'])==0 and $r['activo']<>'1')){
-            //  echo "<td>";
-            //   echo "<form action='cp_nuevos_oficios.php?id=".$id."' method='POST' enctype='multipart/form-data'>";
-            //   echo '<input type="hidden" name="id" value='.$id.'>';
-            //   echo '<input type="hidden" name="idDoc" value='.$r['idDoc'].'>';
-            //   echo '<input type="hidden" name="numDoc" value='.$r['numOficio'].'>';
-            //   echo "<button type='submit' class='Mbtn btn-cancel' title='Haga clic para eliminar el archivo'> <img src='icon/delete.png' style='width:20px; '> </button>";
-            //   echo "</form>";
-            //   echo "</td>";
-            // }
-            if(($r['nitavuSube']==$nitavu) and (estaFinalizadoCaso($r['NumCaso'])==0) and $r['activo']<>'1' and $r['archivo']<>""){
-
-                echo "<td class='pc'>";
-                echo "<form action='cp_nuevos_oficios.php?id=".$id."' method='POST'>";
-                echo '<input type="hidden" name="id" value='.$id.'>';
-                echo '<input type="hidden" name="idDoc" value='.$r['idDoc'].'>';
-                echo '<input type="hidden" name="numDoc" value='.$r['numOficio'].'>';
-                echo "<button type='submit' class='Mbtn btn-cancel' title='Haga clic para eliminar el archivo'> <img src='icon/delete.png' style='width:20px; '> </button>";
-                echo "</form>";
-                echo "</td>";
-              }
-            echo "</tr>";
-          }
-        echo "</table>";
-
-        echo "</div>";
-        echo "</center>";
-        }
-
-        if (estaFinalizadoCaso($_GET['id'])==0){
-        //if (($nivel==1 and $finalizado==0) || (soytitular($nitavu)!='FALSE' and $finalizado==0) || (soyColaborador_caso($id,$nitavu) and soyDptoturnado($id,$dpto))){
-          
-          if(($nivel==3 and estaActivalaColaboracion($nitavu,$id)==0 ) || ((soyColaborador($nitavu)=='TRUE') and (soyDptoturnado($id,$dpto)=='FALSE')) 
-          || (soyDptoturnado($id,$dpto)=='TRUE') ){
-          
-          echo "<a href='#agregar_anexos' style='width:150px;' rel='MyModal:open' class='btn-identidad-color1' title='Clic para agregar anexos' >";
-          echo "Agregar anexos";
-          echo "</a><br><br>";  
-        }}
-        echo "</div>";
-                
-            echo "</div>"; //cierra div historia caso
-
-
-              echo "<div class='historiaCaso'>";
-              echo "<h1>HISTORIAL DE ACCESOS AL CASO</h1>";
-              // $sql = "SELECT empleados.nombre,historia.fecha, historia.hora, 'Entró a ver el historial del caso' as actividad
-              // from historia
-              // right join empleados on empleados.nitavu=historia.nitavu WHERE
-              // historia.descripcion like  '%Entró a ver el historial del caso: ".$id."%'  
-              // UNION  
-              
-              // select empleados.nombre, cp_historialdocumentos.fecha,cp_historialdocumentos.hora, 
-              // CONCAT('Agregó el archivo: \"',cp_historialdocumentos.archivo,'\".')  as actividad
-              // from cp_historialdocumentos 
-              // inner join empleados   on empleados.nitavu=cp_historialdocumentos.nitavusube 
-              // where cp_historialdocumentos.numcaso = ".$id." order by  hora desc";
-              if (isset($_GET['histoall'])){
-                $sql = "
-                select 
-                nitavu as Nuser,
-                (select nombre from empleados where nitavu=Nuser) as nombre,
-                descripcion as actividad,
-                
-                historia.* from historia
-          
-                where
-                
-                descripcion like 'cp%' and 
-                descripcion like '%caso: ".$id."%' 
-                ";
-              } else {
-                  $sql = "
-              select 
-              nitavu as Nuser,
-              (select nombre from empleados where nitavu=Nuser) as nombre,
-              descripcion as actividad,
-              
-              historia.* from historia
-
-              where
-              
-              descripcion like 'cp%' and 
-              descripcion like '%caso: ".$id."%' 
-              limit 0
-              ";  
-              }
-              
-
-
-              // echo $sql;
-                
-              $r = $conexion -> query($sql);
-              echo "<div id='r' style='border: 0px; '>";
-                $cont=0;
-                while($f = $r -> fetch_array())
-                { // resultado de la busqueda.................
-              
-              
-                echo "<div id='resultado_elemento'  style='margin-left:-5px;'>";			 
-                echo "<table border='0'>";
-                echo "<tr>";										
-                        
-                    // DATOS OFICIO ENTRANTE
-                    echo "<td width='90%' class='tipo_nitavu'>";								
-                    echo "<table border='0'>";
-                    echo "<tr>";							
-                    echo "<td>";
-                    echo "<span class='normal tchico'>".$f['nombre']."</span>";
-                    echo "<span class='tchico'><br>".fecha_larga(date_format( date_create($f['fecha']), 'Y-m-d'))." </span>";
-                    echo "<span class='tchico tenue'><br>".$f['actividad']."</span>";
-                    
-                    echo "</td>";
-                    echo "</tr>";
-                    echo "</table>";						
-                    echo "</td>";							  
-                echo "</tr></table>";
-                echo "</div>";				
+            // ANEXOS
+            $anexos = "SELECT * FROM cp_historialdocumentos WHERE numcaso=" . $id . " and tipo=1";
+            $rc = $conexion->query($anexos);
+            echo "<div class='cd-card-section'>";
+              echo "<div class='cd-card-header cd-card-header-gold'>";
+                echo "<h3 class='cd-card-title'><i class='fa-solid fa-paperclip'></i> Anexos Adjuntos al Caso</h3>";
+                if (estaFinalizadoCaso($_GET['id']) == 0) {
+                  if (($nivel == 3 and estaActivalaColaboracion($nitavu, $id) == 0) || ((soyColaborador($nitavu) == 'TRUE') and (soyDptoturnado($id, $dpto) == 'FALSE')) || (soyDptoturnado($id, $dpto) == 'TRUE')) {
+                    echo "<a href='#agregar_anexos' rel='MyModal:open' class='cd-btn cd-btn-gold' style='padding:6px 14px; font-size:0.82rem;'><i class='fa-solid fa-plus'></i> Agregar Anexos</a>";
+                  }
                 }
-                echo "</div>";	
-            echo "</div>"; 
+              echo "</div>";
+              echo "<div class='cd-card-body' style='padding:0;'>";
 
-            if (isset($_GET['histoall'])){
-            } else {echo "<a class='btn-identidad-color1' style='color:white; font-weight:bold;' href='?histoall=&id=".$_GET['id']."'>Ver el historial de accesos...</a>";}
+              if ($rc->num_rows > 0) {
+                echo "<div class='cd-table-container'>";
+                  echo "<table class='cd-table'>";
+                    echo "<thead><tr>";
+                      echo "<th>Nombre del Anexo</th>";
+                      echo "<th style='width:160px;'>Fecha</th>";
+                      echo "<th style='width:80px; text-align:center;'>Acción</th>";
+                    echo "</tr></thead>";
+                    echo "<tbody>";
+                    while ($r = $rc->fetch_array()) {
+                      echo "<tr>";
+                        $archivo = "peticiones/" . $r['idDoc'] . '_' . $r['NumCaso'] . '_' . $r['archivo'] . "";
+                        $link = "<a id=" . $r['idDoc'] . " name='$archivo' href='cp_descargar.php?nombre=" . $archivo . "' target='_self' style='font-weight:700; color:var(--cd-dark); text-decoration:none;' title='Clic para descargar'><i class='fa-solid fa-file-pdf' style='color:#2563eb; margin-right:6px;'></i>" . htmlspecialchars($r['archivo']) . "</a>";
+                        echo "<td>" . $link;
+                          echo "<br><span style='font-size:0.78rem; color:var(--cd-gray-mid);'>por " . nitavu_nombre($r['nitavuSube']) . " (" . nitavu_dpto_nombre($r['nitavuSube']) . ")</span>";
+                        echo "</td>";
 
-        //cierra div bloque.
-          
+                        echo "<td>" . fecha_larga($r['fecha']) . "</td>";
+
+                        echo "<td style='text-align:center;'>";
+                        if (($r['nitavuSube'] == $nitavu) and (estaFinalizadoCaso($r['NumCaso']) == 0) and $r['activo'] <> '1' and $r['archivo'] <> "") {
+                          echo "<form action='cp_nuevos_oficios.php?id=" . $id . "' method='POST' style='margin:0;'>";
+                            echo '<input type="hidden" name="id" value=' . $id . '>';
+                            echo '<input type="hidden" name="idDoc" value=' . $r['idDoc'] . '>';
+                            echo '<input type="hidden" name="numDoc" value=' . $r['numOficio'] . '>';
+                            echo "<button type='submit' class='cd-icon-btn delete' title='Eliminar anexo'><i class='fa-solid fa-trash-can'></i></button>";
+                          echo "</form>";
+                        }
+                        echo "</td>";
+                      echo "</tr>";
+                    }
+                    echo "</tbody>";
+                  echo "</table>";
+                echo "</div>";
+              } else {
+                echo "<div style='padding:20px; text-align:center; color:var(--cd-gray-mid); font-style:italic;'>No hay anexos registrados para este caso.</div>";
+              }
+              echo "</div>";
+            echo "</div>"; // .cd-card-section (Anexos)
+
+            // HISTORIAL DE ACCESOS
+            echo "<div class='cd-card-section'>";
+              echo "<div class='cd-card-header cd-card-header-info'>";
+                echo "<h3 class='cd-card-title'><i class='fa-solid fa-user-clock'></i> Historial de Accesos al Caso</h3>";
+                if (!isset($_GET['histoall'])) {
+                  echo "<a href='?histoall=&id=" . $_GET['id'] . "' class='cd-btn cd-btn-light' style='padding:6px 12px; font-size:0.82rem;'><i class='fa-solid fa-list-ul'></i> Ver todo el historial...</a>";
+                }
+              echo "</div>";
+
+              if (isset($_GET['histoall'])) {
+                $sql = "select nitavu as Nuser, (select nombre from empleados where nitavu=Nuser) as nombre, descripcion as actividad, historia.* from historia where descripcion like 'cp%' and descripcion like '%caso: " . $id . "%' ";
+              } else {
+                $sql = "select nitavu as Nuser, (select nombre from empleados where nitavu=Nuser) as nombre, descripcion as actividad, historia.* from historia where descripcion like 'cp%' and descripcion like '%caso: " . $id . "%' limit 5";
+              }
+
+              $r = $conexion->query($sql);
+              echo "<div class='cd-card-body'>";
+                if ($r->num_rows > 0) {
+                  echo "<div class='cd-comments-list'>";
+                  while ($f = $r->fetch_array()) {
+                    echo "<div class='cd-comment-item' style='background:#f8fafc;'>";
+                      echo "<div class='cd-comment-body'>";
+                        echo "<div class='cd-comment-meta'>";
+                          echo "<span class='cd-comment-author'>" . htmlspecialchars($f['nombre']) . "</span>";
+                          echo "<span class='cd-comment-date'><i class='fa-regular fa-clock'></i> " . fecha_larga(date_format(date_create($f['fecha']), 'Y-m-d')) . "</span>";
+                        echo "</div>";
+                        echo "<div class='cd-comment-text' style='color:var(--cd-gray-dark); font-size:0.82rem;'>" . htmlspecialchars($f['actividad']) . "</div>";
+                      echo "</div>";
+                    echo "</div>";
+                  }
+                  echo "</div>";
+                } else {
+                  echo "<p style='color:var(--cd-gray-mid); font-style:italic; margin:0;'>Sin registros recientes de acceso.</p>";
+                }
+              echo "</div>";
+            echo "</div>"; // .cd-card-section (Historial accesos)
+
+            echo "</div>"; // CIERRA .cd-wrapper PRINCIPAL         
         echo "</div>";
 
           //MODAL PARA AGREGAR ANEXOS

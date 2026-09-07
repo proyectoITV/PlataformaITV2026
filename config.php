@@ -91,11 +91,27 @@ if (!defined('ITAVU_ENV_LOADED')) {
 }
 
 
+if (!function_exists('itavu_get_env')) {
+	function itavu_get_env($key, $default = '') {
+		$val = getenv($key);
+		if ($val !== false && $val !== '') {
+			return $val;
+		}
+		if (isset($_ENV[$key]) && $_ENV[$key] !== '') {
+			return $_ENV[$key];
+		}
+		if (isset($_SERVER[$key]) && $_SERVER[$key] !== '') {
+			return $_SERVER[$key];
+		}
+		return $default;
+	}
+}
+
 //Credenciales para la base de datos de Plataforma
-$dbhost = trim((string) getenv('DB_HOST'), "'\"");
-$dbuser = trim((string) getenv('DB_USER'), "'\"");
-$dbpass = trim((string) getenv('DB_PASS'), "'\"");
-$dbname = trim((string) getenv('DB_NAME'), "'\"");
+$dbhost = trim((string) itavu_get_env('DB_HOST'), "'\"");
+$dbuser = trim((string) itavu_get_env('DB_USER'), "'\"");
+$dbpass = trim((string) itavu_get_env('DB_PASS'), "'\"");
+$dbname = trim((string) itavu_get_env('DB_NAME'), "'\"");
 
 if ($dbhost === '' || $dbuser === '' || $dbpass === '' || $dbname === '') {
 	die('ERROR: Faltan variables de entorno para la conexion a base de datos (DB_HOST, DB_USER, DB_PASS, DB_NAME).');

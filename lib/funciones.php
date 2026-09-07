@@ -11369,6 +11369,16 @@ return $fecha_salida;
 }
 
 
+function fecha_corta($fecha_){
+    if (empty($fecha_) || $fecha_ == '0000-00-00') return '';
+    $time = strtotime($fecha_);
+    if (!$time) return $fecha_;
+    $meses = array(1 => 'ENE', 2 => 'FEB', 3 => 'MAR', 4 => 'ABR', 5 => 'MAY', 6 => 'JUN', 7 => 'JUL', 8 => 'AGO', 9 => 'SEP', 10 => 'OCT', 11 => 'NOV', 12 => 'DIC');
+    $m = (int)date('m', $time);
+    $mes_abrev = isset($meses[$m]) ? $meses[$m] : date('M', $time);
+    return date('d', $time) . '/' . $mes_abrev . '/' . date('Y', $time);
+}
+
 function fecha_larga($fecha_){
 //return  dia_semana($fecha_)." ".date('d/m/Y', strtotime($fecha_));
 $mes = date('m', strtotime($fecha_));
