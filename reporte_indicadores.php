@@ -8,7 +8,8 @@ require('lib/yes_funciones.php');
 
 $idrep=$_GET['idrep'];
 $nitavu = $_GET['nitavu'];
-$search= $_GET['ss'];
+//$search= $_GET['ss'];
+$idactividad = isset($_GET['idactividad']) ? (int) $_GET['idactividad'] : 0;
 
 //idrep
 //1- indicadores_dir actividades activas (0,1)
@@ -19,70 +20,84 @@ $search= $_GET['ss'];
 
 
 
-$vuelta=0;
+
+$id_aplicacion = 'ap130';
+$nivel =aplicacion_nivel($id_aplicacion, $nitavu);
     //historia($nitavu, 'Veo el reporte de la lista de mandantes con los montos por pagar, y todos los saldos.');
 
     $tabla = "";
      //FILTRAR POR DIRECCION
-    if ($idrep==1){
-        // if(nitavu_dpto($nitavu)==1){
-        //     $sql ="select * from actividades_indicadores";
-        // }else{
-        //     $sql ="select * from actividades_indicadores where IdDireccion = ".nitavu_dpto($nitavu)."";
-        // }
+    if ($idrep==1){       
+        $titulo='ACTIVIDADES';
 
-
-        if(nitavu_dpto($nitavu)==1){
+        if(nitavu_dpto($nitavu)==1 or ($nivel=='1'or $nivel=='2')){
             //$sql ="select * from actividades_indicadores";
             $sql =" SELECT *, (CASE WHEN prioridad='A' THEN 0 WHEN prioridad='B' THEN 2 WHEN prioridad='M' THEN 1 END) as valorprioridad 
-            FROM actividades_indicadores WHERE  Estatus!=3 and Estatus!=2  ORDER BY IdDireccion, valorprioridad";
+            FROM actividades_indicadores WHERE Estatus!=3 and Estatus!=2";
+         //echo "entro";
         }else{
            // $sql ="select * from actividades_indicadores where IdDireccion = ".nitavu_dpto($nitavu)."";
             $sql =" SELECT *, (CASE WHEN prioridad='A' THEN 0 WHEN prioridad='B' THEN 2 WHEN prioridad='M' THEN 1 END) as valorprioridad 
-            FROM actividades_indicadores WHERE Estatus!=3 and Estatus!=2 and IdDireccion = ". quienEsmiDireccion(nitavu_dpto($nitavu))."  ORDER BY IdDireccion, valorprioridad";
+            FROM actividades_indicadores WHERE Estatus!=3 and Estatus!=2 and IdDireccion = ". quienEsmiDireccion(nitavu_dpto($nitavu));
             //and Estatus!=3
+            //echo "entro2";
             
         }
+        if ($idactividad > 0){
+            $sql .= " AND IdActividad = ".$idactividad;
+        }
+        $sql .= " ORDER BY IdDireccion, valorprioridad";
     } 
-
+       //echo $sql;
     if ($idrep==2){
-        if(nitavu_dpto($nitavu)==1){
+         $titulo='ACTIVIDADES FINALIZADAS';
+        if(nitavu_dpto($nitavu)==1 or ($nivel=='1'or $nivel=='2')){
             //$sql ="select * from actividades_indicadores";
             $sql =" SELECT *, (CASE WHEN prioridad='A' THEN 0 WHEN prioridad='B' THEN 2 WHEN prioridad='M' THEN 1 END) as valorprioridad 
             FROM actividades_indicadores WHERE  Estatus=3  ORDER BY IdDireccion, valorprioridad";
-        }else{
+           //echo "entro3";
+       }else{
            // $sql ="select * from actividades_indicadores where IdDireccion = ".nitavu_dpto($nitavu)."";
             $sql =" SELECT *, (CASE WHEN prioridad='A' THEN 0 WHEN prioridad='B' THEN 2 WHEN prioridad='M' THEN 1 END) as valorprioridad 
             FROM actividades_indicadores WHERE Estatus=3 and IdDireccion = ". quienEsmiDireccion(nitavu_dpto($nitavu))."  ORDER BY IdDireccion, valorprioridad";
             //and IdDireccion = ".nitavu_dpto($nitavu)."  ORDER BY IdDireccion, valorprioridad";
-            echo $sql;
+
+            if ($idactividad > 0){
+            $sql .= " AND IdActividad = ".$idactividad;
+            //echo "entro4";
+        }
+       //     echo $sql;
             //and Estatus!=3
         }
     }
 
 
     if ($idrep==3){
+         $titulo='ACTIVIDADES';
         if (nitavu_dpto_nivel($nitavu)=='dir'){       
             $sql=" Select * from  actividades_dpto INNER JOIN cat_gerarquia on actividades_dpto.IdDepartamento=cat_gerarquia.id where actividades_dpto.IdDireccion=19 
             and (cat_gerarquia.nombre like '%".$search."%' or actividades_dpto.Actividad like '%".$search."%' or actividades_dpto.Tema like'%".$search."%')  and Estatus not in (2,3) ";    
             //$sql="Select * from  actividades_dpto where IdDireccion=".quienEsmiDireccion(nitavu_dpto($nitavu))." and Estatus not in (2,3) ";
             //$sql="Select * from  actividades_dpto where IdDireccion=".quienEsmiDireccion(nitavu_dpto($nitavu))." and Estatus not in (2,3) ORDER BY IdDepartamento";
-        }else{
+       echo "entro5";
+            }else{
             $sql="Select * from  actividades_dpto where IdDepartamento=".nitavu_dpto($nitavu)." and Estatus not in (2,3)  ";
         } 
         $sql=$sql."ORDER BY IdDepartamento";
     } 
     if ($idrep==4){
-
+        $titulo='ACTIVIDADES FINALIZADAS';
         if (nitavu_dpto_nivel($nitavu)=='dir'){            
             $sql="Select * from  actividades_dpto INNER JOIN cat_gerarquia on actividades_dpto.IdDepartamento=cat_gerarquia.id where actividades_dpto.IdDireccion=19 
           and (cat_gerarquia.nombre like '%".$search."%' or actividades_dpto.Actividad like '%".$search."%' or actividades_dpto.Tema like'%".$search."%')  and Estatus=3 ";
            // $sql="Select * from  actividades_dpto where IdDireccion=".quienEsmiDireccion(nitavu_dpto($nitavu))." and Estatus=3 ";
       //  echo 'search es : '.$search   ;
+      echo "entro6";
         }else{
             $sql="Select * from  actividades_dpto where IdDepartamento=".nitavu_dpto($nitavu)." and Estatus=3  ";
         } 
         $sql=$sql."ORDER BY IdDepartamento";
+        echo "entro7";
     } 
     // if ($idrep==5){
     //     if (nitavu_dpto_nivel($nitavu)=='dir'){            
@@ -133,13 +148,15 @@ $vuelta=0;
     if ($rc->num_rows>0){
         
       
-      
+     
         while($r1 = $rc -> fetch_array()){
-            $vuelta++;
+
+
+           // $vuelta++;
             $tabla = $tabla."<tr style='font-size:7pt;'>";
 
             if ($idrep==1 or $idrep==2){
-                $tabla = $tabla.'<td style="width:2%; ">'.$vuelta.'</td>';
+                $tabla = $tabla.'<td style="width:2%; ">'.$r1['IdActividad'].'</td>';
                 }else
                 {
                     $tabla = $tabla.'<td style="width:2%; color: '.colorbar_catjerarquia($r1['IdDepartamento']).'">'.$vuelta.'</td>';
@@ -190,15 +207,52 @@ $vuelta=0;
                 $tabla = $tabla.'<td style="width:7%;">'.$r1['FechaTermino'].'</td>';
                 $tabla = $tabla.'<td style="width:6%;">'.$r1['FechaInicio'].'</td>';       
                  
-
-                $encargado = titular($r1['IdDireccion']);
-                $nombreencargado = nitavu_nombre($encargado);
+                
+                
+                
                 $tabla = $tabla.'<td  style="width:4%; ">'.$r1['Avance'].'</td>';
-                $tabla = $tabla.'<td style="width:10%; text-align:justify;">'.DptoNombre($r1['IdDepartamento']).'</td>';           
+                
+                 if ($idrep==1 or $idrep==2){
+                   $tabla = $tabla.'<td style="width:10%; text-align:justify;">'.DptoNombreCorto($r1['IdDireccion']).'</td>'; 
+                    }else
+                    {
+                       $tabla = $tabla.'<td style="width:10%; text-align:justify;">'.DptoNombre($r1['IdDepartamento']).'</td>'; 
+                    }          
                 $tabla = $tabla.'<td  style="width:14%;text-align:justify; "><font size="7">'.$r1['Comentarios'].'</font></td>';  
             $tabla = $tabla."</tr>";       
         }
         $tabla = $tabla."</table>";
+    }
+
+    if ($idactividad > 0){
+        $sqlHistorial = "SELECT Id, Fecha, Comentario, Avance
+                         FROM historial_actividades
+                         WHERE IdActividad = ".$idactividad." ORDER BY Fecha, Id";
+        $rcHistorial = $conexion->query($sqlHistorial);
+
+        $tabla .= '<br><br><h3 style="font-size:10pt;">HISTORIAL DE LA ACTIVIDAD</h3>';
+        $tabla .= '<table border="1" border-color="#BC2E22" align="center" style="padding:3px;">';
+        $tabla .= '<tr style="font-size:8pt; color:black;">';
+        $tabla .= '<th style="width:8%;"><b>ID</b></th>';
+        $tabla .= '<th style="width:15%;"><b>FECHA</b></th>';
+        $tabla .= '<th style="width:57%;"><b>COMENTARIO</b></th>';
+        $tabla .= '<th style="width:20%;"><b>AVANCE</b></th>';
+        $tabla .= '</tr>';
+
+        if ($rcHistorial && $rcHistorial->num_rows > 0){
+            while ($historial = $rcHistorial->fetch_assoc()){
+                $tabla .= '<tr style="font-size:8pt;">';
+                $tabla .= '<td style="text-align:center;">'.$historial['Id'].'</td>';
+                $tabla .= '<td style="text-align:center;">'.date_format(date_create($historial['Fecha']), 'd-m-y').'</td>';
+                $tabla .= '<td style="text-align:justify;">'.$historial['Comentario'].'</td>';
+                $tabla .= '<td style="text-align:center;">'.$historial['Avance'].'%</td>';
+                $tabla .= '</tr>';
+            }
+        } else {
+            $tabla .= '<tr style="font-size:8pt;"><td colspan="4" style="text-align:center;">Sin historial registrado</td></tr>';
+        }
+
+        $tabla .= '</table>';
     }
 
     
@@ -212,16 +266,19 @@ $vuelta=0;
     $midpto = nitavu_dpto($nitavu);
     
 
-    if ($idrep==1){
-        $nombreDpto = DptoNombre($r1['IdDireccion']);
+    //revisar el nombre del dpto
+
+    if ($idrep==1 or $idrep==2){
+         $nombreDpto = DptoNombre(nitavu_dpto($nitavu));
+         
     }else{
         $nombreDpto = DptoNombre(nitavu_dpto($nitavu));
         //$nombreDpto = DptoNombre(nitavu_dpto($nitavu));
-    }   
+    }
 
-    if($midpto==1)
+    if($midpto==1  or ($nivel=='1'or $nivel=='2'))
         {
-        $titulo='ACTIVIDADES';
+       
     }
     else{
         $titulo='ACTIVIDADES: '.$nombreDpto;//strtoupper($nombreDpto);
@@ -275,7 +332,7 @@ $vuelta=0;
     // add a page
     $pdf->AddPage('L', 'LEGAL'); //en la tabla de reporte L o P
     $html = $tabla;
-    //echo $html; aqui escribe el contenido de la consulta
+  echo $html; //aqui escribe el contenido de la consulta
     $pdf->Image('@' . $img, 300, 0, '', '', '', $link, 'rigth', false, 0, '', false, false, 0, false, false, false);
     
     $pdf->writeHTML($html, true, false, true, false, '');
@@ -286,6 +343,6 @@ $vuelta=0;
     ob_end_clean();
     $pdf->Output('reporte.pdf', 'I');
         //else ok
-   //     echo $html;
+       echo $html;
 
 ?>

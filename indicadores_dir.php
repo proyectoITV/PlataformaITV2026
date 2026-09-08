@@ -132,7 +132,7 @@ if(isset($_GET['idactividad'])){
     echo "<center>";
     echo "<div style='width:80%;'>";
     //table table-striped table-bordered
-    echo '<table class="table bordered" align="center" style="font-size: 14; vertical-align: middle;">'; //class="table bordered" table table-bordered
+    echo '<table class="table bordered" align="center" style="font-size: 14; vertical-align: middle;" id="tablaActividades">'; //class="table bordered" table table-bordered
     echo '<tr  style="border-color=#F93308; "  >'; //bgcolor="white" bacKground:white;  border:ridge
     echo '<th style="width:2%; font-size:8pt; background:white;  border: 1px solid #B40404;  border-bottom: 2px solid #B40404;"      rowspan="2">NO</th>'; //bacKground:#E75F54;
     echo '<th style="width:3%; background:white; color:black;  border: 1px solid #B40404;  border-bottom: 2px solid #B40404;" rowspan="2">INF<br>GOB</th>';
@@ -155,7 +155,7 @@ if(isset($_GET['idactividad'])){
 
       //if(nitavu_dpto($nitavu)==1){
          
-         echo "<th colspan=2 rowspan='2' style=' color:black; background:white; border: 1px solid #B40404;  border-bottom: 2px solid #B40404;'><center>ACCIONES</center></th>";
+         echo "<th colspan='3' rowspan='2' style=' color:black; background:white; border: 1px solid #B40404;  border-bottom: 2px solid #B40404;'><center>ACCIONES</center></th>";
     // }
 
     echo '</tr>';
@@ -562,6 +562,9 @@ $conexion->set_charset('utf8mb4');
                     //--
                     echo "</a>"; //</td><td></td>
 
+                    echo "<td><a class='pc' href='reporte_indicadores.php?nitavu=".$nitavu."&idrep=1&idactividad=".$f['IdActividad']."' title='Imprimir la actividad' target='_blank'>";
+                    echo "<img src='icon/printer.png' style='width:35px; padding:5px;'>";
+                echo "</td>";
                     if (porcentajeActividad($f['IdActividad'])==100 ){
                         echo "<td style='vertical-align: middle;'><a class='pc'  href='indicadores_dir.php?idactividad=".$f['IdActividad']."'   title='Archivar la actividad'>";
                          echo "<img src='icon/ci.png' style='width:35px; padding:5px;'>";
