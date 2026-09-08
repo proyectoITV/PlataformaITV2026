@@ -240,7 +240,7 @@ while($fc = $rc -> fetch_array())
 {
 
         echo "<div id='aplicaciones' >
-        <h4 style='font-size:10pt; color: #990000; font-weight: bold;'>".$fc['Categoria']."</h4>
+        <h4><i class='fa-solid fa-folder-open' style='color:var(--cd-gold); margin-right:6px;'></i> ".$fc['Categoria']."</h4>
         ";
         if ($busqueda <> ''){
             $sql = "select
@@ -276,36 +276,34 @@ while($fc = $rc -> fetch_array())
                 echo "<article>";
             } else {
 
-                if ($MiApp == '0') { //No Favorita
-                    // $IdFavorite = 1;
+                if ($MiApp == '0') { //Favorita activa
                     echo "<article style='background-color:#ffe0c5;'>";
-                } else {// Favorita
-                    // $IdFavorite = 0;
+                } else {// No Favorita
                     echo "<article>";
                 }
                 
             }
             echo "<table width=100%><tr>";
 
+            $iconPath = "icon/" . $fap['Icono'];
             echo "<td align=center class='MisApps_backgroundIcon'>
-            <a href='".$fap['URL']."' style='display:block; text-decoration:none; text-decoration:none;' title='".$fap['Title']."'><img class='MisApps_Icon'src='icon/".$fap['Icono']."' ></a></td>";
+            <a href='".$fap['URL']."' style='display:block; text-decoration:none;' title='".$fap['Title']."'>
+              <img class='MisApps_Icon' src='".$iconPath."' onerror=\"this.onerror=null; this.src='icon/page.png';\" />
+            </a></td>";
             echo "<td >";
             
-            echo "<span  title='".$fap['Title']."' style='font-size:8pt; cursor:pointer;'> <a style='display:block; text-decoration:none;  color:black; width:100%; height:200%;' href='".$fap['URL']."'>".$fap['Label']."</a></span>";
-            // echo "<cite style='font-size:7pt; font-family:Light;'>".$fap['Title']."</cite>";
+            echo "<span title='".$fap['Title']."' style='font-size:8.5pt; cursor:pointer;'> <a style='display:block; text-decoration:none; color:#1e293b; font-weight:600; width:100%;' href='".$fap['URL']."'>".$fap['Label']."</a></span>";
             
             echo "</td>";
 
            
             if ($MiApp == 'NoR'){ //No registrada                
-                echo "<td align=right><img id='fav_".$fap['IdApp']."' title = 'Haga clic aqui para hacerla su favorita' src='icon/favorite0.png' style='width:18px; cursor:pointer;' onclick='Favorite(`".$fap['IdApp']."`)';>"."</td>";
+                echo "<td align=right><i class='fa-regular fa-star' title='Marcar como favorita' style='font-size:16px; color:#cbd5e1; cursor:pointer; transition:all 0.2s;' onclick='Favorite(`".$fap['IdApp']."`)'></i></td>";
             } else{
-                if ($MiApp == '0') { //No Favorita
-                    // $IdFavorite = 1;
-                    echo "<td align=right><img id='fav_".$fap['IdApp']."' title = 'Haga clic aqui para hacerla su favorita' src='icon/favorite1.png' style='width:18px; cursor:pointer;' onclick='Favorite(`".$fap['IdApp']."`)';>"."</td>";
-                } else {// Favorita
-                    // $IdFavorite = 0;
-                    echo "<td align=right><img id='fav_".$fap['IdApp']."' title = 'Haga clic aqui para hacerla su favorita' src='icon/favorite0.png' style='width:18px; cursor:pointer;' onclick='Favorite(`".$fap['IdApp']."`)';>"."</td>";
+                if ($MiApp == '0') { //Favorita (activa)
+                    echo "<td align=right><i class='fa-solid fa-star' title='Quitar de favoritas' style='font-size:16px; color:#f59e0b; cursor:pointer; filter:drop-shadow(0 2px 4px rgba(245,158,11,0.4)); transform:scale(1.1); transition:all 0.2s;' onclick='Favorite(`".$fap['IdApp']."`)'></i></td>";
+                } else {// No Favorita
+                    echo "<td align=right><i class='fa-regular fa-star' title='Marcar como favorita' style='font-size:16px; color:#cbd5e1; cursor:pointer; transition:all 0.2s;' onclick='Favorite(`".$fap['IdApp']."`)'></i></td>";
                 }
             }
             
