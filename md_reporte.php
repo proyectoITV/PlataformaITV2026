@@ -381,12 +381,13 @@ $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8',
 // set document information
 $pdf->SetCreator(PDF_CREATOR);
 $pdf->SetKeywords('Reporte ITAVU');
-$pdf->SetHeaderData('pdf_logo.jpg', '40','', '');
+$logoHeaderPath = __DIR__ . '/img/pdf_logo.jpg';
+$logoRegresoPath = __DIR__ . '/img/regreso.png';
+$pdf->SetHeaderData('', 0,'', '');
 //$link = "http://".$urlnueva[1]."/mandantes_pago.php?idmandante=".$idmandante."&idcolonia=".$idcolonia."&idmunicipio=".$idmunicipio."";
 //$link = "www.localhost:81\mandantes_pago.php?idmandante=".$idmandante."&idcolonia=".$idcolonia."&idmunicipio=".$idmunicipio."";
 $link = $url."?idmandante=".$idmandante."&idcolonia=".$idcolonia."&idmunicipio=".$idmunicipio."";
 //$img = file_get_contents('C:\pdz-server\htdocs\img\regreso.png');
-$img = file_get_contents('img/regreso.png');
 //$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, '', '');
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
@@ -417,7 +418,12 @@ $pdf->AddPage('L', 'LEGAL');
 
 $html = $tabla;
 //echo $html; //aqui escribe el contenido de la consulta
-$pdf->Image('@' . $img, 300, 0, '', '', '', $link, 'rigth', false, 0, '', false, false, 0, false, false, false);
+if (is_file($logoHeaderPath)) {
+    $pdf->Image($logoHeaderPath, 12, 3, 40, '', 'JPG', '', '', false, 300, '', false, false, 0, false, false, false);
+}
+if (is_file($logoRegresoPath)) {
+    $pdf->Image($logoRegresoPath, 328, 3, 12, '', 'PNG', $link, '', false, 300, '', false, false, 0, false, false, false);
+}
     
 $pdf->writeHTML($html, true, false, true, false, '');
 

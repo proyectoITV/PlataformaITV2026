@@ -19,53 +19,37 @@
   // }
 ?>
 
-<nav style="background-color:white; padding:10px;">
-<table width=100% border=0><tr>
-    <td width=150px>  
-      <a  href="index.php"><img src="img/LogotipoOficial.jpg" style="width:262px;"></a>
-    </td>
-    <td>
-      <!-- <img src="img/moñonegro.png" style="width: 50px; height: 50px;"> -->
-    </td>
-    <td width=50px align=right>
-        
-<?php
-  // require("lib/funciones.php");
-  $notis = CuantasNotificaciones($nitavu);
-  $msg="";
-  if ($notis >0){
-    $msg = $msg."<td class='pc' width=50px align=left><a title='Tienes ".$notis." notificaciones' href='notificaciones.php'>
-    <img id='IconoDeAyuda' src='icon/notificacion_icon2.png' 
-    style='
-    
-    ';
-    >
-    </a></span></td>";
-  } else {
-    $msg = $msg."<td class='pc' width=50px align=left><a title='Sin Notificaciones' href='notificaciones.php'>
-    <img id='IconoDeAyuda' src='icon/notificacion_icon.png' 
-    style='
-
-    ';
-    ></a></span></td>";
-  }
-  echo $msg;
-?>
-
-</td><td width=50px align=right>
-<a style="opacity:0.8;" href="logout.php" title="Salir"><img src="icon/logout.png" style="width:50px;"></a>
-</td></tr></table>
+<nav class="cd-main-navbar">
+  <a href="index.php">
+    <img src="img/LogotipoOficial.jpg" class="cd-logo-img" alt="ITAVU Tamaulipas">
+  </a>
+  <div class="cd-nav-actions">
+    <?php
+      $notis = CuantasNotificaciones($nitavu);
+      if ($notis > 0){
+        echo "<a class='cd-nav-btn' title='Tienes ".$notis." notificaciones' href='notificaciones.php'>
+                <i class='fa-solid fa-bell' style='color:#7c121d; font-size:18px;'></i>
+                <span class='cd-noti-badge'>".$notis."</span>
+              </a>";
+      } else {
+        echo "<a class='cd-nav-btn' title='Sin Notificaciones' href='notificaciones.php'>
+                <i class='fa-regular fa-bell' style='color:#64748b; font-size:18px;'></i>
+              </a>";
+      }
+    ?>
+    <a class="cd-nav-btn" href="logout.php" title="Cerrar Sesión">
+      <i class="fa-solid fa-right-from-bracket" style="color:#7c121d; font-size:18px;"></i>
+    </a>
+  </div>
 </nav>
 
 <?php
-  echo "<div id='avisos' style='background-color: #990000;'>";
-  $nip =nitavu_nip($nitavu);
+  $nip = nitavu_nip($nitavu);
   if ($nip == $nitavu){
-    echo "<li style='color:white; border-bottom:7px solid #bc955c;'> Por seguridad debes cambiar tu nip; ya que es igual que no. de empleado. Cambialo <a style='color:#bc955c;' href='nip_update.php' >aqui</a>"."</li>";
-  }else {
-    echo "<li style='color:white; border-bottom:7px solid #bc955c;'> Imagenes destacadas</li>";
+    echo "<div id='avisos' style='background: linear-gradient(135deg, #7c121d 0%, #990000 100%); color: white; padding: 10px 24px; text-align: center; border-bottom: 3px solid #bc955c; font-size: 13px; font-weight: 600;'>";
+    echo "<i class='fa-solid fa-triangle-exclamation' style='color:#bc955c; margin-right:8px;'></i> Por seguridad debes cambiar tu NIP ya que es igual a tu No. de Empleado. Cámbialo <a style='color:#ddc9a3; text-decoration:underline;' href='nip_update.php'>aquí</a>.";
+    echo "</div>";
   }
-  echo "</div>";
 ?>
 
 <?php
@@ -73,7 +57,7 @@
     //------------------- Inicia carrusel  -------------------//
     $script = "select * from ControlDeCarrusel where IdEstatus = 0 and archivophp = 'index.php' order by OrdenVisual DESC";
     $result = $conexion->query($script);
-    $row_cnt = $result->num_rows;
+    $row_cnt = ($result)? $result->num_rows : 0;
 
     if ($row_cnt > 0) {
       $secuencia = 0;
@@ -90,12 +74,7 @@
         $carouselindicators .= "<button type='button' data-bs-target='#carouselExampleCaptions' data-bs-slide-to='" . $secuencia . "' class='" . $activeClass . "' " . $ariaCurrent . " aria-label='Diapositiva " . ($secuencia + 1) . "'></button>";
 
         $carouselinner .= "<div class='carousel-item " . $activeClass . "'>";
-        $carouselinner .= "<img src='" . $rutaArchivo . "' class='d-block w-100' alt='" . htmlspecialchars($pieFoto) . "' onerror=\"this.style.display='none'; this.nextElementSibling.style.display='flex';\" />";
-        $carouselinner .= "<div class='cd-carousel-fallback' style='display:none;'>";
-        $carouselinner .= "<i class='fa-solid fa-building-columns cd-carousel-fallback-icon'></i>";
-        $carouselinner .= "<h2 class='cd-carousel-fallback-title'>" . htmlspecialchars($pieFoto) . "</h2>";
-        $carouselinner .= "<p class='cd-carousel-fallback-subtitle'><i class='fa-solid fa-bullhorn' style='color:var(--cd-gold);'></i> Información Destacada Plataforma ITAVU 2026</p>";
-        $carouselinner .= "</div>";
+        $carouselinner .= "<img src='" . $rutaArchivo . "' class='d-block w-100' alt='" . htmlspecialchars($pieFoto) . "' onerror=\"this.onerror=null; this.src='img/itavu_hero_banner.png';\" />";
         $carouselinner .= "<div class='cd-carousel-badge'><i class='fa-regular fa-clock'></i> " . $fechaPub . "</div>";
         $carouselinner .= "</div>";
 
@@ -114,27 +93,54 @@
       echo "</button>";
       echo "</div>";
       echo "</div>";
+    } else {
+      // Default Executive Hero Banner when DB table is empty
+      echo "<div id='ControlDeCarrusel' class='cd-carousel-container'>";
+      echo "<div id='carouselExampleCaptions' class='carousel slide' data-bs-ride='carousel'>";
+      echo "<div class='carousel-inner'>";
+      echo "<div class='carousel-item active'>";
+      echo "<img src='img/itavu_hero_banner.png' class='d-block w-100' alt='Plataforma ITAVU 2026' />";
+      echo "<div class='cd-carousel-badge'><i class='fa-regular fa-clock'></i> " . date("d/m/Y H:i") . "</div>";
+      echo "</div>";
+      echo "</div>";
+      echo "</div>";
+      echo "</div>";
     }
     //------------------- Termina carrusel  -------------------///
 
 
     //--------------------- Inicia menu ----------------------//
+    $VistaUser = Preference('VistaMenu', $nitavu, '');
+    if ($VistaUser == 'NoR' || $VistaUser == '') {
+      $VistaUser = 0;
+    }
+
     echo "
-    <div id='minMenu' style='width: 100%; text-align: right; background-color: transparent; padding: 10px;'>
-      <table width=100%>
-        <tr>
-          <td align=right  width=80%>  
-          </td>
-          <td align=right width=20%>
-            <b style='font-family: Compacta; color: #4f4f4f;'>Formas de vistas</b>
-            <button class='btn-identidad-color1' onclick='BuscarApps(4);' title='MisFavoritos'><img src='icon/favorite1.png' style='width:18px'></button>
-            <button class='btn-identidad-color1' onclick='BuscarApps(0);' title='Vista por Categorias'><img src='icon/view_1.png' style='width:18px'></button>
-            <button class='btn-identidad-color1' onclick='BuscarApps(2);' title='Vista por Iconos'><img src='icon/view_2.png' style='width:18px'></button>
-            <button class='btn-identidad-color1' onclick='BuscarApps(3);' title='Vista por DataTable'><img src='icon/view_3.png' style='width:18px'></button>
-          </td>
-        </tr>
-      </table>
+    <div class='cd-view-mode-bar'>
+      <span class='cd-view-mode-title'>
+        <i class='fa-solid fa-shapes'></i> Modalidad de Vista
+      </span>
+      <div class='cd-segmented-pills'>
+        <button class='cd-pill-btn ".($VistaUser==4 ? "active" : "")." ' onclick='BuscarApps(4); selectPill(this);' title='Mis Favoritos'>
+          <i class='fa-solid fa-star' style='color:#f59e0b;'></i> Favoritos
+        </button>
+        <button class='cd-pill-btn ".($VistaUser==0 ? "active" : "")." ' onclick='BuscarApps(0); selectPill(this);' title='Vista por Categorías'>
+          <i class='fa-solid fa-layer-group'></i> Categorías
+        </button>
+        <button class='cd-pill-btn ".($VistaUser==2 ? "active" : "")." ' onclick='BuscarApps(2); selectPill(this);' title='Vista por Iconos'>
+          <i class='fa-solid fa-grip-vertical'></i> Iconos
+        </button>
+        <button class='cd-pill-btn ".($VistaUser==3 ? "active" : "")." ' onclick='BuscarApps(3); selectPill(this);' title='Vista por Tabla'>
+          <i class='fa-solid fa-table-list'></i> Tabla
+        </button>
+      </div>
     </div>
+    <script>
+      function selectPill(btn) {
+        $('.cd-pill-btn').removeClass('active');
+        $(btn).addClass('active');
+      }
+    </script>
     ";
     //--------------------- Termina Menu ----------------------//
 ?>
@@ -142,7 +148,7 @@
 <div id='AppResultado' style="margin-top: 19px; text-align:center;"></div>
 
 <?php
-  echo "<div id='app_contenedor' style='background-color: #ccc;'>";
+  echo "<div id='app_contenedor' style='background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 24px 10px; text-align: center;'>";
     include("widget_salidas.php");
     include("widget_cumples.php");
 
@@ -260,31 +266,9 @@
           echo "</div>";
         echo "</section>";
     }
-
-    //Mes de octubre - Halloween
-    //if (date("m")==10) {
-    //  echo "<div id='videos' style = 'border-radius: 2px; background-color: black; background-color: rgb(0, 0, 0); border: 1px #000 solid; vertical-align: top; overflow: hidden; margin: 10px; border-radius: 4px; -webkit-box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 0.75); -moz-box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 0.75); box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 0.75); width:600px;'>";	
-    //    echo "<video width='600' height='360' controls> <source src='videos/halloween.mp4' type='video/mp4'> Your browser does not support the video tag. </video>";
-    //  echo "</div>";
-    //}
-    //if (date("m")==11) {
-    //  echo "<div id='videos' style = 'border-radius: 2px; background-color: black; background-color: rgb(0, 0, 0); border: 1px #000 solid; vertical-align: top; overflow: hidden; margin: 10px; border-radius: 4px; -webkit-box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 0.75); -moz-box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 0.75); box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 0.75); width:600px;'>";	
-    //    echo "<video width='600' height='360' controls> <source src='videos/diademuertos.mp4' type='video/mp4'> Your browser does not support the video tag. </video>";
-    // echo "</div>";
-    //}
-
-
-
 ?>
 
-
-
 <?php
-$VistaUser = Preference('VistaMenu', $nitavu, '');
-// var_dump($VistaUser);
-if ($VistaUser == 'NoR') {
-  $VistaUser = 0;
-} 
 echo "
 <script>
 function BuscarApps(mode){   
@@ -319,7 +303,7 @@ function Favorite(IdApp){
           success: function(data){
           $('#R').html(data);          
           $('#progressbar').hide();
-          
+          BuscarApps(".$VistaUser.");
           }
       });
     
@@ -348,58 +332,35 @@ function BuscarApps_lite(){
     ";
 ?>
 
-
 <?php
 include ("lib/body_footer.php");
-
-
 ?>
 </div>
-<div id='MenuFooter' style='
-    
-'>
-<table width=100%></tr><td width=50px>
-  <a href="perfil.php" id="FotoFooter" class="pc">          
-  
-    <?php 
-    echo ponerfoto("fotos/".$nitavu.".jpg",'fotoMenu'); 
-    ?> 
-  
-  </a>
-</td><td valign=top align=center>
-    <article class='movil'>
-      <table><tr><td valign=midle align=center width=20px>
-      <img src='icon/tr_o_verde.png' style='width:12px;'>
-      </td><td>
-      <a class='btn-Link' style='color:white; font-size:9pt; text-decoration:none;' href='perfil.php'>
-      Mi Perfil
+
+<footer class="cd-executive-footer">
+  <div class="cd-footer-content">
+    <div class="cd-footer-user">
+      <div class="cd-user-avatar-wrapper">
+        <?php echo ponerfoto("fotos/".$nitavu.".jpg", 'cd-hero-avatar'); ?>
+        <span class="cd-online-dot" title="Sesión activa"></span>
+      </div>
+      <div style="display:flex; flex-direction:column; text-align:left;">
+        <span style="font-size:13.5px; font-weight:700; color:#ffffff;"><?php echo nitavu_nombre($nitavu); ?></span>
+        <span style="font-size:11.5px; color:#94a3b8;"><?php echo nitavu_dpto_nombre(nitavu_dpto($nitavu)); ?></span>
+      </div>
+    </div>
+
+    <div class="cd-footer-links">
+      <a class="cd-footer-link" href="perfil.php">
+        <i class="fa-solid fa-id-card" style="color:var(--cd-gold);"></i> Mi Perfil
       </a>
-    </td></tr></table>
-    </article>
+      <a class="cd-footer-link" href="SETUP_TokenPlataforma.zip" download>
+        <i class="fa-solid fa-key" style="color:var(--cd-gold);"></i> Token Digital
+      </a>
+      <a class="cd-footer-link" href="#Acuerdo" rel="MyModal:open">
+        <i class="fa-solid fa-file-contract" style="color:var(--cd-gold);"></i> Acuerdo de Confidencialidad
+      </a>
+    </div>
+  </div>
+</footer>
 
-
-<article>
-  <table><tr><td valign=midle align=center width=20px>
-  <img src='icon/tr_o_verde.png' style='width:12px;'>
-  </td><td>
-  <a class='btn-Link' style='color:white; font-size:9pt; text-decoration:none;' href='SETUP_TokenPlataforma.zip' download>   
-  Instalacion del TOKEN
-  </a>
-</td></tr></table>
-</article>
-
-
-<article>
-  <table><tr><td valign=midle align=center width=20px>
-  <img src='icon/tr_o_verde.png' style='width:12px;'>
-  </td><td>
-  <a class='btn-Link' style='color:white; font-size:9pt; text-decoration:none;' href='#Acuerdo' rel=MyModal:open>
-   Acuerdo de Confidencialidad
-  </a>
-</td></tr></table>
-</article>
-
-
-
-</td></tr></table>
-</div>
