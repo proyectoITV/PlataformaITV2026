@@ -252,9 +252,9 @@ $pdf->SetFont('Helvetica','B',8);
 $pdf->Cell(60,10,"VoBo PARA PROXIMO SERVICIO",0 ,0,'C',0);
 $pdf->SetFont('Helvetica','',8);
 $pdf->SetXY(25,245);
-$pdf->Cell(60,10,"LIC. OSCAR ALBERTO BAEZA FRANCO", 0,0,'C',0);
+$pdf->Cell(60,10,"ING. SERGIO ENRIQUE RIVERA CASTILLO", 0,0,'C',0);
 $pdf->SetXY(25,250);
-$pdf->Cell(60,10,"ENCARGADO DE DESPACHO DEL DEPARTAMENTO", 0,0,'C',0);
+$pdf->Cell(60,10,"JEFE DEL DEPARTAMENTO", 0,0,'C',0);
 $pdf->SetXY(25,255);
 $pdf->Cell(65,10," DE RECURSOS MATERIALES Y SERVICIOS GENERALES", 0,0,'C',0);
 
