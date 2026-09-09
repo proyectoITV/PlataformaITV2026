@@ -1,212 +1,174 @@
 <?php
 require_once ("config.php");
 require_once ("lib/flor_funciones.php");
-//include ("./lib/body_head.php"); include ("./lib/body_menu.php");
 
-if(isset($_GET['id']) and isset($_GET['idcolonia']) and isset($_GET['idmunicipio'])  ){
+if(isset($_GET['id']) and isset($_GET['idcolonia']) and isset($_GET['idmunicipio'])){
  
     $idmandante = $_GET['id'];
     $idcolonia = $_GET['idcolonia'];
     $idmunicipio = $_GET['idmunicipio'];
     $nitavu = $_GET['nitavu'];
     
-    //Tabla de registros
-    echo "<div id='tablaRegistros' style='display:inline-block;'>";
-       $vuelta = 0;
     $sql = "SELECT * FROM mandantes_abonos WHERE idmandante = ".$idmandante." and idcolonia = ".$idcolonia." and idmunicipio = ".$idmunicipio." and cancelado = 0 ORDER BY id DESC";
     $rc = $conexion -> query($sql);
-    if ($rc->num_rows>0){
-        echo "<br><br><br>";
-        echo "<h1>Desglose de pagos a mandante:</h1>";
-        echo "<center>";
-        echo "<table id='registros' class='tabla' style='text-align: right; width:90%;'>";
-        echo "<th align='center'>ID</th>";
-        echo "<th align='center'>Periodo Pago</th>";
-        echo "<th align='center'>Recuperación</th>";
-        echo "<th align='center'>Gastos</th>";
-        echo "<th align='center'>Monto pagar</th>";
-        echo "<th align='center'>Devols.</th>";
-        echo "<th align='center'>Otros Desc.</th>";
-        echo "<th align='center'>Amortización anticipo</th>";
-        echo "<th align='center'>Monto pagado</th>";
-        echo "<th align='center'>Monto Acumulado</th>";
-        echo "<th align='center'>Saldo</th>";
-        //echo "<th style='width:15%;'>N. de oficio</th>";
-        echo "<th align='center'>Documentos</th>";
-        echo "<th align='center'>Orden Pago</th>";
-        echo "<th align='center'>mas</th>";
-        echo "<th align='center'>Editar</th>";
-        echo "<th align='center'>Eliminar</th>";
-        
- 
-        while($r = $rc -> fetch_array()){
-            $vuelta +=1;
-            echo "<tr>";
-            echo "<td align='center'>".$r['id']."</td>";
-            echo "<td align='left'>";
-            if($r['periodopago']==$r['periodopago2']){
-                
-                
-                
-                echo fechaesp($r['periodopago']);
+    $total_rows = $rc ? $rc->num_rows : 0;
 
-            }else{
-                //$fech = strtotime($r['periodopago']);
-                //$fech2 = strtotime($r['periodopago2']);
-                //echo date("M",$fech).'-'.date("y",$fech)." A ".date("M",$fech2).'-'.date("y",$fech2); 
-                echo fechaesp($r['periodopago'])." A ".fechaesp($r['periodopago2']);
-            } 
-            echo "</td>";
-            echo "<td>$".$r['recuperacion']."</td>";
-            echo "<td>$".$r['gastos']."</td>";
-            echo "<td>$".$r['montopagar']."</td>";
-            echo "<td>$".$r['devols']."</td>";
-            echo "<td>$".$r['otrosdesc']."</td>";
-            echo "<td>$".$r['amortizacion_anticipo']."</td>";
-            echo "<td>$".$r['monto_pagado']."</td>";
-            echo "<td>$".$r['monto_acumulado']."</td>";
-            echo "<td>$".$r['saldo']."</td>";
-            echo "<td>";
-                echo "<a href='#subirAdjuntos1".$vuelta."' rel='MyModal:open'  title='Haga click aqui para subir archivos'>Adjuntos</a>";
-                    echo "<div id='subirAdjuntos1".$vuelta."' class='MyModal'>";
-                    echo "<div id='subirAdjuntos' >";
-                        echo "<div>";
-                            $adj = "SELECT idpago, ndocumento, nombre FROM documentos, mandantes_documentos WHERE mandantes_documentos.n_archivo=documentos.ndocumento and mandantes_documentos.idpago = ".$r['id']."";
-                            //echo $adj;
-                            $rc1 = $conexion -> query($adj);
-                            if ($rc1->num_rows>0){
-                                echo "<table class='tabla'>";
-                                    echo "<th>Nombre de archivo</th>";
-                                    while($r1 = $rc1 -> fetch_array()){
-                                        echo "<tr>";
-                                            echo "<td>";
-                                            $archivo = "docs_mandantes/".$r1['idpago'].'_'.$r1['ndocumento'].'_'.$r1['nombre']; 
-                                            $link = "<a id=".$r1['idpago']." name='$archivo' href='md_descargar.php?nombre=".$archivo."' target='_self' onclick =''  title='Haga click aqui para descargar'>".$r1['nombre']."</a>";
-                                            echo $link;//archivo
-                                            echo "</td>";
-                                        echo "</tr>";
-                                    }
-                                echo "</table>";
+    echo "<div id='tablaRegistros' style='width:100%; margin-top:20px;'>";
+    if ($total_rows > 0){
+?>
+        <div class="cd-card-section">
+            <div class="cd-card-header cd-card-header-primary">
+                <h3 class="cd-card-title">
+                    <i class="fa-solid fa-receipt"></i> Desglose de Pagos a Mandante
+                </h3>
+                <span class="cd-badge cd-badge-info"><?php echo $total_rows; ?> Registros</span>
+            </div>
+            <div class="cd-card-body" style="padding:0;">
+                <div class="cd-table-container">
+                    <table class="cd-table">
+                        <thead>
+                            <tr>
+                                <th style="text-align:center; width:50px;">ID</th>
+                                <th>Periodo Pago</th>
+                                <th style="text-align:right;">Recuperación</th>
+                                <th style="text-align:right;">Gastos</th>
+                                <th style="text-align:right;">Monto Pagar</th>
+                                <th style="text-align:right;">Devols.</th>
+                                <th style="text-align:right;">Otros Desc.</th>
+                                <th style="text-align:right;">Amort. Ant.</th>
+                                <th style="text-align:right;">Monto Pagado</th>
+                                <th style="text-align:right;">Acumulado</th>
+                                <th style="text-align:right;">Saldo</th>
+                                <th style="text-align:center; width:190px;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php
+                        $vuelta = 0;
+                        while($r = $rc -> fetch_array()){
+                            $vuelta += 1;
+                            echo "<tr>";
+                            echo "<td style='text-align:center;'><span class='cd-badge-id'>".$r['id']."</span></td>";
+                            echo "<td style='font-weight:600;'>";
+                            if($r['periodopago'] == $r['periodopago2']){
+                                echo fechaesp($r['periodopago']);
+                            } else {
+                                echo fechaesp($r['periodopago'])." A ".fechaesp($r['periodopago2']);
                             }
-                        echo "</div>";
+                            echo "</td>";
+                            echo "<td style='text-align:right;'>$".number_format((float)$r['recuperacion'], 2)."</td>";
+                            echo "<td style='text-align:right;'>$".number_format((float)$r['gastos'], 2)."</td>";
+                            echo "<td style='text-align:right;'>$".number_format((float)$r['montopagar'], 2)."</td>";
+                            echo "<td style='text-align:right;'>$".number_format((float)$r['devols'], 2)."</td>";
+                            echo "<td style='text-align:right;'>$".number_format((float)$r['otrosdesc'], 2)."</td>";
+                            echo "<td style='text-align:right;'>$".number_format((float)$r['amortizacion_anticipo'], 2)."</td>";
+                            echo "<td style='text-align:right; font-weight:700; color:var(--cd-primary);'>$".number_format((float)$r['monto_pagado'], 2)."</td>";
+                            echo "<td style='text-align:right;'>$".number_format((float)$r['monto_acumulado'], 2)."</td>";
+                            echo "<td style='text-align:right; font-weight:700;'>$".number_format((float)$r['saldo'], 2)."</td>";
 
-                        echo "<form action='mandantes_pago.php?idmandante=".$idmandante."&idcolonia=".$idcolonia."&idmunicipio=".$idmunicipio."' method='POST' enctype='multipart/form-data'>";
-                            echo "<label>Seleccione los archivos que se van a agregar como anexos</label>";
-                            echo '<input type="hidden" name="comprobante" id="comprobante" value='.$r['id'].'>';
-                            echo "<input type='hidden' name='idmandante2' id='idmandante2' value=".$idmandante.">";
-                            echo "<input type='hidden' name='idcolonia2' id='idcolonia2' value=".$idcolonia.">";
-                            echo "<input type='hidden' name='idmunicipio2' id='idmunicipio2' value=".$idmunicipio.">";
-                            echo '<input id="archivo[]" name="archivo[]" type="file" accept=".pdf" multiple="" required>';
-                            echo "<button type='submit' class='Mbtn btn-danger' title='Haga clic para subir el archivo'> Subir archivos </button>";
-                        echo "</form>"; 
+                            // Column Acciones
+                            echo "<td style='text-align:center;'><div class='cd-action-group'>";
 
-                        
+                            // Adjuntos button & modal
+                            echo "<a href='#subirAdjuntos1".$vuelta."' rel='MyModal:open' class='cd-icon-btn view' title='Documentos Adjuntos'><i class='fa-solid fa-paperclip'></i></a>";
+                            
+                            // Orden de Pago Form
+                            MiToken_Init($nitavu, 'PAGO A MANDANTES-ORDEN DE PAGO');
+                            echo "<form action='md_ordenpago.php?id=".$r['id']."&idmandante=".$idmandante."&idcolonia=".$idcolonia."&idmunicipio=".$idmunicipio."&fecha=".$r['periodopago']."' method='POST' style='margin:0; display:inline;'>";
+                            echo "<input type='hidden' class='url1' name='url1'>";
+                            echo "<button type='submit' class='cd-icon-btn view' title='Ver Orden de Pago PDF'><i class='fa-solid fa-file-pdf' style='color:#dc2626;'></i></button>";
+                            echo "</form>";
 
-                        echo "</div>";
-                echo "</div>";
-            echo "</td>";
-            echo "<td>";
-                MiToken_Init($nitavu, 'PAGO A MANDANTES-ORDEN DE PAGO'); // inicializamos seguridad del Token (no necesitamos saberlo)
-                echo '<form action="md_ordenpago.php?id='.$r['id'].'&idmandante='.$idmandante.'&idcolonia='.$idcolonia.'&idmunicipio='.$idmunicipio.'&fecha='.$r['periodopago'].'" method="POST">';
-                    echo "<input type='hidden' class='url1' name='url1'>";
-                    echo "<button  type='submit' title='Clic para ver la orden de pago'>";
-                        echo '<img src="./icon/pdf.png" height="42" width="42">';
-                    echo "</button>";	
-                echo "</form>";
-                //echo '<a href="md_ordenpago.php?id='.$r['id'].'&idmandante='.$idmandante.'&idcolonia='.$idcolonia.'&idmunicipio='.$idmunicipio.'&fecha='.$r['periodopago'].'" ><img src="./icon/pdf.png" height="42" width="42"></a>';
-            echo "</td>";
+                            // Abono Extra
+                            echo "<a href='#masAbonos".$r['id']."' rel='MyModal:open' class='cd-icon-btn edit' title='Registrar Abono Extra'><i class='fa-solid fa-circle-plus'></i></a>";
 
-            echo "<td align='center'>";
-            echo '<a href="#masAbonos'.$r['id'].'" rel="MyModal:open"  title="Haga click aqui para subir archivos" ><img src="./icon/mas3.png" height="20" width="15">';
-            echo "<div id='masAbonos".$r['id']."' class='MyModal' style='width:500px'>";    
-            echo "<div>";
-            echo '<form action="md_ingresa_abonoextra.php" method="POST">';
-            echo "<table style='border-collapse: separate;'>";
-            echo "<tr>";
-            
-                echo "<td>
-                <input name='nitavu1'  type='hidden' class='form-select'   id='nitavu1' value='".$nitavu."'  />
-              <input name='idabono'  type='hidden' class='form-select'   id='idabono' value='".$r['id']."'  />
-                <label style='font-size: 12; font-weight:bold;'>Signo</label><td>";
-                echo "<td><select id='mas_menos' name='mas_menos' class='form-select'  style='font-size: 12; '>";
-                    echo "<option value='1'>Más(+)</option>";
-                    echo "<option value='2'>Menos(-)</option>";
-                echo "</select></td>"; 
-                echo "</td>";
-            echo "</tr>";
-            echo "<tr>";
-                echo "<td><label style='font-size: 12; font-weight:bold;'>Concepto</label><td>";
-                echo "<td> <select name='idconcepto'  class='form-select'    id='idconcepto'  style='font-size: 12;'  >"; 
-                $sql = "SELECT * FROM cat_conceptos_mandabonos where Activo=1 ";
-           
-                $rr = $conexion -> query($sql);
-                while($f = $rr -> fetch_array())
-                { // resultado de la busqueda.................
-                    echo "<option  style='font-size: 12;' value='".$f['Id']."'>".$f['Concepto']. "</option>";
-                }
-                 echo "</select>";
+                            // Editar
+                            echo "<a href='md_modificarRegistro.php?id=".$r['id']."&idmandante=".$idmandante."&idcolonia=".$idcolonia."&idmunicipio=".$idmunicipio."' class='cd-icon-btn edit' title='Modificar Registro'><i class='fa-solid fa-pen-to-square'></i></a>";
 
-                echo "</td>";
-            echo "</tr>";                    
-            echo "<tr>";
-                echo "<td><label style='font-size: 12; font-weight:bold;'>Importe</label><td>";
-                echo "<td> <input name='importe'     id='importe'   style='font-size: 12;' /></td>";
-            echo "</tr>";
+                            // Eliminar
+                            echo "<a href='mandantes_pago.php?ideliminar=".$r['id']."&idmandante=".$idmandante."&idcolonia=".$idcolonia."&idmunicipio=".$idmunicipio."' onclick=\"return confirm('¿Está seguro de eliminar este pago?');\" class='cd-icon-btn delete' title='Eliminar Registro'><i class='fa-solid fa-trash-can'></i></a>";
 
-            echo "<tr>";
-            
-            echo "<td colspan='2'>";
-            echo "<td colspan='2'><center><input class='Mbtn btn-danger' type='submit' id='guardar' value='Guardar' ></center></td>";
-            echo "</td>";
-        echo "</tr>";
-            echo "</table >";
-            echo "</form>";
-            echo "</div>";
-        echo "</div>";
-                echo "</a>";
+                            echo "</div>";
 
-            echo "</td>";
+                            // MODAL ADJUNTOS
+                            echo "<div id='subirAdjuntos1".$vuelta."' class='MyModal'>";
+                            echo "<h3><i class='fa-solid fa-paperclip'></i> Documentos Adjuntos del Pago #".$r['id']."</h3>";
+                            echo "<div>";
+                            $adj = "SELECT idpago, ndocumento, nombre FROM documentos, mandantes_documentos WHERE mandantes_documentos.n_archivo=documentos.ndocumento and mandantes_documentos.idpago = ".$r['id']."";
+                            $rc1 = $conexion -> query($adj);
+                            if ($rc1 && $rc1->num_rows > 0){
+                                echo "<table class='cd-table' style='margin-bottom:15px;'>";
+                                echo "<thead><tr><th>Archivo</th><th style='width:120px; text-align:center;'>Acción</th></tr></thead><tbody>";
+                                while($r1 = $rc1 -> fetch_array()){
+                                    $archivo = "docs_mandantes/".$r1['idpago'].'_'.$r1['ndocumento'].'_'.$r1['nombre'];
+                                    echo "<tr><td><i class='fa-solid fa-file-pdf' style='color:#dc2626; margin-right:8px;'></i>".htmlspecialchars($r1['nombre'])."</td>";
+                                    echo "<td style='text-align:center;'><a href='md_descargar.php?nombre=".$archivo."' target='_self' class='cd-btn cd-btn-light' style='padding:4px 10px; font-size:0.8rem;'><i class='fa-solid fa-download'></i> Descargar</a></td></tr>";
+                                }
+                                echo "</tbody></table>";
+                            } else {
+                                echo "<p style='color:var(--cd-gray-dark); margin-bottom:15px;'><i class='fa-solid fa-info-circle'></i> No hay archivos adjuntos en este pago.</p>";
+                            }
+                            echo "</div>";
 
-            
-            echo "<td align='center'>";
-                echo '<a  href="md_modificarRegistro.php?id='.$r['id'].'&idmandante='.$idmandante.'&idcolonia='.$idcolonia.'&idmunicipio='.$idmunicipio.'"><img src="./icon/edit.png" height="20" width="15"></a>';
-            echo "</td>";
+                            echo "<form action='mandantes_pago.php?idmandante=".$idmandante."&idcolonia=".$idcolonia."&idmunicipio=".$idmunicipio."' method='POST' enctype='multipart/form-data' class='cd-form-group'>";
+                            echo "<label class='cd-form-label'><i class='fa-solid fa-upload'></i> Seleccione archivos anexos (PDF):</label>";
+                            echo "<input type='hidden' name='comprobante' value='".$r['id']."'>";
+                            echo "<input type='hidden' name='idmandante2' value='".$idmandante."'>";
+                            echo "<input type='hidden' name='idcolonia2' value='".$idcolonia."'>";
+                            echo "<input type='hidden' name='idmunicipio2' value='".$idmunicipio."'>";
+                            echo "<input id='archivo[]' name='archivo[]' type='file' accept='.pdf' multiple class='cd-form-control' required style='margin-bottom:12px;'>";
+                            echo "<button type='submit' class='cd-btn cd-btn-primary'><i class='fa-solid fa-cloud-arrow-up'></i> Subir Archivos</button>";
+                            echo "</form>";
+                            echo "</div>";
 
+                            // MODAL MAS ABONOS
+                            echo "<div id='masAbonos".$r['id']."' class='MyModal'>";
+                            echo "<h3><i class='fa-solid fa-circle-plus'></i> Registrar Concepto Adicional - Pago #".$r['id']."</h3>";
+                            echo "<form action='md_ingresa_abonoextra.php' method='POST'>";
+                            echo "<input name='nitavu1' type='hidden' value='".$nitavu."'/>";
+                            echo "<input name='idabono' type='hidden' value='".$r['id']."'/>";
+                            echo "<div class='cd-form-grid'>";
+                            echo "<div class='cd-form-group'><label class='cd-form-label'><i class='fa-solid fa-plus-minus'></i> Tipo de Ajuste</label>";
+                            echo "<select id='mas_menos' name='mas_menos' class='cd-form-control'>";
+                            echo "<option value='1'>Más (+)</option><option value='2'>Menos (-)</option></select></div>";
 
-           
-            echo "<td align='center'>";
-                echo '<a  href="mandantes_pago.php?ideliminar='.$r['id'].'&idmandante='.$idmandante.'&idcolonia='.$idcolonia.'&idmunicipio='.$idmunicipio.'"><img src="./icon/x.png" height="20" width="15"></a>';
-            echo "</td>";
+                            echo "<div class='cd-form-group'><label class='cd-form-label'><i class='fa-solid fa-list-check'></i> Concepto</label>";
+                            echo "<select name='idconcepto' class='cd-form-control' id='idconcepto'>";
+                            $sql_c = "SELECT * FROM cat_conceptos_mandabonos where Activo=1 ";
+                            $rr = $conexion -> query($sql_c);
+                            while($f = $rr -> fetch_array()){
+                                echo "<option value='".$f['Id']."'>".htmlspecialchars($f['Concepto'])."</option>";
+                            }
+                            echo "</select></div>";
+                            echo "</div>";
 
+                            echo "<div class='cd-form-group'><label class='cd-form-label'><i class='fa-solid fa-dollar-sign'></i> Importe</label>";
+                            echo "<input name='importe' id='importe' type='number' step='any' placeholder='$0.00' class='cd-form-control' required/></div>";
 
+                            echo "<div style='margin-top:15px; text-align:right;'>";
+                            echo "<button class='cd-btn cd-btn-primary' type='submit'><i class='fa-solid fa-floppy-disk'></i> Guardar Concepto</button>";
+                            echo "</div>";
+                            echo "</form>";
+                            echo "</div>";
 
-
-        }
-        echo "</tr>";
-        echo "</table>";
-        echo "</center>";
-        }
+                            echo "</td></tr>";
+                        }
+                        ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+<?php
+    } else {
+        echo "<div class='cd-card-section' style='padding:30px; text-align:center;'><i class='fa-solid fa-folder-open' style='font-size:2.5rem; color:var(--cd-gray-mid); margin-bottom:10px;'></i><p style='font-weight:600; color:var(--cd-gray-dark); margin:0;'>No se encontraron registros de pago para este mandante.</p></div>";
+    }
     echo "</div>";
-
- 
-    
-    
-   
-                
-
-
 }
-
-
 ?>
 <script>
 $(document).ready(function() {
-    
     var URLactual = window.location;    
-
-    //document.getElementById('url1').value = URLactual;
     $('.url1').val(URLactual);
-
 });
-        
 </script>

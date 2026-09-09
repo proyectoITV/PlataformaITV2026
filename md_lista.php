@@ -1,282 +1,269 @@
- <?php
- include ("./lib/body_head.php"); include ("./lib/body_menu.php");
- $id_aplicacion = 'ap70';
+<?php
+include ("./lib/body_head.php"); 
+include ("./lib/body_menu.php"); 
+?>
+<link rel="stylesheet" href="lib/laura.css" />
+<link rel="stylesheet" href="lib/plataforma_modern.css" />
+<?php
+$id_aplicacion = 'ap70';
 xd_update('ap70',$nitavu);//guarda la experiencia del usuario
 echo "<div id='AppDetalle'>".app_detalle($id_aplicacion, $nitavu)."</div>";
 //PROCESO PARA TOCAR LA PUERTA DE SAN PEDRO
-$nivel =aplicacion_nivel($id_aplicacion, $nitavu);
+$nivel = aplicacion_nivel($id_aplicacion, $nitavu);
 
-if (sanpedro($id_aplicacion, $nitavu)==TRUE){
-historia($nitavu, 'Entre a ver la lista de mandantes con los montos por pagar, y todos los saldos pendientes.');
- echo "<br><br>";
- echo "<div id='ReporteMandantes'>"; 
- echo "<form action='md_reporteMandantes.php?nitavu=".$nitavu."' method='POST'>";
-    echo "<input type='hidden' id='url' name='url'>";
-    echo "<button  type='submit' title='Clic para registar pago'>";
-        echo "<img src='icon/pdf.png' style='width:40px; height:40px;'>";
-    echo "</button>";	
-echo "</form>";
-echo "</div>";
-MiToken_Init($nitavu, 'PAGO A MANDANTES-LISTA DE MANDANTES'); // inicializamos seguridad del Token (no necesitamos saberlo)
- echo "<div id='listaMandantes'>"; 
-          /*  $sqlMandantes = "SELECT  mu.Municipio as MUN, co.Colonia as COL , ma.Mandante as MAN, ma.IdMandante as IdMAN, 
-            ma.IdColonia as IdCOL, ma.IdMunicipio as IdMUN, ma.idTipoMandato as tipMan, ma.IdEstatus as estatus, 
-            mcar.total_lotesLotes as TotalLotes, mcar.total_lotesSuelo as LotesSuelo, SUM(mc.monto_pagado) as montoPagado, 
-            mcar.monto_pagar as PagarContrato, (mcar.monto_pagar - SUM(mc.monto_pagado)) as resta
-    FROM cat_mandantes AS ma
-    INNER JOIN cat_colonias AS co ON ma.IdColonia = co.IdColonia and ma.IdMunicipio = co.IdMunicipio 
-    INNER JOIN cat_municipios AS mu ON ma.IdMunicipio = mu.IdMunicipio and ma.IdMunicipio = co.IdMunicipio 
-		LEFT JOIN mandantes_abonos as mc ON mc.idmandante = ma.IdMandante and mc.idcolonia = ma.IdColonia and mc.idmunicipio = ma.IdMunicipio and mc.cancelado = 0
-		LEFT JOIN  mandantes_cargos as mcar  ON mcar.idmandante = ma.IdMandante and mcar.idcolonia = ma.IdColonia and mcar.idmunicipio = ma.IdMunicipio and mcar.id=(select MAX(mcar.id) from mandantes_cargos as mcar where mcar.idmandante = ma.idmandante and mcar.idcolonia = ma.idcolonia and mcar.idmunicipio = ma.IdMunicipio)
-            GROUP BY ma.IdMandante, ma.IdColonia, ma.IdMunicipio ORDER BY mu.Municipio, co.colonia ASC" ;*/
-            
-            $sqlMandantes = "SELECT  mu.Municipio as MUN, co.Colonia as COL , ma.Mandante as MAN, ma.IdMandante as IdMAN, 
-            ma.IdColonia as IdCOL, ma.IdMunicipio as IdMUN, ma.idTipoMandato as tipMan, ma.IdEstatus as estatus, 
-            (mcar.lotes_contratadosLotes + mcar.lotes_contratadosSuelo)  as LotesContratados, (mcar.lotes_sincontratoLotes + mcar.lotes_sincontratoSuelo) as LotesSinContrato, SUM(mc.monto_pagado) as montoPagado, 
-            (select SUM(mc.monto_pagado) as montoPagado from  mandantes_abonos as mc where  mc.idmandante = ma.IdMandante and mc.idcolonia = ma.IdColonia and mc.idmunicipio = ma.IdMunicipio and mc.cancelado = 0 and mc.tipoMov=1) as TotalAnticipo,		
-	SUM(mc.amortizacion_anticipo) as totalAmortizacion,
-    ((select SUM(mc.monto_pagado) as montoPagado from  mandantes_abonos as mc where  mc.idmandante = ma.IdMandante and mc.idcolonia = ma.IdColonia and mc.idmunicipio = ma.IdMunicipio and mc.cancelado = 0 and mc.tipoMov=1)-SUM(mc.amortizacion_anticipo))  as saldoaPAmortizar,  
+if (sanpedro($id_aplicacion, $nitavu) == TRUE){
+    historia($nitavu, 'Entre a ver la lista de mandantes con los montos por pagar, y todos los saldos pendientes.');
+    MiToken_Init($nitavu, 'PAGO A MANDANTES-LISTA DE MANDANTES');
+?>
 
+<div class="cd-wrapper">
+    <!-- Hero Banner -->
+    <div class="cd-hero">
+        <div>
+            <h1 class="cd-hero-title">
+                <i class="fa-solid fa-list-check"></i> Lista General de Mandantes y Saldos
+            </h1>
+            <div class="cd-hero-dept">
+                <i class="fa-solid fa-building-columns"></i> Control Financiero ITAVU 2026
+            </div>
+        </div>
+        <div class="cd-top-links">
+            <a href="mandantes_pago.php" class="cd-top-link-btn" title="Regresar al módulo de pago">
+                <i class="fa-solid fa-arrow-left"></i> Regresar a Pago a Mandantes
+            </a>
+        </div>
+    </div>
 
-            mcar.monto_pagar as PagarContrato, (mcar.monto_pagar - SUM(mc.monto_pagado)) as resta
-    FROM cat_mandantes AS ma
-    INNER JOIN cat_colonias AS co ON ma.IdColonia = co.IdColonia and ma.IdMunicipio = co.IdMunicipio 
-    INNER JOIN cat_municipios AS mu ON ma.IdMunicipio = mu.IdMunicipio and ma.IdMunicipio = co.IdMunicipio 
-		LEFT JOIN mandantes_abonos as mc ON mc.idmandante = ma.IdMandante and mc.idcolonia = ma.IdColonia and mc.idmunicipio = ma.IdMunicipio and mc.cancelado = 0
-		LEFT JOIN  mandantes_cargos as mcar  ON mcar.idmandante = ma.IdMandante and mcar.idcolonia = ma.IdColonia and mcar.idmunicipio = ma.IdMunicipio and mcar.id=(select MAX(mcar.id) from mandantes_cargos as mcar where mcar.idmandante = ma.idmandante and mcar.idcolonia = ma.idcolonia and mcar.idmunicipio = ma.IdMunicipio)
-        WHERE ma.Cancelado = 0 GROUP BY ma.IdMandante, ma.IdColonia, ma.IdMunicipio ORDER BY mu.Municipio, co.colonia ASC";
-            //echo $sqlMandantes;
-            $rc = $conexion -> query($sqlMandantes);
+    <!-- Toolbar Exportar Reporte -->
+    <div class="cd-toolbar-card" style="margin-bottom:20px;">
+        <div class="cd-toolbar-group">
+            <form action="md_reporteMandantes.php?nitavu=<?php echo $nitavu; ?>" method="POST" style="margin:0;">
+                <input type="hidden" id="url" name="url">
+                <button type="submit" class="cd-btn cd-btn-gold" title="Exportar reporte completo en PDF">
+                    <i class="fa-solid fa-file-pdf"></i> Exportar Reporte General PDF
+                </button>
+            </form>
+        </div>
+    </div>
 
-            if ($rc->num_rows>0){
-            
-                echo "<table class='tabla'>";
+    <!-- Tabla Principal de Mandantes -->
+    <div class="cd-card-section">
+        <div class="cd-card-header cd-card-header-primary">
+            <h3 class="cd-card-title">
+                <i class="fa-solid fa-table"></i> Resumen General de Mandantes y Contratos
+            </h3>
+        </div>
+        <div class="cd-card-body" style="padding:0;">
+            <div class="cd-table-container">
+                <?php
+                $sqlMandantes = "SELECT mu.Municipio as MUN, co.Colonia as COL , ma.Mandante as MAN, ma.IdMandante as IdMAN, 
+                ma.IdColonia as IdCOL, ma.IdMunicipio as IdMUN, ma.idTipoMandato as tipMan, ma.IdEstatus as estatus, 
+                (mcar.lotes_contratadosLotes + mcar.lotes_contratadosSuelo) as LotesContratados, (mcar.lotes_sincontratoLotes + mcar.lotes_sincontratoSuelo) as LotesSinContrato, SUM(mc.monto_pagado) as montoPagado, 
+                (select SUM(mc.monto_pagado) as montoPagado from mandantes_abonos as mc where mc.idmandante = ma.IdMandante and mc.idcolonia = ma.IdColonia and mc.idmunicipio = ma.IdMunicipio and mc.cancelado = 0 and mc.tipoMov=1) as TotalAnticipo,		
+                SUM(mc.amortizacion_anticipo) as totalAmortizacion,
+                ((select SUM(mc.monto_pagado) as montoPagado from mandantes_abonos as mc where mc.idmandante = ma.IdMandante and mc.idcolonia = ma.IdColonia and mc.idmunicipio = ma.IdMunicipio and mc.cancelado = 0 and mc.tipoMov=1)-SUM(mc.amortizacion_anticipo)) as saldoaPAmortizar,  
+                mcar.monto_pagar as PagarContrato, (mcar.monto_pagar - SUM(mc.monto_pagado)) as resta
+                FROM cat_mandantes AS ma
+                INNER JOIN cat_colonias AS co ON ma.IdColonia = co.IdColonia and ma.IdMunicipio = co.IdMunicipio 
+                INNER JOIN cat_municipios AS mu ON ma.IdMunicipio = mu.IdMunicipio and ma.IdMunicipio = co.IdMunicipio 
+                LEFT JOIN mandantes_abonos as mc ON mc.idmandante = ma.IdMandante and mc.idcolonia = ma.IdColonia and mc.idmunicipio = ma.IdMunicipio and mc.cancelado = 0
+                LEFT JOIN mandantes_cargos as mcar ON mcar.idmandante = ma.IdMandante and mcar.idcolonia = ma.IdColonia and mcar.idmunicipio = ma.IdMunicipio and mcar.id=(select MAX(mcar.id) from mandantes_cargos as mcar where mcar.idmandante = ma.idmandante and mcar.idcolonia = ma.idcolonia and mcar.idmunicipio = ma.IdMunicipio)
+                WHERE ma.Cancelado = 0 GROUP BY ma.IdMandante, ma.IdColonia, ma.IdMunicipio ORDER BY mu.Municipio, co.colonia ASC";
+
+                $rc = $conexion->query($sqlMandantes);
+
+                if ($rc && $rc->num_rows > 0){
+                    echo "<table class='cd-table'>";
+                    echo "<thead><tr>";
                     echo "<th>Delegación</th>";
                     echo "<th>Colonia</th>";
-                    echo "<th style='width:15%'>Mandante</th>";
-                    echo "<th>Tipo</th>";
-                    echo "<th>Lotes contratados</th>";
-                    echo "<th>Lotes sin contratar</th>";
-                    echo "<th>Monto por pagar de acuerdo al contrato</th>";
-                    echo "<th>Monto pagado</th>";
-                    echo "<th>Saldo por pagar</th>";
-                    echo "<th>Total de Anticipos</th>";
-                    echo "<th>Total Amortizado</th>";
-                    echo "<th>Saldo Pendiente por Amortizar</th>";
+                    echo "<th>Mandante</th>";
+                    echo "<th>Tipo Mandato</th>";
+                    echo "<th style='text-align:center;'>Lotes Contratados</th>";
+                    echo "<th style='text-align:center;'>Lotes sin Contrato</th>";
+                    echo "<th style='text-align:right;'>Monto Contrato</th>";
+                    echo "<th style='text-align:right;'>Monto Pagado</th>";
+                    echo "<th style='text-align:right;'>Saldo por Pagar</th>";
+                    echo "<th style='text-align:right;'>Total Anticipos</th>";
+                    echo "<th style='text-align:right;'>Total Amortizado</th>";
+                    echo "<th style='text-align:right;'>Pendiente Amortizar</th>";
                     echo "<th>Estatus</th>";
-                    echo "<th>Comentarios</th>";
+                    echo "<th style='text-align:center;'>Comentarios</th>";
+                    echo "</tr></thead><tbody>";
 
-                    while($r1 = $rc -> fetch_array()){
+                    while($r1 = $rc->fetch_array()){
                         echo "<tr>";
-                            echo "<td>".$r1['MUN']."</td>";
-                            echo "<td>".$r1['COL']."</td>";
-                            echo "<td>".$r1['MAN']."</td>";
-                            echo "<td>";
-                                echo "<table>";
-                                    
-                                        if($r1['tipMan']!= 0){
-                                            //$tipo = buscartipoMandante($r1['tipMan']);
-                                            // echo $tipo;
-                                            echo "<td>";
-                                                echo "<form action='md_lista.php' method='POST'>";
-                                                    $sqlTipo = "SELECT * FROM cat_tipomandato";
-                                                    $r = $conexion -> query($sqlTipo);
-                                                    echo "<select id='tipoman1' name='tipoman1'>";
-                                                    while($f = $r -> fetch_array()){ // resultado de la busqueda.................
-                                                        if ($r1['tipMan']==$f['id']){
-                                                            echo "<option value='".$f['id']."' selected>".$f['tipo']."</option>";
-                                                        }else{
-                                                            echo "<option value='".$f['id']."'>".$f['tipo']."</option>";
-                                                        } 
-                                                    }
-                                                    echo "</select>";
-                                            echo "</td>";
-                                            echo "<td>";
-                                                echo "<input type='hidden' name='IdMAN1' id='IdMAN1' value='".$r1['IdMAN']."'>";
-                                                echo "<input type='hidden' name='IdCOL1' id='IdCOL1' value='".$r1['IdCOL']."'>";
-                                                echo "<input type='hidden' name='IdMUN1' id='IdMUN1' value='".$r1['IdMUN']."'>";
-                                                echo "<button type='submit' style='background-color: transparent; border-width: 0px;
-                    margin-left: 0px;' title='Guardar nombre'> <img src='icon/mod.png' style='width:20px; '> </button>";
-                                            echo "</form>";  
-                                            echo "</td>";
-                                        }else{
-                                            echo "<td>";
-                                            echo "<form action='md_lista.php' method='POST'>";
-                                                $sqlTipo = "SELECT * FROM cat_tipomandato";
-                                                $r = $conexion -> query($sqlTipo);
-                                                    echo "<select id='tipoman' name='tipoman'>";
-                                                        echo "<option>Seleccione un tipo...</option>";
-                                                        while($f = $r -> fetch_array()){ // resultado de la busqueda.................
-                                                            
-                                                            echo "<option value='".$f['id']."'>".$f['tipo']."</option>";
-                                                            
-                                                        }
-                                                    
-                                                    echo "</select>";
-                                            echo "</td>";
-                                            echo "<td>";
-                                                echo "<input type='hidden' name='IdMAN' id='IdMAN' value='".$r1['IdMAN']."'>";
-                                                echo "<input type='hidden' name='IdCOL' id='IdCOL' value='".$r1['IdCOL']."'>";
-                                                echo "<input type='hidden' name='IdMUN' id='IdMUN' value='".$r1['IdMUN']."'>";
-                                                echo "<button type='submit' style='background-color: transparent; border-width: 0px;
-                    margin-left: 0px;' title='Guardar nombre'> <img src='icon/guardar.png' style='width:20px; '> </button>";
-                                            echo "</form>";
-                                            echo "</td>";
-                                        }
-                                    
-                                    
-                                echo "</table>";
-                            
-                            echo "</td>";
-                            echo "<td>".$r1['LotesContratados']."</td>";
-                            echo "<td>".$r1['LotesSinContrato']."</td>";
-                            echo "<td>$".number_format($r1['PagarContrato'], 2, '.', ',')."</td>";
-                            echo "<td>$".number_format($r1['montoPagado'], 2, '.', ',')."</td>";                       
-                            echo "<td>$".number_format($r1['resta'], 2, '.', ',')."</td>";
-                            echo "<td>$".number_format($r1['TotalAnticipo'], 2, '.', ',')."</td>";
-                            echo "<td>$".number_format($r1['totalAmortizacion'], 2, '.', ',')."</td>";
-                            echo "<td>$".number_format($r1['saldoaPAmortizar'], 2, '.', ',')."</td>";
+                        echo "<td style='font-weight:600;'>".htmlspecialchars($r1['MUN'])."</td>";
+                        echo "<td>".htmlspecialchars($r1['COL'])."</td>";
+                        echo "<td style='font-weight:600; color:var(--cd-dark);'>".htmlspecialchars($r1['MAN'])."</td>";
+                        
+                        // Tipo Mandato
+                        echo "<td>";
+                        if($r1['tipMan'] != 0){
+                            echo "<form action='md_lista.php' method='POST' style='display:flex; align-items:center; gap:4px; margin:0;'>";
+                            $sqlTipo = "SELECT * FROM cat_tipomandato";
+                            $r = $conexion->query($sqlTipo);
+                            echo "<select id='tipoman1' name='tipoman1' class='cd-form-control' style='font-size:0.8rem; padding:4px 8px; width:auto;'>";
+                            while($f = $r->fetch_array()){
+                                $sel = ($r1['tipMan'] == $f['id']) ? 'selected' : '';
+                                echo "<option value='".$f['id']."' ".$sel.">".htmlspecialchars($f['tipo'])."</option>";
+                            }
+                            echo "</select>";
+                            echo "<input type='hidden' name='IdMAN1' value='".$r1['IdMAN']."'>";
+                            echo "<input type='hidden' name='IdCOL1' value='".$r1['IdCOL']."'>";
+                            echo "<input type='hidden' name='IdMUN1' value='".$r1['IdMUN']."'>";
+                            echo "<button type='submit' class='cd-icon-btn edit' title='Guardar cambio de tipo'><i class='fa-solid fa-floppy-disk'></i></button>";
+                            echo "</form>";
+                        } else {
+                            echo "<form action='md_lista.php' method='POST' style='display:flex; align-items:center; gap:4px; margin:0;'>";
+                            $sqlTipo = "SELECT * FROM cat_tipomandato";
+                            $r = $conexion->query($sqlTipo);
+                            echo "<select id='tipoman' name='tipoman' class='cd-form-control' style='font-size:0.8rem; padding:4px 8px; width:auto;'>";
+                            echo "<option value=''>Seleccione...</option>";
+                            while($f = $r->fetch_array()){
+                                echo "<option value='".$f['id']."'>".htmlspecialchars($f['tipo'])."</option>";
+                            }
+                            echo "</select>";
+                            echo "<input type='hidden' name='IdMAN' value='".$r1['IdMAN']."'>";
+                            echo "<input type='hidden' name='IdCOL' value='".$r1['IdCOL']."'>";
+                            echo "<input type='hidden' name='IdMUN' value='".$r1['IdMUN']."'>";
+                            echo "<button type='submit' class='cd-icon-btn check' title='Guardar tipo'><i class='fa-solid fa-floppy-disk'></i></button>";
+                            echo "</form>";
+                        }
+                        echo "</td>";
 
-                            echo "<td>";
-                            
-                            echo "<table>";
-                                    
-                                    if($r1['estatus']!= 0){
-                                        //$estatus = buscarEstatusMandante($r1['estatus']);
-                                        //echo $estatus;
-                                        echo "<td>";
-                                            echo "<form action='md_lista.php' method='POST'>";
-                                                $sqlEstatus = "SELECT * FROM cat_estatusmandato";
-                                                $r = $conexion -> query($sqlEstatus);
-                                                echo "<select id='estatusman1' name='estatusman1'>";
-                                                    while($f = $r -> fetch_array()){ // resultado de la busqueda.................
-                                                        if ($r1['estatus']==$f['id']){
-                                                            echo "<option value='".$f['id']."' selected>".$f['estatus_mandato']."</option>";
-                                                        }else{
-                                                            echo "<option value='".$f['id']."'>".$f['estatus_mandato']."</option>";
-                                                        } 
-                                                    }
-                                                echo "</select>";
-                                        echo "</td>";
-                                        echo "<td>";
-                                            echo "<input type='hidden' name='IdMAN1' id='IdMAN1' value='".$r1['IdMAN']."'>";
-                                            echo "<input type='hidden' name='IdCOL1' id='IdCOL1' value='".$r1['IdCOL']."'>";
-                                            echo "<input type='hidden' name='IdMUN1' id='IdMUN1' value='".$r1['IdMUN']."'>";
-                                            echo "<button type='submit' style='background-color: transparent; border-width: 0px;
-                margin-left: 0px;' title='Guardar nombre'> <img src='icon/mod.png' style='width:20px; '> </button>";
-                                            echo "</form>";  
-                                        echo "</td>";
-                                    }else{
-                                        echo "<td>";
-                                        echo "<form action='md_lista.php' method='POST'>";
-                                            $sqlEstatus = "SELECT * FROM cat_estatusmandato";
-                                            $r = $conexion -> query($sqlEstatus);
-                                                echo "<select id='estatusman' name='estatusman'>";
-                                                    echo "<option>Seleccione un estatus...</option>";
-                                                    while($f = $r -> fetch_array()){ // resultado de la busqueda.................
-                                                        
-                                                        echo "<option value='".$f['id']."'>".$f['estatus_mandato']."</option>";
-                                                        
-                                                    }
-                                                
-                                                echo "</select>";
-                                            
-                                        echo "</td>";
-                                        echo "<td>";
-                                            echo "<input type='hidden' name='IdMAN' id='IdMAN' value='".$r1['IdMAN']."'>";
-                                            echo "<input type='hidden' name='IdCOL' id='IdCOL' value='".$r1['IdCOL']."'>";
-                                            echo "<input type='hidden' name='IdMUN' id='IdMUN' value='".$r1['IdMUN']."'>";
-                                            echo "<button type='submit' style='background-color: transparent; border-width: 0px;
-                margin-left: 0px;' title='Guardar nombre'> <img src='icon/guardar.png' style='width:20px; '> </button>";
-                                        echo "</form>";
-                                        echo "</td>";
-                                    }
-                                    
-                                echo "</table>";
-                            
-                            echo "</td>";
+                        echo "<td style='text-align:center;'>".$r1['LotesContratados']."</td>";
+                        echo "<td style='text-align:center;'>".$r1['LotesSinContrato']."</td>";
+                        echo "<td style='text-align:right;'>$".number_format((float)$r1['PagarContrato'], 2, '.', ',')."</td>";
+                        echo "<td style='text-align:right; font-weight:700; color:var(--cd-primary);'>$".number_format((float)$r1['montoPagado'], 2, '.', ',')."</td>";
+                        echo "<td style='text-align:right; font-weight:700;'>$".number_format((float)$r1['resta'], 2, '.', ',')."</td>";
+                        echo "<td style='text-align:right;'>$".number_format((float)$r1['TotalAnticipo'], 2, '.', ',')."</td>";
+                        echo "<td style='text-align:right;'>$".number_format((float)$r1['totalAmortizacion'], 2, '.', ',')."</td>";
+                        echo "<td style='text-align:right;'>$".number_format((float)$r1['saldoaPAmortizar'], 2, '.', ',')."</td>";
 
-                            echo "<td align=center>";
-                            echo "<a href='#AgregarObservaciones_".$r1['IdMAN']."_".$r1['IdCOL']."_".$r1['IdMUN']."' rel='MyModal:open' title='Agregar un comentario' class='btn-comentario'><img src='icon/bcomentario.png' style='width:40px;'></a>";
-                                echo "<div id='AgregarObservaciones_".$r1['IdMAN']."_".$r1['IdCOL']."_".$r1['IdMUN']."' class='MyModal'>";
-                                echo "<form action='md_lista.php?idmandante=".$r1['IdMAN']."&idcolonia=".$r1['IdCOL']."&idmunicipio=".$r1['IdMUN']."' method='POST'  enctype='multipart/form-data'>";
-                                echo "<label>Comentario:</label>";  
-                                
-                                if(comentariosMandante($r1['IdMAN'], $r1['IdCOL'], $r1['IdMUN']) != 'FALSE'){
-                                    echo "<textarea name='comentario'>".comentariosMandante($r1['IdMAN'], $r1['IdCOL'], $r1['IdMUN'])."</textarea>"; 
-                                }else{
-                                    echo "<textarea name='comentario'></textarea>";  
-                                }
-                                   
-                                echo "<button type='submit' name='Comentar' class='Mbtn btn-danger' title='Haga clic aqui para comentar'> Guardar </button>";
-                                echo "</form>"; 
-                                echo "</div>";
-                               
-                            echo "</td>";
+                        // Estatus Mandato
+                        echo "<td>";
+                        if($r1['estatus'] != 0){
+                            echo "<form action='md_lista.php' method='POST' style='display:flex; align-items:center; gap:4px; margin:0;'>";
+                            $sqlEstatus = "SELECT * FROM cat_estatusmandato";
+                            $r = $conexion->query($sqlEstatus);
+                            echo "<select id='estatusman1' name='estatusman1' class='cd-form-control' style='font-size:0.8rem; padding:4px 8px; width:auto;'>";
+                            while($f = $r->fetch_array()){
+                                $sel = ($r1['estatus'] == $f['id']) ? 'selected' : '';
+                                echo "<option value='".$f['id']."' ".$sel.">".htmlspecialchars($f['estatus_mandato'])."</option>";
+                            }
+                            echo "</select>";
+                            echo "<input type='hidden' name='IdMAN1' value='".$r1['IdMAN']."'>";
+                            echo "<input type='hidden' name='IdCOL1' value='".$r1['IdCOL']."'>";
+                            echo "<input type='hidden' name='IdMUN1' value='".$r1['IdMUN']."'>";
+                            echo "<button type='submit' class='cd-icon-btn edit' title='Guardar estatus'><i class='fa-solid fa-floppy-disk'></i></button>";
+                            echo "</form>";
+                        } else {
+                            echo "<form action='md_lista.php' method='POST' style='display:flex; align-items:center; gap:4px; margin:0;'>";
+                            $sqlEstatus = "SELECT * FROM cat_estatusmandato";
+                            $r = $conexion->query($sqlEstatus);
+                            echo "<select id='estatusman' name='estatusman' class='cd-form-control' style='font-size:0.8rem; padding:4px 8px; width:auto;'>";
+                            echo "<option value=''>Seleccione...</option>";
+                            while($f = $r->fetch_array()){
+                                echo "<option value='".$f['id']."'>".htmlspecialchars($f['estatus_mandato'])."</option>";
+                            }
+                            echo "</select>";
+                            echo "<input type='hidden' name='IdMAN' value='".$r1['IdMAN']."'>";
+                            echo "<input type='hidden' name='IdCOL' value='".$r1['IdCOL']."'>";
+                            echo "<input type='hidden' name='IdMUN' value='".$r1['IdMUN']."'>";
+                            echo "<button type='submit' class='cd-icon-btn check' title='Guardar estatus'><i class='fa-solid fa-floppy-disk'></i></button>";
+                            echo "</form>";
+                        }
+                        echo "</td>";
+
+                        // Comentarios Button & Modal
+                        echo "<td style='text-align:center;'>";
+                        echo "<a href='#AgregarObservaciones_".$r1['IdMAN']."_".$r1['IdCOL']."_".$r1['IdMUN']."' rel='MyModal:open' title='Agregar u observad comentario' class='cd-icon-btn view'><i class='fa-solid fa-comment-dots'></i></a>";
+                        
+                        echo "<div id='AgregarObservaciones_".$r1['IdMAN']."_".$r1['IdCOL']."_".$r1['IdMUN']."' class='MyModal'>";
+                        echo "<h3><i class='fa-solid fa-comment-dots'></i> Observaciones del Mandante</h3>";
+                        echo "<form action='md_lista.php?idmandante=".$r1['IdMAN']."&idcolonia=".$r1['IdCOL']."&idmunicipio=".$r1['IdMUN']."' method='POST' enctype='multipart/form-data'>";
+                        echo "<div class='cd-form-group'>";
+                        echo "<label class='cd-form-label'>Comentario u observaciones:</label>";  
+                        $com_existing = comentariosMandante($r1['IdMAN'], $r1['IdCOL'], $r1['IdMUN']);
+                        $val_com = ($com_existing != 'FALSE') ? $com_existing : '';
+                        echo "<textarea name='comentario' class='cd-form-control' style='min-height:100px;'>".htmlspecialchars($val_com)."</textarea>"; 
+                        echo "</div>";
+                        echo "<div style='margin-top:15px; text-align:right;'>";
+                        echo "<button type='submit' name='Comentar' class='cd-btn cd-btn-primary'><i class='fa-solid fa-floppy-disk'></i> Guardar Comentario</button>";
+                        echo "</div>";
+                        echo "</form>"; 
+                        echo "</div>";
+                        echo "</td>";
+
                         echo "</tr>";
                     }
-                echo "</table>";
-            }
-            
-        echo "</div>";
+                    echo "</tbody></table>";
+                }
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
 
+<?php
+    // Procesamiento POST de tipos de mandato
     if(isset($_POST['tipoman'], $_POST['IdMAN'],$_POST['IdCOL'],$_POST['IdMUN'])){
-        echo $tipoman = $_POST['tipoman'];
-        echo $idman = $_POST['IdMAN'];
-        echo  $idcol = $_POST['IdCOL'];
-        echo $idmun = $_POST['IdMUN'];
+        $tipoman = $_POST['tipoman'];
+        $idman = $_POST['IdMAN'];
+        $idcol = $_POST['IdCOL'];
+        $idmun = $_POST['IdMUN'];
         $res = agregarTipoMandante($idman, $idcol, $idmun, $tipoman);
         if($res == TRUE){
             historia($nitavu, 'Cambie el tipo de mandante al mandante: idmadante='.$idman.' idcolonia='.$idcol.' idmunicipio='.$idmun.' tipo:'.$tipoman.'');
             mensaje('Se ha registrado el nuevo tipo de mandato.','md_lista.php');
         }else{
-            historia($nitavu, ' No se puede cambiar el tipo mandante al mandante: idmadante='.$idman.' idcolonia='.$idcol.' idmunicipio='.$idmun.' tipo:'.$tipoman.'');
+            historia($nitavu, ' No se puede cambiar el tipo mandante al mandante');
             mensaje('Ocurrio un error al momento de guardar la información, por favor vuelva a intentarlo.','md_lista.php');
         }
     }
 
     if(isset($_POST['tipoman1'], $_POST['IdMAN1'],$_POST['IdCOL1'],$_POST['IdMUN1'])){
-        echo $tipoman = $_POST['tipoman1'];
-        echo $idman = $_POST['IdMAN1'];
-        echo  $idcol = $_POST['IdCOL1'];
-        echo $idmun = $_POST['IdMUN1'];
+        $tipoman = $_POST['tipoman1'];
+        $idman = $_POST['IdMAN1'];
+        $idcol = $_POST['IdCOL1'];
+        $idmun = $_POST['IdMUN1'];
         $res = agregarTipoMandante($idman, $idcol, $idmun, $tipoman);
         if($res == TRUE){
-             historia($nitavu, 'Cambie el tipo de mandante al mandante: idmadante='.$idman.' idcolonia='.$idcol.' idmunicipio='.$idmun.' tipo:'.$tipoman.'');
+            historia($nitavu, 'Cambie el tipo de mandante al mandante: idmadante='.$idman.' idcolonia='.$idcol.' idmunicipio='.$idmun.' tipo:'.$tipoman.'');
             mensaje('Se ha registrado el nuevo tipo de mandato.','md_lista.php');
         }else{
-            historia($nitavu, ' No se puede cambiar el tipo mandante al mandante: idmadante='.$idman.' idcolonia='.$idcol.' idmunicipio='.$idmun.' tipo:'.$tipoman.'');
+            historia($nitavu, ' No se puede cambiar el tipo mandante');
             mensaje('Ocurrio un error al momento de guardar la información, por favor vuelva a intentarlo.','md_lista.php');
         }
     }
 
-
     if(isset($_POST['estatusman'], $_POST['IdMAN'],$_POST['IdCOL'],$_POST['IdMUN'])){
-        echo $estatusman = $_POST['estatusman'];
-        echo $idman = $_POST['IdMAN'];
-        echo  $idcol = $_POST['IdCOL'];
-        echo $idmun = $_POST['IdMUN'];
+        $estatusman = $_POST['estatusman'];
+        $idman = $_POST['IdMAN'];
+        $idcol = $_POST['IdCOL'];
+        $idmun = $_POST['IdMUN'];
         $res = agregarEstatusMandante($idman, $idcol, $idmun, $estatusman);
         if($res == TRUE){
-            historia($nitavu, 'Cambie el estatus de mandante al mandante: idmadante='.$idman.' idcolonia='.$idcol.' idmunicipio='.$idmun.' estatus:'.$estatusman.'');
-            mensaje('Se ha registrado el nuevo tipo de mandato.','md_lista.php');
+            historia($nitavu, 'Cambie el estatus de mandante al mandante');
+            mensaje('Se ha registrado el nuevo estatus de mandato.','md_lista.php');
         }else{
-            historia($nitavu, 'No se puede cambiar el tipo mandante al mandante: idmadante='.$idman.' idcolonia='.$idcol.' idmunicipio='.$idmun.' estatus:'.$estatusman.'');
+            historia($nitavu, 'No se puede cambiar el estatus mandante');
             mensaje('Ocurrio un error al momento de guardar la información, por favor vuelva a intentarlo.','md_lista.php');
         }
     }
 
     if(isset($_POST['estatusman1'], $_POST['IdMAN1'],$_POST['IdCOL1'],$_POST['IdMUN1'])){
-        echo $estatusman = $_POST['estatusman1'];
-        echo $idman = $_POST['IdMAN1'];
-        echo  $idcol = $_POST['IdCOL1'];
-        echo $idmun = $_POST['IdMUN1'];
+        $estatusman = $_POST['estatusman1'];
+        $idman = $_POST['IdMAN1'];
+        $idcol = $_POST['IdCOL1'];
+        $idmun = $_POST['IdMUN1'];
         $res = agregarEstatusMandante($idman, $idcol, $idmun, $estatusman);
         if($res == TRUE){
-            historia($nitavu, 'Cambie el estatus de mandante al mandante: idmadante='.$idman.' idcolonia='.$idcol.' idmunicipio='.$idmun.' estatus:'.$estatusman.'');
-            mensaje('Se ha registrado el nuevo tipo de mandato.','md_lista.php');
+            historia($nitavu, 'Cambie el estatus de mandante');
+            mensaje('Se ha registrado el nuevo estatus de mandato.','md_lista.php');
         }else{
-            historia($nitavu, 'No se puede cambiar el tipo mandante al mandante: idmadante='.$idman.' idcolonia='.$idcol.' idmunicipio='.$idmun.' estatus:'.$estatusman.'');
+            historia($nitavu, 'No se puede cambiar el estatus mandante');
             mensaje('Ocurrio un error al momento de guardar la información, por favor vuelva a intentarlo.','md_lista.php');
         }
     }
@@ -286,10 +273,9 @@ MiToken_Init($nitavu, 'PAGO A MANDANTES-LISTA DE MANDANTES'); // inicializamos s
         $idcolonia = $_GET['idcolonia'];
         $idmunicipio = $_GET['idmunicipio'];
         $comentario = $_POST['comentario'];
-        $sql = "UPDATE cat_mandantes SET comentario = '".$comentario."' WHERE IdMandante = ".$idmandante."  and IdColonia= ".$idcolonia." and IdMunicipio= ".$idmunicipio."";
-        echo $sql;
+        $sql = "UPDATE cat_mandantes SET comentario = '".$comentario."' WHERE IdMandante = ".$idmandante." and IdColonia= ".$idcolonia." and IdMunicipio= ".$idmunicipio."";
         if ($conexion->query($sql) == TRUE){
-            historia($nitavu,'cat_mandantes-Edite el comentario al mandante: idmandante: '.$idmandante.' idcolonia: '.$idcolonia.' idmunicipio: '.$idmunicipio.' comentario: '.$comentario.'');
+            historia($nitavu,'cat_mandantes-Edite el comentario al mandante');
             mensaje('Información guardada correctamente','md_lista.php');
         }else{
             mensaje('ERROR al guardar el comentario','md_lista.php');
@@ -299,28 +285,15 @@ MiToken_Init($nitavu, 'PAGO A MANDANTES-LISTA DE MANDANTES'); // inicializamos s
 else{
     mensaje("No tiene acceso a ".$id_aplicacion,'');
 }
-
 ?>
- <script type="text/javascript">
-        $(document).ready(function() {
 
-            var URLactual = window.location;    
-       
-            document.getElementById('url').value = URLactual;
-            
-        });
+<script type="text/javascript">
+$(document).ready(function() {
+    var URLactual = window.location;    
+    if(document.getElementById('url')) {
+        document.getElementById('url').value = URLactual;
+    }
+});
 </script>
 
-<br><br><br>
-<br>
-<br>
-<br><br><br>
-<br>
-<br>
-<br><br><br>
-<br>
-<br>
-<br><br><br>
-<br>
-<br>
 <?php include ("./lib/body_footer.php"); ?>

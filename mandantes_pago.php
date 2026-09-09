@@ -1,40 +1,29 @@
 <?php include ("./lib/body_head.php"); include ("./lib/body_menu.php"); ?>
+<link rel="stylesheet" href="lib/laura.css" />
+<link rel="stylesheet" href="lib/plataforma_modern.css" />
 <?php
 require("config.php");
 $id_aplicacion = 'ap70';
 xd_update('ap70',$nitavu);//guarda la experiencia del usuario
 echo "<div id='AppDetalle'>".app_detalle($id_aplicacion, $nitavu)."</div>";
 //PROCESO PARA TOCAR LA PUERTA DE SAN PEDRO
-$nivel =aplicacion_nivel($id_aplicacion, $nitavu);
+$nivel = aplicacion_nivel($id_aplicacion, $nitavu);
 echo "<input type='hidden' id='nitavu' name='nitavu' value='".$nitavu."'>";
 
-if (sanpedro($id_aplicacion, $nitavu)==TRUE){
+if (sanpedro($id_aplicacion, $nitavu) == TRUE){
     
     historia($nitavu, 'Entre al módulo de pago a mandantes');
+    
+    // Procesamiento de formularios y acciones cuando hay parámetros GET de selección
     if(isset($_GET['idmandante']) and isset($_GET['idcolonia']) and isset($_GET['idmunicipio'])  ){
         $idmandante = $_GET['idmandante'];
         $idcolonia = $_GET['idcolonia'];
         $idmunicipio = $_GET['idmunicipio'];
-       /* if(isset($_POST['numoficio'])){
-            echo $id = $_POST['idabono'];
-            echo $num = strtoupper($_POST['numoficio']);
 
-            if(ingresarNumerodeOficio($id,$num) == TRUE){
-                historia($nitavu, 'Agregue el número de oficio al pago con id: '.$id.' con el cual salio la orden de pago para el mandante id: '.$idmandante.' .');
-                mensaje('Se ha guardado la información con éxito.','mandantes_pago.php?idmandante='.$idmandante.'&idcolonia='.$idcolonia.'&idmunicipio='.$idmunicipio.'');  
-            }else{
-                mensaje('Hubo un error al momento de guardar la información.','mandantes_pago.php?idmandante='.$idmandante.'&idcolonia='.$idcolonia.'&idmunicipio='.$idmunicipio.'');  
-            }
-
-        }*/
-
-        
-
-        //EDITAR UN CARGO 
-        if(isset($_POST['fechaMan'])  and isset($_POST['superficie']) and isset($_POST['costoLotes']) and isset($_POST['editar'])){
+        // EDITAR UN CARGO 
+        if(isset($_POST['fechaMan']) and isset($_POST['superficie']) and isset($_POST['costoLotes']) and isset($_POST['editar'])){
             $id = $_POST['id'];
             $fechaman = $_POST['fechaMan'];
-            //$fechatri = $_POST['fechaTri'];
             $fechaAdendum = "";
             $fechaAdendumFiniquito = "";
             $plazoCredito = $_POST['plazoCredito'];
@@ -42,17 +31,12 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE){
             $LoteM2 = $_POST['LoteM2'];
             $superficie = $_POST['superficie'];
             $supComercializar = $_POST['supComercializar'];
-            //$lotescol = $_POST['lotescol'];
-            //$lotesareav = $_POST['lotesareav'];
-            //$loteq = $_POST['loteq'];
             $porMan = $_POST['porMan'];
             $porItavu = $_POST['porItavu'];
             $monpagar = $_POST['monpagar'];
             $porEsc = $_POST['porEsc'];
             $monpagarComer = $_POST['monpagarComer'];
 
-            
-            //$pagoInicial = $_POST['pagoInicial'];
             $totLotesL = $_POST['totLotesL'];
             $lotesXComercialzarL = $_POST['lotesXComercialzarL'];
             $lotesConL = $_POST['lotesConL'];
@@ -66,10 +50,8 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE){
             $loteseq = $_POST['loteseq'];
             $reserva = $_POST['lotesreserva'];
             $observaciones = $_POST['observaciones'];
-            $porAmorAnt=$_POST['porAmorAnt'];
+            $porAmorAnt = $_POST['porAmorAnt'];
 
-
-            
             $nuevo = modificarNuevoCargo($id,$idmandante, $idcolonia, $idmunicipio, $fechaman, 
             $fechaAdendum, $fechaAdendumFiniquito, $plazoCredito, $costoLotes, $LoteM2, $superficie,
             $supComercializar, $porMan, $porItavu, $monpagar, $monpagarComer,
@@ -87,7 +69,6 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE){
         if(isset($_POST['fechaAdendum']) and isset($_POST['fechaAdendumFiniquito']) and isset($_POST['editar'])){
             $id = $_POST['id'];
             $fechaman = "";
-            //$fechatri = $_POST['fechaTri'];
             $fechaAdendum = $_POST['fechaAdendum'];
             $fechaAdendumFiniquito = $_POST['fechaAdendumFiniquito'];
             $plazoCredito = $_POST['plazoCredito'];
@@ -95,15 +76,11 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE){
             $LoteM2 = $_POST['LoteM2'];
             $superficie = $_POST['superficie'];
             $supComercializar = $_POST['supComercializar'];
-            //$lotescol = $_POST['lotescol'];
-            //$lotesareav = $_POST['lotesareav'];
-            //$loteq = $_POST['loteq'];
             $porMan = $_POST['porMan'];
             $porItavu = $_POST['porItavu'];
             $porEsc = $_POST['porEsc'];
             $monpagar = $_POST['monpagar'];
             $monpagarComer = $_POST['monpagarComer'];
-            //$pagoInicial = $_POST['pagoInicial'];
             
             $lotesXComercialzarL = $_POST['lotesXComercialzarL'];
             $lotesXComercialzarS = $_POST['lotesXComercialzarS'];
@@ -119,7 +96,7 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE){
             $loteseq = $_POST['loteseq'];
             $reserva = $_POST['lotesreserva'];
             $observaciones = $_POST['observaciones'];
-            $porAmorAnt=$_POST['porAmorAnt'];
+            $porAmorAnt = $_POST['porAmorAnt'];
 
             $nuevo = modificarNuevoCargo($id,$idmandante, $idcolonia, $idmunicipio, $fechaman, 
             $fechaAdendum, $fechaAdendumFiniquito, $plazoCredito, $costoLotes, $LoteM2, $superficie,
@@ -135,11 +112,9 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE){
             }
         }
 
-        //AGREGAR UN CARGO NUEVO 
-        if(isset($_POST['fechaMan'])  and isset($_POST['superficie']) and isset($_POST['costoLotes']) and isset($_POST['guardar'])){
-            
+        // AGREGAR UN CARGO NUEVO 
+        if(isset($_POST['fechaMan']) and isset($_POST['superficie']) and isset($_POST['costoLotes']) and isset($_POST['guardar'])){
             $fechaman = $_POST['fechaMan'];
-            //$fechatri = $_POST['fechaTri'];
             $fechaAdendum = "";
             $fechaAdendumFiniquito = "";
             $plazoCredito = $_POST['plazoCredito'];
@@ -147,16 +122,11 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE){
             $LoteM2 = $_POST['LoteM2'];
             $superficie = $_POST['superficie'];
             $supComercializar = $_POST['supComercializar'];
-            //$lotescol = $_POST['lotescol'];
-            //$lotesareav = $_POST['lotesareav'];
-            //$loteq = $_POST['loteq'];
             $porMan = $_POST['porMan'];
             $porItavu = $_POST['porItavu'];
             $monpagar = $_POST['monpagar'];
             $monpagarComer = $_POST['monpagarComer'];
 
-            
-            //$pagoInicial = $_POST['pagoInicial'];
             $totLotesL = $_POST['totLotesL'];
             $lotesConL = $_POST['lotesConL'];
             $lotesSinConL = $_POST['lotesSinConL'];
@@ -170,11 +140,10 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE){
             $reserva = $_POST['lotesreserva'];
             $observaciones = $_POST['observaciones'];
 
-            
             $lotesXComercialzarL = $_POST['lotesXComercialzarL'];
             $lotesXComercialzarS = $_POST['lotesXComercialzarS'];
             $porEsc = $_POST['porEsc'];
-            $porAmorAnt=$_POST['porAmorAnt'];
+            $porAmorAnt = $_POST['porAmorAnt'];
 
             $nuevo = agregarNuevoCargo($idmandante, $idcolonia, $idmunicipio, $fechaman, 
             $fechaAdendum, $fechaAdendumFiniquito, $plazoCredito, $costoLotes, $LoteM2, $superficie,
@@ -192,7 +161,6 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE){
 
         if(isset($_POST['fechaAdendum']) and isset($_POST['fechaAdendumFiniquito']) and isset($_POST['guardar'])){
             $fechaman = "";
-            //$fechatri = $_POST['fechaTri'];
             $fechaAdendum = $_POST['fechaAdendum'];
             $fechaAdendumFiniquito = $_POST['fechaAdendumFiniquito'];
             $plazoCredito = $_POST['plazoCredito'];
@@ -200,14 +168,11 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE){
             $LoteM2 = $_POST['LoteM2'];
             $superficie = $_POST['superficie'];
             $supComercializar = $_POST['supComercializar'];
-            //$lotescol = $_POST['lotescol'];
-            //$lotesareav = $_POST['lotesareav'];
-            //$loteq = $_POST['loteq'];
             $porMan = $_POST['porMan'];
             $porItavu = $_POST['porItavu'];
             $monpagar = $_POST['monpagar'];
             $monpagarComer = $_POST['monpagarComer'];
-            //$pagoInicial = $_POST['pagoInicial'];
+
             $totLotesL = $_POST['totLotesL'];
             $lotesConL = $_POST['lotesConL'];
             $lotesSinConL = $_POST['lotesSinConL'];
@@ -220,12 +185,11 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE){
             $loteseq = $_POST['loteseq'];
             $reserva = $_POST['lotesreserva'];
             $observaciones = $_POST['observaciones'];
-            
 
             $lotesXComercialzarL = $_POST['lotesXComercialzarL'];
             $lotesXComercialzarS = $_POST['lotesXComercialzarS'];
             $porEsc = $_POST['porEsc'];
-            $porAmorAnt=$_POST['porAmorAnt'];
+            $porAmorAnt = $_POST['porAmorAnt'];
             $nuevo = agregarNuevoCargo($idmandante, $idcolonia, $idmunicipio, $fechaman, 
             $fechaAdendum, $fechaAdendumFiniquito, $plazoCredito, $costoLotes, $LoteM2, $superficie,
             $supComercializar, $porMan, $porItavu, $monpagar, $monpagarComer, 
@@ -240,9 +204,9 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE){
             }
         }
 
-        //GUARDAR EN LA BD LOS DATOS MODIFICADOS DE UN PAGO
+        // GUARDAR EN LA BD LOS DATOS MODIFICADOS DE UN PAGO
         if(isset($_GET['idpago'])){
-            $id=$_GET['idpago'];
+            $id = $_GET['idpago'];
 
             if(isset($_POST['fecha2'])){
                 $fecha1 = $_POST['fecha2'];
@@ -259,7 +223,6 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE){
                 $montoAcumulado = $_POST['montoAcumulado2'];
                 $saldo = $_POST['saldo2'];
                 $sistema = 0;
-               // $engancheTraspaso = 0;
                 $mas_menos1 = "";
                 $desNomina = 0;
                 $mas_menos2 = "";
@@ -286,13 +249,12 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE){
                 $fecha1 = $_POST['fecha'];
                 $fecha2 = $_POST['periodo2'];
                 if($fecha2 == ""){
-                    $fecha2=$fecha1; 
+                    $fecha2 = $fecha1; 
                 }
                 $recu = $_POST['recuperacion'];
                 $pgastos = $_POST['pgastos'];
                 $gastos = $_POST['gastos'];
                 $montopagar= $_POST['montopagar'];
-                //$pdevols = $_POST['pdevols'];
                 $pdevols = 0;
                 $devols = $_POST['devols'];
                 $otrosdesc = $_POST['otrosdesc'];
@@ -302,7 +264,6 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE){
                 $montoAcumulado = $_POST['montoAcumulado'];
                 $saldo = $_POST['saldo'];
                 $sistema = $_POST['sistema'];
-                //$engancheTraspaso = $_POST['engancheTraspaso'];
                 $mas_menos1 = $_POST['mas_menos1'];
                 $desNomina = $_POST['desNomina'];
                 $mas_menos2 = $_POST['mas_menos2'];
@@ -319,7 +280,6 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE){
                 $pagoDerechos = $_POST['pagoDerechos'];
                 $mas_menos8  = $_POST['mas_menos8'];
                 $pagooxxo = $_POST['pagooxxo'];
-                //$centavo = $_POST['centavo'];
                 $mas_menos9 = $_POST['mas_menos9'];
                 $pagootros = $_POST['pagootros'];
                 $centavo = 0;
@@ -327,10 +287,8 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE){
                 $observacionPago = $_POST['observacionPago'];
                 $datosbancarios = $_POST['datos_bancarios'];
                 $pgastosesc = $_POST['pgastosesc'];
-            $gastosesc = $_POST['gastosesc'];
+                $gastosesc = $_POST['gastosesc'];
             }  
-            
-           
 
             $res = actualizarPago($id, $fecha1, $fecha2, $recu, $pgastos,
             $gastos,$montopagar, $pdevols,$devols, $pamorAnt, $amorAnticipo, $montoPagado,
@@ -347,12 +305,12 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE){
             }
         }
          
-        //ELIMINAR UN REGISTRO 
+        // ELIMINAR UN REGISTRO 
         if(isset($_GET['ideliminar']))
         {
             $id = $_GET['ideliminar'];
             $res = eliminarRegistroPago($id,$nitavu);
-            if($res==TRUE){
+            if($res == TRUE){
                 historia($nitavu, 'Elimine el pago, idpago: '.$id.'');
                 mensaje('Se ha eliminado con éxito el pago.','mandantes_pago.php?idmandante='.$idmandante.'&idcolonia='.$idcolonia.'&idmunicipio='.$idmunicipio.'');
             }else{
@@ -361,1248 +319,646 @@ if (sanpedro($id_aplicacion, $nitavu)==TRUE){
             }
         }
 
-        
-        echo "<center><div>"; 
-            echo "<a style='right: 0px; position: absolute; top: 50px;' href='md_lista.php' title='Clic para ver lista de mandantes' class='btn btn-link'>";
-            echo "Lista Mandantes</a>";
-            echo "<a style='right: 150px; position: absolute; top: 50px;' href='md_pagomandantes.php' title='Clic para crear el oficio de pago a mandantes' class='btn btn-link'>";
-            echo "Pago Mandantes</a>";
-        echo "</div></center>";
-
-        echo '<br><br><br>';
-        echo "<h3>Registar pago a mandantes</h3>";
-        //echo "<form action='mandantes_pago.php' method='POST'>";
-        echo '<div class="container" style="background:#E9ECED;">';
-        echo "<center>";
-        echo "<div>";
-            echo "<label for='municipio'>Seleccione un municipio:";
-            echo "<select id='municipio' name='municipio'>";
-
-            $sql1 = "SELECT * FROM cat_municipios";
-                $r = $conexion -> query($sql1);
-                while($f = $r -> fetch_array()){ // resultado de la busqueda.................
-                    if ($idmunicipio==$f['IdMunicipio']){
-                         echo "<option value='".$f['IdMunicipio']."' selected>".$f['municipio']."</option>";
-                    }else{
-                        echo "<option value='".$f['IdMunicipio']."'>".$f['municipio']."</option>";
-                    } 
-                }
-            
-            echo "</select>";
-            echo "</label>";
-        echo "</div>";
-
-        echo "<div name='colonia' id='colonia'>";
-            $sql2 = "SELECT * FROM cat_colonias WHERE IdMunicipio = ".$idmunicipio."";
-            $r = $conexion -> query($sql2);
-
-            echo "<label for='colonia'>Seleccione una colonia:";
-                echo "<select id='colonia' name='colonia' onchange='mostrarMandantes()'>";
-                   
-                    while($f = $r -> fetch_array()){ // resultado de la busqueda.................
-                        if ($idcolonia==$f['idcolonia']){
-                            echo "<option value='".$f['idcolonia']."' selected>".$f['colonia']."</option>";
+        // SUBIR ANEXOS
+        if(isset($_POST['comprobante'])){
+            $id = $_POST['comprobante']; 
+            $idmandante_post = $_POST['idmandante2']; 
+            $idcolonia_post = $_POST['idcolonia2']; 
+            $idmunicipio_post = $_POST['idmunicipio2']; 
+            foreach($_FILES["archivo"]['tmp_name'] as $key => $tmp_name){
+                if($_FILES["archivo"]["name"][$key]){
+                    $doc = $_FILES["archivo"]["name"][$key];
+                    $tmp = $_FILES["archivo"]["tmp_name"][$key];
+                    $num = ndocumento(TRUE);
+                    $archivo = "docs_mandantes/".$id.'_'.$num.'_'.$doc."";
+                    $subida = FTP_subir($tmp,$archivo);
+                    if ($subida == "TRUE"){
+                        documento_add($num, $doc, $nitavu,$id_aplicacion);
+                        $sql = "INSERT INTO mandantes_documentos (idmunicipio, idcolonia, idmandante, n_archivo, idpago) VALUES ('$idmunicipio_post','$idcolonia_post','$idmandante_post','$num', '$id')";
+                        if ($conexion->query($sql) == TRUE){ 
+                            ndocumento(FALSE);
+                            historia($nitavu,'md_Subi un documento al mandante: '.$idmandante_post .' archivo: '.$doc);
+                            mensaje('Se ha subido el archivo con éxito.','mandantes_pago.php?idmandante='.$idmandante_post.'&idcolonia='.$idcolonia_post.'&idmunicipio='.$idmunicipio_post.'');  
                         }else{
-                            echo "<option value='".$f['idcolonia']."'>".$f['colonia']."</option>";
-                        }
-                        
-                    }
-                
-                echo "</select>";
-            echo "</label>";
-        echo "</div>";
-
-
-        echo "<div name='Mandantes' id='Mandantes'>";
-            $sql3 = "SELECT * FROM cat_mandantes WHERE IdColonia = ".$idcolonia." and IdMunicipio=".$idmunicipio." and Cancelado = 0";
-            $r = $conexion -> query($sql3);
-
-            echo "<label for='mandantes'>Seleccione un mandante:";
-                echo "<select id='mandantes' name='mandantes' onchange='mostrarApoderado()'>";
-                   
-                    while($f = $r -> fetch_array()){ // resultado de la busqueda.................
-                        if ($idmandante==$f['IdMandante']){
-                            echo "<option value='".$f['IdMandante']."' selected>".$f['Propietarios']."</option>";
-                        }else{
-                            echo "<option value='".$f['IdMandante']."'>".$f['Propietarios']."</option>";
-                        }
-                    }
-                
-                echo "</select>";
-            echo "</label>";
-        echo "</div>";
-
-        echo "<div name='Apoderado' id='Apoderado'>";
-            $sql4 = "SELECT Mandante FROM cat_mandantes WHERE IdColonia = ".$idcolonia." and IdMunicipio=".$idmunicipio."  and IdMandante=".$idmandante." and Cancelado = 0 ORDER BY Mandante ASC";
-            $r = $conexion -> query($sql4);
-            echo "<label for='mandantes'>Seleccione un apoderado:";
-                echo "<select id='mandantes' name='mandantes' onchange='mostrarOpciones()'>";
-                echo "<option>Seleccione un apoderado...</option>";
-                    
-                    while($f = $r -> fetch_array()){ // resultado de la busqueda.................
-                      
-                            echo "<option value='".$f['IdMandante']."' selected>".$f['Mandante']."</option>";
-                        
-                        
-                    }
-                
-                echo "</select>";
-            echo "</label>";
-        echo "</div>";
-        echo "</center>";
-        echo "</div>";//cierra contenedor
-        //OPCIONES
-        
-        //BOTONES MENU
-        echo "<br><br><br>";
-        echo "<center>";
-        echo "<div id='req_menu' style='display:inline-block;'>"; 
-            echo "<a href='#registroPago' rel='MyModal:open' class='Mbtn btn-danger' title='Clic para registrar un nuevo pago'>";
-          
-            echo "<table  width='100%'><tr><td valign='middle' align='center'>";
-            echo "<img src='icon/pago.png' style='width:30px; height:30px;'>";
-            echo "</td>";
-            echo "<td valign='middle' align='center' style='color:white;' class='pc'>";
-            echo "Registar Pago";
-            echo "</td></tr></table>";
-            
-            echo "</a>";	
-            
-            //?id=".$idmandante."&idcolonia=".$idcolonia."&idmunicipio=".$idmunicipio."
-            MiToken_Init($nitavu, 'PAGO A MANDANTES-ORDEN DE PAGO'); // inicializamos seguridad del Token (no necesitamos saberlo)
-            echo "<a style='vertical-align: text-bottom;'>";
-            echo "<form id='reporteMandante' action='md_reporte.php?id=".$idmandante."&idcolonia=".$idcolonia."&idmunicipio=".$idmunicipio."' method='POST'>";
-           //href="md_reporte.php"
-            echo '<button type="submit"  class="Mbtn btn-danger"  title="Clic para ver el reporte">';
-            echo "<input type='hidden' id='url' name='url'>";
-            echo "<table  width='100%'><tr><td valign='middle' align='center'>";
-            echo "<img src='icon/pdf.png' style='width:30px; height:30px;'>";
-            echo "</td>";
-            echo "<td valign='middle' align='center' style='color:white;' class='pc'>";
-            echo "Crear Reporte";
-            echo "</td></tr></table></button>";
-            echo "</form>";
-            echo "</a>";
-            
-            echo "<a id='nuevoCargo' href='md_nuevoCargo.php?id=".$idmandante."&idcolonia=".$idcolonia."&idmunicipio=".$idmunicipio."' class='Mbtn btn-danger' title='Clic para capturar un cargo'>";
-            
-            echo "<table  width='100%'><tr><td valign='middle' align='center'>";
-            echo "<img src='icon/cargo.png' style='width:30px; height:30px;'>";
-            echo "</td>";
-            echo "<td valign='middle' align='center' style='color:white;' class='pc'>";
-            echo "Registrar Cargo";
-            echo "</td></tr></table>";
-            echo "</a>";
-
-            echo "<a id='mddocumentos' href='md_documentos.php?id=".$idmandante."&idcolonia=".$idcolonia."&idmunicipio=".$idmunicipio."' class='Mbtn btn-danger' title='Clic para agregar documentos al mandante'>";
-            echo "<table  width='100%'><tr><td valign='middle' align='center'>";
-            echo "<img src='icon/folio.png' style='width:30px; height:30px;'>";
-            echo "</td>";
-            echo "<td valign='middle' align='center' style='color:white;' class='pc'>";
-            echo "Documentos";
-            echo "</td></tr></table>";
-            echo "</a>";
-
-            //SOLO INFORMATICA VA A TENER ACCESO A ESTE BOTÓN, ES PARA CORREGIR CUENTAS 
-            //if (pertenecesaInformatica($nitavu)== true){
-                echo "<a id='recalculo' onclick='recalcular()' class='Mbtn btn-danger' title='Clic para recaulcular los saldos del mandante'>";
-                
-                echo "<table  width='100%'><tr><td valign='middle' align='center'>";
-                echo "<img src='icon/recalcular.png' style='width:20px; height:30px;'>";
-                echo "</td>";
-                echo "<td valign='middle' align='center' style='color:white;' class='pc'>";
-                echo "Recalcular Saldos";
-                echo "</td></tr></table>";
-                
-                echo "</a>";
-            //}
-            
-        echo "</div>";
-        echo "</center>";
-
-        echo '<div name="respuesta" id="respuesta"></div>'; 
-
-       //Ingresar datos
-        echo "<center>";
-        echo "<div id='registroPago' class='MyModal' style='width:70%; display:none;'>";
-            echo "<h1>Ingresa los datos que se solicitan</h1>";
-            
-            $sql4 = "SELECT * FROM cat_mov_mandante";
-            $r4 = $conexion -> query($sql4);
-            
-            echo "<center><div style='width:100%'>";
-            echo "<label for='tipo_mov'>Seleccione un tipo de pago:";
-                echo "<select id='tipo_mov' name='tipo_mov' onchange='seleccionarQueDivMostrar()'>";
-                    echo "<option>Seleccione una opcion...</option>";
-                    while($f4 = $r4 -> fetch_array()){ // resultado de la busqueda.................
-                        
-                        echo "<option value='".$f4['id']."'>".$f4['nombre']."</option>";
-                        
-                    }
-                
-                echo "</select>";
-            echo "</label>"; 
-            echo "</div></center>";
-
-            echo "<input type='hidden' name='idmandante' id='idmandante' value=".$idmandante." readonly>";
-            echo "<input type='hidden' name='idcolonia' id='idcolonia' value=".$idcolonia." readonly>";
-            echo "<input type='hidden' name='idmunicipio' id='idmunicipio' value=".$idmunicipio." readonly>";
-            echo "<input type='hidden' name='nitavu' id='nitavu' value='".$nitavu."' readonly>";
-
-           echo "<form name='formulario' id='formulario' style='display:none' action=''  onSubmit='enviarDatos(); return false'>";
-           //  echo '<form name="formulario" onSubmit="enviarDatos();" >';
-           
-                 echo '<label><input type="checkbox" id="peri2" name="peri2" value="periodo2" onClick="mostrarFecha2()">Periodo</label>';
-                echo "<div>";
-                    echo "<table style='width:100%;'>";
-                        echo "<td>";
-                        echo "<label>Fecha 1</label>";
-                        echo "<input type='date' name='fecha' id='fecha' required>";
-                        echo "</td>";
-                        echo "<td id='fech2' style='display:none;'>";
-                        echo "<label>Fecha 2</label>";
-                        echo "<input type='date' name='periodo2' id='periodo2'>";
-                        echo "</td>";
-                    echo "</table>";
-                echo "</div>";
-                echo "<div>";
-                    echo "<label>Recuperación</label>";
-                    echo "<input type='number' step='any' placeholder='$0.00' onkeyup='todas();' name='recuperacion' id='recuperacion' required>";
-                echo "</div>";
-
-
-                echo "<div>";
-                echo "<table style='width:100%;'>";
-                    echo "<td>";
-                        echo "<label style='text-align:center;'>%</label>";
-                        echo "<input type='number' step='any' placeholder='%' onkeyup='calcularAmortizacion();' name='pamorAnt' id='pamorAnt' required>";
-                    echo "</td>";
-                    echo "<td>";
-                        echo "<label>Amortización de anticipo</label>";
-                        echo "<input type='number' step='any' placeholder='$0.00' name='amorAnticipo' id='amorAnticipo' required>";
-                    echo "</td>";
-                echo "</table>";
-            echo "</div>";  
-
-                 
-            echo "<div>";
-            echo "<label>Monto por pagar</label>";
-            echo "<input type='number' step='any' placeholder='$0.00' name='montopagar' id='montopagar' required>";
-        echo "</div>";
-                echo "<div>";
-                    echo "<table style='width:100%;'>";
-                        echo "<td>";
-                            echo "<label style='text-align:center;'>%</label>";
-                            echo "<input type='number' step='any' placeholder='%' name='pgastos' id='pgastos' value='".GastosAdminMandante($idmandante,$idcolonia,$idmunicipio)."' required>";
-                        echo "</td>";
-                        echo "<td>";
-                            echo "<label>Gastos de admon.</label>";
-                            echo "<input type='number' step='any' placeholder='$0.00' name='gastos' id='gastos' required>";
-                        echo "</td>";
-                    echo "</table>";
-                echo "</div>";
-
-                echo "<div>";
-                    echo "<table style='width:100%;'>";
-                        echo "<td>";
-                            echo "<label style='text-align:center;'>%</label>";//value='".GastosAdminMandante($idmandante,$idcolonia,$idmunicipio)."'
-                            echo "<input type='number' step='any' placeholder='%' name='pgastosesc' id='pgastosesc'  value='".GastosEscMandante($idmandante,$idcolonia,$idmunicipio)."'  required>";
-                        echo "</td>";
-                        echo "<td>";
-                            echo "<label>Gastos de escrituracion</label>";
-                            echo "<input type='number' step='any' placeholder='$0.00' name='gastosesc' id='gastosesc' required>";
-                        echo "</td>";
-                    echo "</table>";
-                echo "</div>";
-                
-               echo "<div>";
-                    /*echo "<table style='width:100%;'>";
-                        echo "<td>";
-                            echo "<label style='text-align:center;'>%</label>";
-                            echo "<input type='number' step='any' placeholder='%' onkeypress='calcularDevoluciones();' name='pdevols' id='pdevols' required>";
-                        echo "</td>";
-                        echo "<td>";*/
-                            echo "<label>Devoluciones</label>";
-                            echo "<input type='number' step='any' placeholder='$0.00' name='devols' id='devols' onkeyup='calcularDevoluciones();' value='0'>";
-                       /* echo "</td>";
-                    echo "</table>";*/
-                echo "</div>";
-                
-                echo "<div>";            
-                        echo "<label>Otros Descuentos</label>";
-                        echo "<input type='number' step='any' placeholder='$0.00' name='otrosdesc' id='otrosdesc'   onkeyup='calcularDevoluciones();' value='0'>";
-                 echo "</div>";
-             
-
-                echo "<div>";
-                    echo "<label>Monto pagado</label>";
-                    echo "<input type='number' step='any' placeholder='$0.00' onkeyup='operaciones(1);' name='montoPagado' id='montoPagado' required>";
-                echo "</div>";
-            echo "<div id='calculados' name='calculados'>";
-                echo "<div>";
-                    echo "<label>Monto acumulado</label>";
-                    echo "<input type='number' step='any' placeholder='$0.00' name='montoAcumulado' id='montoAcumulado' required>";
-                echo "</div>";
-                echo "<div>";
-                    echo "<label>Saldo</label>";
-                    echo "<input type='number' step='any' placeholder='$0.00' name='saldo' id='saldo' required>";
-                echo "</div>";
-            echo "</div>";
-                echo "<div>";
-                    echo "<label>Recuperación emitida por el sistema</label>";
-                    echo "<input type='number' step='any' placeholder='$0.00' name='sistema' id='sistema' >";
-                echo "</div>";
-                
-               /* echo "<div>";
-                    echo "<label>Enganche ahorro por identificar y traspasar</label>";
-                    echo "<input type='number' step='any' placeholder='$0.00' name='engancheTraspaso' id='engancheTraspaso'>";
-                echo "</div>";*/
-
-
-                echo "<div>";
-                    echo "<table style='width:100%;'>";
-                        echo "<td>";
-                            echo "<label style='text-align:center;'>(+/-)</label>";
-                            echo "<select id='mas_menos2' name='mas_menos2'>";
-                                echo "<option value='1'>más</option>";
-                                echo "<option value='2'>menos</option>";
-                            echo "</select>";
-                        echo "</td>";
-                        echo "<td>";
-                            echo "<label  style='text-align:center;'>Enganche ahorro por identificar y traspasar</label>";
-                            echo "<input type='number' step='any' placeholder='$0.00' name='engancheAhorro' id='engancheAhorro' >";
-                        echo "</td>";
-                    echo "</table>";
-                echo "</div>";
-
-
-                 echo "<div>";
-                    echo "<table style='width:100%;'>";
-                        echo "<td>";
-                            echo "<label style='text-align:center;'>(+/-)</label>";
-                            echo "<select id='mas_menos1' name='mas_menos1'>";
-                                echo "<option value='1'>más</option>";
-                                echo "<option value='2'>menos</option>";
-                            echo "</select>";
-                        echo "</td>";
-                        echo "<td>";
-                            echo "<label style='text-align:center;'>Descuento por nómina</label>";
-                            echo "<input type='number' step='any' placeholder='$0.00' name='desNomina' id='desNomina' >";
-                        echo "</td>";
-                    echo "</table>";
-                echo "</div>";
-                
-                echo "<div>";
-                    echo "<table style='width:100%;'>";
-                        echo "<td>";
-                            echo "<label style='text-align:center;'>(+/-)</label>";
-                            echo "<select id='mas_menos3' name='mas_menos3'>";
-                                echo "<option value='1'>más</option>";
-                                echo "<option value='2'>menos</option>";
-                            echo "</select>";
-                        echo "</td>";
-                        echo "<td>";
-                            echo "<label  style='text-align:center;'>Por transferencia</label>";
-                            echo "<input type='number' step='any' placeholder='$0.00' name='transferencia' id='transferencia' >";
-                        echo "</td>";
-                    echo "</table>";
-                echo "</div>";
-              echo "<div>";
-                    echo "<table style='width:100%;'>";
-                        echo "<td>";
-                            echo "<label style='text-align:center;'>(+/-)</label>";
-                            echo "<select id='mas_menos4' name='mas_menos4'>";
-                                echo "<option value='1'>más</option>";
-                                echo "<option value='2'>menos</option>";
-                            echo "</select>";
-                        echo "</td>";
-                        echo "<td>";
-                            echo "<label  style='text-align:center;'>Por pagos universales</label>";
-                            echo "<input type='number' step='any' placeholder='$0.00' name='pagosUniversales' id='pagosUniversales' >";
-                        echo "</td>";
-                    echo "</table>";
-                
-                echo "</div>";
-                echo "<div>";
-
-                    echo "<table style='width:100%;'>";
-                        echo "<td>";
-                            echo "<label style='text-align:center;'>(+/-)</label>";
-                            echo "<select id='mas_menos5' name='mas_menos5'>";
-                                echo "<option value='1'>más</option>";
-                                echo "<option value='2'>menos</option>";
-                            echo "</select>";
-                        echo "</td>";
-                        echo "<td>";
-                            echo "<label  style='text-align:center;'>Por concepto de escritura</label>";
-                            echo "<input type='number' step='any' placeholder='$0.00' name='escritura' id='escritura' >";
-                        echo "</td>";
-                    echo "</table>";
-                echo "</div>";
-                echo "<div>";
-                    echo "<table style='width:100%;'>";
-                        echo "<td>";
-                            echo "<label style='text-align:center;'>(+/-)</label>";
-                            echo "<select id='mas_menos6' name='mas_menos6'>";
-                                echo "<option value='1'>más</option>";
-                                echo "<option value='2'>menos</option>";
-                            echo "</select>";
-                        echo "</td>";
-                        echo "<td>";
-                            echo "<label  style='text-align:center;'>Por cesión de derechos</label>";
-                            echo "<input type='number' step='any' placeholder='$0.00' name='derechos' id='derechos'>";
-                        echo "</td>";
-                    echo "</table>";
-                echo "</div>";
-                echo "<div>";
-                    echo "<table style='width:100%;'>";
-                        echo "<td>";
-                            echo "<label style='text-align:center;'>(+/-)</label>";
-                            echo "<select id='mas_menos7' name='mas_menos7'>";
-                                echo "<option value='1'>más</option>";
-                                echo "<option value='2'>menos</option>";
-                            echo "</select>";
-                        echo "</td>";
-                        echo "<td>";
-                            echo "<label  style='text-align:center;'>Por pago de derechos</label>";
-                            echo "<input type='number' step='any' placeholder='$0.00' name='pagoDerechos' id='pagoDerechos'>";
-                        echo "</td>";
-                    echo "</table>";
-                echo "</div>";
-                echo "<div>";
-                    echo "<table style='width:100%;'>";
-                        echo "<td>";
-                            echo "<label style='text-align:center;'>(+/-)</label>";
-                            echo "<select id='mas_menos8' name='mas_menos8'>";
-                                echo "<option value='1'>más</option>";
-                                echo "<option value='2'>menos</option>";
-                            echo "</select>";
-                        echo "</td>";
-                        echo "<td>";
-                            echo "<label  style='text-align:center;'>Por pago en oxxo</label>";
-                            echo "<input type='number' step='any' placeholder='$0.00' name='pagooxxo' id='pagooxxo'>";
-                        echo "</td>";
-                    echo "</table>";
-                echo "</div>";
-               /* echo "<div>";
-                    echo "<label>Ajuste al centavo</label>";
-                    echo "<input type='number' step='any' placeholder='$0.00' name='centavo' id='centavo' required>";
-                echo "</div>";*/
-
-                //echo "<div>";
-               
-
-
-                echo "<div>";
-                echo "<table style='width:100%;'>";
-                    echo "<td>";
-                        echo "<label style='text-align:center;'>(+/-)</label>";
-                        echo "<select id='mas_menos9' name='mas_menos9'>";
-                            echo "<option value='1'>más</option>";
-                            echo "<option value='2'>menos</option>";
-                        echo "</select>";
-                    echo "</td>";
-                    echo "<td>";
-                        echo "<label  style='text-align:center;'>Otros pagos</label>";
-                        echo "<input type='number' step='any' placeholder='$0.00' name='pagootros' id='pagootros'>";
-                    echo "</td>";
-                echo "</table>";
-            echo "</div>";
-
-             echo "<div>";
-            //echo "<table>";
-             //   echo "<td>";
-                    echo "<label>Comentario</label>";
-                    echo "<input type='text'  placeholder='comentario' name='comentario' id='comentario' required>";
-               // echo "</td>";
-                //echo "<td>";
-        echo "</div>";
-           /* echo "<div>";
-                echo "<label>Ajuste al centavo</label>";
-                echo "<input type='number' step='any' placeholder='$0.00' name='centavo' id='centavo' required>";
-            echo "</div>";*/
-
-            //echo "<div>";
-           
-
-                echo "<div>";
-                            echo "<label>Observacion para Pago</label>";
-                            echo "<input type='text'  placeholder='Observación para el pago' name='observacionPago' id='observacionPago'>";
-                        //echo "</td>";
-                    //echo "</table>";
-             echo "</div>"; 
-            //     echo "<div>";
-            //     echo "<label>Observacion para Pago2</label>";
-            //     echo "<input type='text'  placeholder='Observación para el pago' name='observacionPago2' id='observacionPago2'>";
-            // echo "</div>"; 
-            
-
-            echo "<div>";
-            echo "<label>Datos Bancarios</label>";
-            echo "<input type='text'  placeholder='Datos bancarios' name='datosBancarios' id='datosBancarios'>";
-             echo "</div>"; 
-                //echo "</div>";
-                echo "<div>";
-                    echo "<input class='Mbtn btn-danger' type='submit' id='guardar' value='Guardar' >";
-                echo "</div>";
-                
-            echo "</form>";
-
-
-            echo "<form name='formulario1' id='formulario1' style='display:none; width:100%;' action=''  onSubmit='enviarDatos2(); return false'>";
-           //  echo '<form name="formulario" onSubmit="enviarDatos();" >';
-                echo "<div>";
-                    echo "<label>Fecha de pago</label>";
-                    echo "<input type='date' name='fecha2' id='fecha2' required>";
-                echo "</div>"; 
-                echo "<div>";
-                    echo "<label>Monto pagado</label>";
-                    echo "<input type='number' step='any' placeholder='$0.00' onkeyup='operaciones();' name='montoPagado' id='montoPagado' required>";
-                echo "</div>";  
-            echo "<div id='calculados' name='calculados' style='width:100%;'>";
-                echo "<div>";
-                    echo "<label>Monto acumulado</label>";
-                    echo "<input type='number' step='any' placeholder='$0.00' name='montoAcumulado' id='montoAcumulado' required>";
-                echo "</div>";
-                echo "<div>";
-                    echo "<label>Saldo</label>";
-                    echo "<input type='number' step='any' placeholder='$0.00' name='saldo' id='saldo' required>";
-                echo "</div>";
-            echo "</div>";
-            echo "<br>";
-                echo "<label>Comentario</label>";
-                echo "<input type='text'  placeholder='comentario' name='comentario' id='comentario' required>";
-              
-                echo "<div>";
-                    echo "<input class='Mbtn btn-danger' type='submit' id='guardar' value='Guardar' >";
-                echo "</div>";
-
-            echo "</form>";
-        echo "</div>";
-    echo "</center>";
-    
-
-    //Aqui se dibuja la notificacion 
-    echo '<div name="mensajeConfirmacion" id="mensajeConfirmacion"></div>'; 
-    
-    //Tabla de registros
-    echo "<div id='tablaRegistros' style='display:inline-block;'>";
-    $vuelta = 0;
-    $sql = "SELECT * FROM mandantes_abonos WHERE idmandante = ".$idmandante." and idcolonia = ".$idcolonia." and idmunicipio = ".$idmunicipio." and cancelado=0 ORDER BY id DESC";
-    $rc = $conexion -> query($sql);
-    if ($rc->num_rows>0){
-        echo "<br><br><br>";
-        echo "<h1>Desglose de pagos a mandante:</h1>";
-        echo "<center>";
-        echo "<table id='registros' class='tabla' style='text-align: right; width:90%;'>";
-        echo "<th align='center'>ID</th>";
-        echo "<th align='center'>Periodo Pago</th>";
-        echo "<th align='center'>Recuperación</th>";
-        echo "<th align='center'>Gastos</th>";
-        echo "<th align='center'>Gastos Esc</th>";
-        echo "<th align='center'>Monto pagar</th>";
-        echo "<th align='center'>Devols.</th>";
-        echo "<th align='center'>Otros Desc.</th>";
-        echo "<th align='center'>Amortización anticipo</th>";
-        echo "<th align='center'>Monto pagado</th>";
-        echo "<th align='center'>Monto Acumulado</th>";
-        echo "<th align='center'>Saldo</th>";
-        //echo "<th style='width:15%;'>N. de oficio</th>";
-        echo "<th align='center'>Documentos</th>";
-        echo "<th align='center'>Orden Pago</th>";
-        echo "<th align='center'>maS</th>";
-        echo "<th align='center'>Editar</th>";
-        echo "<th align='center'>Eliminar</th>";
- 
-        while($r = $rc -> fetch_array()){
-            $vuelta +=1;
-            echo "<tr>";
-            echo "<td align='center'>".$r['id']."</td>";
-            echo "<td align='left'>";
-            if($r['periodopago']==$r['periodopago2']){
-                
-                
-                
-                echo fechaesp($r['periodopago']);
-
-            }else{
-                //$fech = strtotime($r['periodopago']);
-                //$fech2 = strtotime($r['periodopago2']);
-                //echo date("M",$fech).'-'.date("y",$fech)." A ".date("M",$fech2).'-'.date("y",$fech2); 
-                echo fechaesp($r['periodopago'])." A ".fechaesp($r['periodopago2']);
-            } 
-            echo "</td>";
-            echo "<td>$".$r['recuperacion']."</td>";
-            echo "<td>$".$r['gastos']."</td>";
-            echo "<td>$".$r['gastosesc']."</td>";
-            echo "<td>$".$r['montopagar']."</td>";
-            echo "<td>$".$r['devols']."</td>";
-            echo "<td>$".$r['otrosdesc']."</td>";
-            echo "<td>$".$r['amortizacion_anticipo']."</td>";
-            echo "<td>$".$r['monto_pagado']."</td>";
-            echo "<td>$".$r['monto_acumulado']."</td>";
-            echo "<td>$".$r['saldo']."</td>";
-            echo "<td>";
-            //onclick='seleccionarMODAL('subirAdjuntos1".$vuelta."')'
-                //echo "<a href='#subirAdjuntos' rel='MyModal:open' onclick='pasarIdConsulta(".$r['id'].','.$idmandante.','.$idcolonia.','.$idmunicipio.")' title='Haga click aqui para subir archivos'>Adjuntos_".$r['id']."</a>";
-                //echo '<a href="#subirAdjuntos" rel="modal:open" id="'.$r['id'].'" data-id="row.id" data-toggle="modal" data-target="#subirAdjuntos">Adjuntos_'.$r['id'].'</a>';
-                echo "<a href='#subirAdjuntos1".$vuelta."' rel='MyModal:open'  title='Haga click aqui para subir archivos'>Adjuntos</a>";
-                //echo '<a href="#subirAdjuntos" rel="modal:open" id="'.$r['id'].'" data-id="row.id" data-toggle="modal" data-target="#subirAdjuntos">Adjuntos_'.$r['id'].'</a>';
-                echo "<div id='subirAdjuntos1".$vuelta."' class='MyModal'>";
-                    echo "<div id='subirAdjuntos' >";
-                        echo "<div>";
-                            $adj = "SELECT idpago, ndocumento, nombre FROM documentos, mandantes_documentos WHERE mandantes_documentos.n_archivo=documentos.ndocumento and mandantes_documentos.idpago = ".$r['id']."";
-                            //echo $adj;
-                            $rc1 = $conexion -> query($adj);
-                            if ($rc1->num_rows>0){
-                                echo "<table class='tabla'>";
-                                    echo "<th>Nombre de archivo</th>";
-                                    while($r1 = $rc1 -> fetch_array()){
-                                        echo "<tr>";
-                                            echo "<td>";
-                                            $archivo = "docs_mandantes/".$r1['idpago'].'_'.$r1['ndocumento'].'_'.$r1['nombre']; 
-                                            $link = "<a id=".$r1['idpago']." name='$archivo' href='md_descargar.php?nombre=".$archivo."' target='_self' onclick =''  title='Haga click aqui para descargar'>".$r1['nombre']."</a>";
-                                            echo $link;//archivo
-                                            echo "</td>";
-                                        echo "</tr>";
-                                    }
-                                echo "</table>";
-                            }
-                        echo "</div>";
-
-                        echo "<form action='mandantes_pago.php?idmandante=".$idmandante."&idcolonia=".$idcolonia."&idmunicipio=".$idmunicipio."' method='POST' enctype='multipart/form-data'>";
-                            echo "<label>Seleccione los archivos que se van a agregar como anexos</label>";
-                            echo '<input type="hidden" name="comprobante" id="comprobante" value='.$r['id'].'>';
-                            echo "<input type='hidden' name='idmandante2' id='idmandante2' value=".$idmandante.">";
-                            echo "<input type='hidden' name='idcolonia2' id='idcolonia2' value=".$idcolonia.">";
-                            echo "<input type='hidden' name='idmunicipio2' id='idmunicipio2' value=".$idmunicipio.">";
-                            echo '<input id="archivo[]" name="archivo[]" type="file" accept=".pdf" multiple="" required>';
-                            echo "<button type='submit' class='Mbtn btn-danger' title='Haga clic para subir el archivo'> Subir archivos </button>";
-                        echo "</form>"; 
-
-                        
-
-                        echo "</div>";
-                echo "</div>";
-            echo "</td>";
-            echo "<td>";
-                MiToken_Init($nitavu, 'PAGO A MANDANTES-ORDEN DE PAGO'); // inicializamos seguridad del Token (no necesitamos saberlo)          
-                echo '<form action="md_ordenpago.php?id='.$r['id'].'&idmandante='.$idmandante.'&idcolonia='.$idcolonia.'&idmunicipio='.$idmunicipio.'&fecha='.$r['periodopago'].'" method="POST">';
-                    echo "<input type='hidden' class='url1' name='url1'>";
-                    echo "<button  type='submit' title='Clic para ver la orden de pago'>";
-                        echo '<img src="./icon/pdf.png" height="42" width="42">';
-                    echo "</button>";	
-                echo "</form>";
-            echo "</td>";
-            echo "<td align='center'>";
-            echo '<a href="#masAbonos'.$r['id'].'" rel="MyModal:open"  title="Haga click aqui para subir archivos" ><img src="./icon/mas3.png" height="20" width="15">';
-            echo "<div id='masAbonos".$r['id']."' class='MyModal' style='width:500px'>";    
-                    echo "<div>";
-                    echo '<form action="md_ingresa_abonoextra.php" method="POST">';
-                    echo "<table style='border-collapse: separate;'>";
-                    echo "<tr>";
-                    
-                        echo "<td>
-                        <input name='nitavu1'  type='hidden' class='form-select'   id='nitavu1' value='".$nitavu."'  /> 
-                      <input name='idabono'  type='hidden' class='form-select'   id='idabono' value='".$r['id']."'  />
-                        <label style='font-size: 12; font-weight:bold;'>Signo</label><td>";
-                        echo "<td><select id='mas_menos' name='mas_menos' class='form-select'  style='font-size: 12; '>";
-                            echo "<option value='1'>Más(+)</option>";
-                            echo "<option value='2'>Menos(-)</option>";
-                        echo "</select></td>"; 
-                        echo "</td>";
-                    echo "</tr>";
-                    echo "<tr>";
-                        echo "<td><label style='font-size: 12; font-weight:bold;'>Concepto</label><td>";
-                        echo "<td> <select name='idconcepto'  class='form-select'    id='idconcepto'  style='font-size: 12;'  >"; 
-                        $sql = "SELECT * FROM cat_conceptos_mandabonos where Activo=1 ";
-                   
-                        $rr = $conexion -> query($sql);
-                        while($f = $rr -> fetch_array())
-                        { // resultado de la busqueda.................
-                            echo "<option  style='font-size: 12;' value='".$f['Id']."'>".$f['Concepto']. "</option>";
-                        }
-                         echo "</select>";
-
-                        echo "</td>";
-                    echo "</tr>";                    
-                    echo "<tr>";
-                        echo "<td><label style='font-size: 12; font-weight:bold;'>Importe</label><td>";
-                        echo "<td> <input name='importe'     id='importe'   style='font-size: 12;' /></td>";
-                    echo "</tr>";
-
-                    echo "<tr>";
-                    
-                    echo "<td colspan='2'>";
-                    echo "<td colspan='2'><center><input class='Mbtn btn-danger' type='submit' id='guardar' value='Guardar' ></center></td>";
-                    echo "</td>";
-                echo "</tr>";
-                    echo "</table >";
-                    echo "</form>";
-                    echo "</div>";
-                echo "</div>";
-                echo "</a>";
-
-            echo "</td>";
-
-            echo "<td align='center'>";
-                echo '<a  href="md_modificarRegistro.php?id='.$r['id'].'&idmandante='.$idmandante.'&idcolonia='.$idcolonia.'&idmunicipio='.$idmunicipio.'"><img src="./icon/edit.png" height="20" width="15"></a>';
-            echo "</td>";
-            echo "<td align='center'>";
-                echo '<a  href="mandantes_pago.php?ideliminar='.$r['id'].'&idmandante='.$idmandante.'&idcolonia='.$idcolonia.'&idmunicipio='.$idmunicipio.'"><img src="./icon/x.png" height="20" width="15"></a>';
-            echo "</td>";
-            
-        }
-        echo "</tr>";
-        echo "</table>";
-        echo "</center>";
-        }
-    echo "</div>";
- 
-            //SUBIR ANEXOS
-    if(isset($_POST['comprobante'])){
-        $id = $_POST['comprobante']; 
-        $idmandante = $_POST['idmandante2']; 
-        $idcolonia = $_POST['idcolonia2']; 
-        $idmunicipio = $_POST['idmunicipio2']; 
-        //Como el elemento es un arreglos utilizamos foreach para extraer todos los valores
-        foreach($_FILES["archivo"]['tmp_name'] as $key => $tmp_name){
-            //Validamos que el archivo exista
-            if($_FILES["archivo"]["name"][$key]){
-            $doc = $_FILES["archivo"]["name"][$key]; //Obtenemos el nombre original del archivo
-            $tmp = $_FILES["archivo"]["tmp_name"][$key]; //Obtenemos un nombre temporal del archivo
-            $num = ndocumento(TRUE);
-            //$directorio = 'docs/'; //Declaramos un  variable con la ruta donde guardaremos los archivos
-            $archivo = "docs_mandantes/".$id.'_'.$num.'_'.$doc."";
-            $subida = FTP_subir($tmp,$archivo);
-            //$nombrearchivo = $num.'_'.$doc;
-                if ($subida == "TRUE"){
-                    documento_add($num, $doc, $nitavu,$id_aplicacion);
-                    $sql = "INSERT INTO mandantes_documentos (idmunicipio, idcolonia, idmandante, n_archivo, idpago) VALUES  ('$idmunicipio','$idcolonia','$idmandante','$num', '$id')";
-                    if ($conexion->query($sql) == TRUE){ 
-                        ndocumento(FALSE);
-                        historia($nitavu,'md_Subi un documento al mandante: '.$idmandante .' archivo: '.$doc);
-                        mensaje('Se ha subido el archivo con éxito.','mandantes_pago.php?idmandante='.$idmandante.'&idcolonia='.$idcolonia.'&idmunicipio='.$idmunicipio.'');  
+                            historia($nitavu,'No se pudo guardar la informacion del archivo: '.$doc.' en la base de datos del mandante');
+                            mensaje('Hubo un error al momento de subir los archivos, por favor vuelva a intentarlo.','mandantes_pago.php?idmandante='.$idmandante_post.'&idcolonia='.$idcolonia_post.'&idmunicipio='.$idmunicipio_post.'');
+                        }      
                     }else{
-                        historia($nitavu,'No se pudo guardar la informacion del archivo: '.$doc.' en la base de datos del mamdante: idmandante: '.$idmandnte.' idcolonia: '.$idcolonia.' idmunicipio:'.$idmunicipio.'');
-                        mensaje('Hubo un error al momento de subir los archivos, por favor vuelva a intentarlo.','mandantes_pago.php?idmandante='.$idmandante.'&idcolonia='.$idcolonia.'&idmunicipio='.$idmunicipio.'');
-                    }      
-                }else{
-                    historia($nitavu,'No se pudo guardar el documento en el servidor FTP, archivo: '.$doc.' del mamdante: idmandante: '.$idmandnte.' idcolonia: '.$idcolonia.' idmunicipio:'.$idmunicipio.'');                                                                                                                             
-                    mensaje('Hubo un error al momento de subir el archivo, por favor vuelva a intentarlo.','mandantes_pago.php?idmandante='.$idmandante.'&idcolonia='.$idcolonia.'&idmunicipio='.$idmunicipio.'');
+                        historia($nitavu,'No se pudo guardar el documento en el servidor FTP, archivo: '.$doc);
+                        mensaje('Hubo un error al momento de subir el archivo, por favor vuelva a intentarlo.','mandantes_pago.php?idmandante='.$idmandante_post.'&idcolonia='.$idcolonia_post.'&idmunicipio='.$idmunicipio_post.'');
+                    }
                 }
             }
-            
         }
-        
-        }
-/*-------------------------------------------------------------------------------------------------------------------------*/
-    }else{
-        
-       
-         echo "<center><div>"; 
-            echo "<a style='right: 0px; position: absolute; top: 50px;' href='md_lista.php' title='Clic para ver lista de mandantes' class='btn btn-link'>";
-            echo "Lista Mandantes</a>";
-            echo "<a style='right: 150px; position: absolute; top: 50px;' href='md_pagomandantes.php' title='Clic para crear el oficio de pago a mandantes' class='btn btn-link'>";
-            echo "Pago Mandantes</a>";
-        echo "</div></center>";
-
-
-        echo '<br><br><br>';
-        echo "<h3>Registar pago a mandantes</h3>";
-        //echo "<form action='mandantes_pago.php' method='POST'>";
-        echo '<div class="container" style="background:#E9ECED;">';
-        echo "<center>";
-        echo "<div>";
-            echo "<label for='municipio'>Seleccione un municipio:";
-            echo "<select id='municipio' name='municipio'>";
-            echo "<option>Seleccione un municipio...</option>";
-            $sql = "SELECT * FROM cat_municipios";
-                $r = $conexion -> query($sql);
-                while($f = $r -> fetch_array()){ // resultado de la busqueda.................
-                    echo "<option value='".$f['IdMunicipio']."'>".$f['municipio']."</option>";
-                    
-                }
-            
-            echo "</select>";
-            echo "</label>";
-        echo "</div>";
-        
-        echo "<div name='colonia' id='colonia'></div>";
-        
-        echo "<div name='Mandantes' id='Mandantes'></div>";
-
-        echo "<div name='Apoderado' id='Apoderado'></div>";
-        echo "</center>";
-        echo "</div>";
-
-        //echo mostrarApoderadoMandante($idmunicipio, $idcolonia, $idmandante);
-        
-        //OPCIONES
-        //BOTONES MENU
-        echo "<br><br><br>";
-        echo "<center>";
-        echo "<div id='req_menu' style='display:none;'>"; 
-            echo "<a href='#registroPago' rel='MyModal:open' class='Mbtn btn-danger' title='Clic para registar pago'>";
-            
-            echo "<table  width='100%'><tr><td valign='middle' align='center'>";
-            echo "<img src='icon/pago.png' style='width:30px; height:30px;'>";
-            echo "</td>";
-            echo "<td valign='middle' align='center' style='color:white;' class='pc'>";
-            echo "Registar Pago";
-            echo "</td></tr></table>";
-            
-            echo "</a>";	
-                //target="_blank"
-            MiToken_Init($nitavu, 'PAGO A MANDANTES-ORDEN DE PAGO'); // inicializamos seguridad del Token (no necesitamos saberlo)
-            /*echo '<a id="reporteMandante" href="md_reporte.php"  class="Mbtn btn-danger"  title="Clic para ver el reporte">';
-            echo "<table  width='100%'><tr><td valign='middle' align='center'>";
-            echo "<img src='icon/pdf.png' style='width:30px; height:30px;'>";
-            echo "</td>";
-            echo "<td valign='middle' align='center' style='color:white;' class='pc'>";
-            echo "Crear Reporte";
-            echo "</td></tr></table>";
-            echo "</a>";*/
-
-            //echo '<a id="reporteMandante" href="md_reporte.php?id='.$idmandante.'&idcolonia='.$idcolonia.'&idmunicipio='.$idmunicipio.'" class="Mbtn btn-danger" onclick="ObtenerURL();" title="Clic para ver el reporte">';
-           echo "<a style='vertical-align: text-bottom;'>";
-            echo "<form id='reporteMandante' action='md_reporte.php' method='POST'>";
-           //href="md_reporte.php"
-           echo '<button type="submit"  class="Mbtn btn-danger"  title="Clic para ver el reporte">';
-           echo "<input type='hidden' id='url' name='url'>";
-            echo "<table  width='100%'><tr><td valign='middle' align='center'>";
-            echo "<img src='icon/pdf.png' style='width:30px; height:30px;'>";
-            echo "</td>";
-            echo "<td valign='middle' align='center' style='color:white;' class='pc'>";
-            
-            echo "Crear Reporte";
-            echo "</td></tr></table></button>";
-            echo "</form>";
-            echo "</a>";
-            
-            echo "<a id='nuevoCargo' href='md_nuevoCargo.php' class='Mbtn btn-danger' title='Clic para registrar cargo'>";
-         
-            echo "<table  width='100%'><tr><td valign='middle' align='center'>";
-            echo "<img src='icon/cargo.png' style='width:30px; height:30px;'>";
-            echo "</td>";
-            echo "<td valign='middle' align='center' style='color:white;' class='pc'>";
-            echo "Registrar Cargo";
-            echo "</td></tr></table>";
-            
-            echo "</a>";
-
-            echo "<a id='mddocumentos' href='md_documentos.php' class='Mbtn btn-danger' title='Clic para agregar documentos al mandante'>";
-            
-            echo "<table  width='100%'><tr><td valign='middle' align='center'>";
-            echo "<img src='icon/folio.png' style='width:30px; height:30px;'>";
-            echo "</td>";
-            echo "<td valign='middle' align='center' style='color:white;' class='pc'>";
-            echo "Documentos";
-            echo "</td></tr></table>";
-            
-            echo "</a>";
-
-            //SOLO INFORMATICA VA A TENER ACCESO A ESTE BOTÓN, ES PARA CORREGIR CUENTAS 
-            //if (pertenecesaInformatica($nitavu) == true){
-                echo "<a id='recalculo' onclick='recalcular()' class='Mbtn btn-danger' title='Clic para recaulcular los saldos del mandante'>";
-                
-                echo "<table  width='100%'><tr><td valign='middle' align='center'>";
-                echo "<img src='icon/recalcular.png' style='width:20px; height:30px;'>";
-                echo "</td>";
-                echo "<td valign='middle' align='center' style='color:white;' class='pc'>";
-                echo "Recalcular Saldos";
-                echo "</td></tr></table>";
-                
-                echo "</a>";
-            //}
-
-        echo "</div>";
-        echo "</center>";
-
-        echo '<div name="respuesta" id="respuesta"></div>'; 
-
-           //Ingresar datos
-        echo "<center>";
-        echo "<div id='registroPago' class='MyModal' style='width:70%; display:none;'>";
-            echo "<h1>Ingresa los datos que se solicitan</h1>";
-            
-            $sql4 = "SELECT * FROM cat_mov_mandante";
-            $r4 = $conexion -> query($sql4);
-            
-            echo "<center><div style='width:100%'>";
-            echo "<label for='tipo_mov'>Seleccione un tipo de pago:";
-                echo "<select id='tipo_mov' name='tipo_mov' onchange='seleccionarQueDivMostrar()'>";
-                    echo "<option>Seleccione una opcion...</option>";
-                    while($f4 = $r4 -> fetch_array()){ // resultado de la busqueda.................
-                        
-                        echo "<option value='".$f4['id']."'>".$f4['nombre']."</option>";
-                        
-                    }
-                
-                echo "</select>";
-            echo "</label>"; 
-            echo "</div></center>";
-
-            echo "<input type='hidden' name='idmandante' id='idmandante' readonly>";
-            echo "<input type='hidden' name='idcolonia' id='idcolonia' readonly>";
-            echo "<input type='hidden' name='idmunicipio' id='idmunicipio' readonly>";
-             echo "<input type='hidden' name='nitavu' id='nitavu' value='".$nitavu."' readonly>";       
-           echo "<form name='formulario' id='formulario' style='display:none' action=''  onSubmit='enviarDatos(); return false'>";
-           //  echo '<form name="formulario" onSubmit="enviarDatos();" >';
-                echo '<label><input type="checkbox" id="peri2" name="peri2" value="periodo2" onClick="mostrarFecha2()">Periodo</label>';
-                echo "<div>";
-                    echo "<table style='width:100%;'>";
-                        echo "<td>";
-                        echo "<label>Fecha 1</label>";
-                        echo "<input type='date' name='fecha' id='fecha' required>";
-                        echo "</td>";
-                        echo "<td id='fech2' style='display:none;'>";
-                        echo "<label>Fecha 2</label>";
-                        echo "<input type='date' name='periodo2' id='periodo2'>";
-                        echo "</td>";
-                    echo "</table>";
-                echo "</div>";
-                echo "<div>";
-                    echo "<label>Recuperación</label>";
-                    
-                    echo "<input type='number' step='any' placeholder='$0.00' onkeyup='todas();' name='recuperacion' id='recuperacion' required>";
-                echo "</div>";
-
-
-                echo "<div>";
-                echo "<table style='width:100%;'>";
-                    echo "<td>";
-                        echo "<label style='text-align:center;'>%</label>";
-                        echo "<input type='number' step='any' placeholder='%' onkeyup='calcularAmortizacion();' name='pamorAnt' id='pamorAnt' required>";
-                    echo "</td>";
-                    echo "<td>";
-                        echo "<label>Amortización de anticipo</label>";
-                        echo "<input type='number' step='any' placeholder='$0.00' name='amorAnticipo' id='amorAnticipo' required>";
-                    echo "</td>";
-                echo "</table>";
-            echo "</div>";    
-
-
-                echo "<div>";
-                    echo "<table style='width:100%;'>";
-                        echo "<td>";
-                            echo "<label style='text-align:center;'>%</label>";
-                            echo "<input type='number' step='any' placeholder='%' name='pgastos' id='pgastos'   required>";
-                        echo "</td>";
-                        echo "<td>";
-                            echo "<label>Gastos de admon.</label>";
-                            echo "<input type='number' step='any' placeholder='$0.00' name='gastos' id='gastos' required>";
-                        echo "</td>";
-                    echo "</table>";
-                echo "</div>";
-                echo "<div>";
-                    echo "<table style='width:100%;'>";
-                        echo "<td>";
-                            echo "<label style='text-align:center;'>%</label>";
-                            echo "<input type='number' step='any' placeholder='%' name='pgastosesc' id='pgastosesc' value='' required>";
-                        echo "</td>";
-                        echo "<td>";
-                            echo "<label>Gastos de escrituracion</label>";
-                            echo "<input type='number' step='any' placeholder='$0.00' name='gastosesc' id='gastosesc' required>";
-                        echo "</td>";
-                    echo "</table>";
-                echo "</div>";
-                echo "<div>";
-                    echo "<label>Monto por pagar</label>";
-                    echo "<input type='number' step='any' placeholder='$0.00' name='montopagar' id='montopagar' required>";
-                echo "</div>";
-                echo "<div>";
-                    /*echo "<table style='width:100%;'>";
-                        echo "<td>";
-                            echo "<label style='text-align:center;'>%</label>";
-                            echo "<input type='number' step='any' placeholder='%' onkeypress='calcularDevoluciones();' name='pdevols' id='pdevols' required>";
-                        echo "</td>";
-                        echo "<td>";*/
-                            echo "<label>Devoluciones</label>";
-                            echo "<input type='number' step='any' placeholder='$0.00' name='devols' id='devols' onkeyup='calcularDevoluciones();'  value='0'>";
-                        /*echo "</td>";
-                    echo "</table>";*/
-                echo "</div>";
-                
-                echo "<div>";            
-                    echo "<label>Otros Descuentos</label>";
-                    echo "<input type='number' step='any' placeholder='$0.00' name='otrosdesc' id='otrosdesc'  value='0'  onkeyup='calcularDevoluciones();'>";
-                 echo "</div>";
-                          
-
-                echo "<div>";
-                    echo "<label>Monto pagado</label>";
-                    echo "<input type='number' step='any' placeholder='$0.00' onkeyup='operaciones();' name='montoPagado' id='montoPagado' required>";
-                echo "</div>";
-            echo "<div id='calculados' name='calculados'>";
-                echo "<div>";
-                    echo "<label>Monto acumulado</label>";
-                    echo "<input type='number' step='any' placeholder='$0.00' name='montoAcumulado' id='montoAcumulado' required>";
-                echo "</div>";
-                echo "<div>";
-                    echo "<label>Saldo</label>";
-                    echo "<input type='number' step='any' placeholder='$0.00' name='saldo' id='saldo' required>";
-                echo "</div>";
-            echo "</div>";
-                echo "<div>";
-                    echo "<label>Recuperación emitida por el sistema</label>";
-                    echo "<input type='number' step='any' placeholder='$0.00' name='sistema' id='sistema' >";
-                echo "</div>";
-
-
-                /*echo "<div>";
-                    echo "<label>Enganche ahorro por identificar y traspasar</label>";
-                    echo "<input type='number' step='any' placeholder='$0.00' name='engancheTraspaso' id='engancheTraspaso'>";
-                echo "</div>";*/
-
-                echo "<div>";
-                    echo "<table style='width:100%;'>";
-                        echo "<td>";
-                            echo "<label style='text-align:center;'>(+/-)</label>";
-                            echo "<select id='mas_menos2' name='mas_menos2'>";
-                                echo "<option value='1'>más</option>";
-                                echo "<option value='2'>menos</option>";
-                            echo "</select>";
-                        echo "</td>";
-                        echo "<td>";
-                            echo "<label  style='text-align:center;'>Enganche ahorro por identificar y traspasar</label>";
-                            echo "<input type='number' step='any' placeholder='$0.00' name='engancheAhorro' id='engancheAhorro' >";
-                        echo "</td>";
-                    echo "</table>";
-                echo "</div>";
-
-               echo "<div>";
-                    echo "<table style='width:100%;'>";
-                        echo "<td>";
-                            echo "<label style='text-align:center;'>(+/-)</label>";
-                            echo "<select id='mas_menos1' name='mas_menos1'>";
-                                echo "<option value='1'>más</option>";
-                                echo "<option value='2'>menos</option>";
-                            echo "</select>";
-                        echo "</td>";
-                        echo "<td>";
-                            echo "<label style='text-align:center;'>Descuento por nómina</label>";
-                            echo "<input type='number' step='any' placeholder='$0.00' name='desNomina' id='desNomina' >";
-                        echo "</td>";
-                    echo "</table>";
-                echo "</div>";
-                
-                echo "<div>";
-                    echo "<table style='width:100%;'>";
-                        echo "<td>";
-                            echo "<label style='text-align:center;'>(+/-)</label>";
-                            echo "<select id='mas_menos3' name='mas_menos3'>";
-                               echo "<option value='1'>más</option>";
-                                echo "<option value='2'>menos</option>";
-                            echo "</select>";
-                        echo "</td>";
-                        echo "<td>";
-                            echo "<label  style='text-align:center;'>Por transferencia</label>";
-                            echo "<input type='number' step='any' placeholder='$0.00' name='transferencia' id='transferencia' >";
-                        echo "</td>";
-                    echo "</table>";
-                echo "</div>";
-              echo "<div>";
-                    echo "<table style='width:100%;'>";
-                        echo "<td>";
-                            echo "<label style='text-align:center;'>(+/-)</label>";
-                            echo "<select id='mas_menos4' name='mas_menos4'>";
-                                echo "<option value='1'>más</option>";
-                                echo "<option value='2'>menos</option>";
-                            echo "</select>";
-                        echo "</td>";
-                        echo "<td>";
-                            echo "<label  style='text-align:center;'>Por pagos universales</label>";
-                            echo "<input type='number' step='any' placeholder='$0.00' name='pagosUniversales' id='pagosUniversales' >";
-                        echo "</td>";
-                    echo "</table>";
-                
-                echo "</div>";
-                echo "<div>";
-
-                    echo "<table style='width:100%;'>";
-                        echo "<td>";
-                            echo "<label style='text-align:center;'>(+/-)</label>";
-                            echo "<select id='mas_menos5' name='mas_menos5'>";
-                                echo "<option value='1'>más</option>";
-                                echo "<option value='2'>menos</option>";
-                            echo "</select>";
-                        echo "</td>";
-                        echo "<td>";
-                            echo "<label  style='text-align:center;'>Por concepto de escritura</label>";
-                            echo "<input type='number' step='any' placeholder='$0.00' name='escritura' id='escritura' >";
-                        echo "</td>";
-                    echo "</table>";
-                echo "</div>";
-                echo "<div>";
-                    echo "<table style='width:100%;'>";
-                        echo "<td>";
-                            echo "<label style='text-align:center;'>(+/-)</label>";
-                            echo "<select id='mas_menos6' name='mas_menos6'>";
-                                echo "<option value='1'>más</option>";
-                                echo "<option value='2'>menos</option>";
-                            echo "</select>";
-                        echo "</td>";
-                        echo "<td>";
-                            echo "<label  style='text-align:center;'>Por cesión de derechos</label>";
-                            echo "<input type='number' step='any' placeholder='$0.00' name='derechos' id='derechos'>";
-                        echo "</td>";
-                    echo "</table>";
-                echo "</div>";
-                echo "<div>";
-                    echo "<table style='width:100%;'>";
-                        echo "<td>";
-                            echo "<label style='text-align:center;'>(+/-)</label>";
-                            echo "<select id='mas_menos7' name='mas_menos7'>";
-                                echo "<option value='1'>más</option>";
-                                echo "<option value='2'>menos</option>";
-                            echo "</select>";
-                        echo "</td>";
-                        echo "<td>";
-                            echo "<label  style='text-align:center;'>Por pago de derechos</label>";
-                            echo "<input type='number' step='any' placeholder='$0.00' name='pagoDerechos' id='pagoDerechos'>";
-                        echo "</td>";
-                    echo "</table>";
-                echo "</div>";
-                echo "<div>";
-                    echo "<table style='width:100%;'>";
-                        echo "<td>";
-                            echo "<label style='text-align:center;'>(+/-)</label>";
-                            echo "<select id='mas_menos8' name='mas_menos8'>";
-                                echo "<option value='1'>más</option>";
-                                echo "<option value='2'>menos</option>";
-                            echo "</select>";
-                        echo "</td>";
-                        echo "<td>";
-                            echo "<label  style='text-align:center;'>Por pago en oxxo</label>";
-                            echo "<input type='number' step='any' placeholder='$0.00' name='pagooxxo' id='pagooxxo'>";
-                        echo "</td>";
-                    echo "</table>";
-                echo "</div>";
-                echo "<div>";
-                echo "<table style='width:100%;'>";
-                    echo "<td>";
-                        echo "<label style='text-align:center;'>(+/-)</label>";
-                        echo "<select id='mas_menos9' name='mas_menos9'>";
-                            echo "<option value='1'>más</option>";
-                            echo "<option value='2'>menos</option>";
-                        echo "</select>";
-                    echo "</td>";
-                    echo "<td>";
-                        echo "<label  style='text-align:center;'>Otros Pagos</label>";
-                        echo "<input type='number' step='any' placeholder='$0.00' name='pagootros' id='pagootros'>";
-                    echo "</td>";
-                echo "</table>";
-            echo "</div>";
-                /*echo "<div>";
-                    echo "<label>Ajuste al centavo</label>";
-                    echo "<input type='number' step='any' placeholder='$0.00' name='centavo' id='centavo' required>";
-                echo "</div>";*/
-                //echo "<div>";
-                echo "<div>";
-                    //echo "<table>";
-                     //   echo "<td>";
-                            echo "<label>Comentario</label>";
-                            echo "<input type='text'  placeholder='comentario' name='comentario' id='comentario' required>";
-                       // echo "</td>";
-                        //echo "<td>";
-                echo "</div>";
-                echo "<div>";
-                            echo "<label>Observacion para Pago</label>";
-                            echo "<input type='text'  placeholder='Observación para el pago' name='observacionPago' id='observacionPago'>";
-                        //echo "</td>";
-                    //echo "</table>";
-            echo "</div>"; 
-            echo "<div>";
-            echo "<label>Datos Bancarios</label>";
-            echo "<input type='text'  placeholder='Datos bancarios' name='datosBancarios' id='datosBancarios'>";
-             echo "</div>"; 
-                //echo "</div>";
-                echo "<div>";
-                    echo "<input class='Mbtn btn-danger' type='submit' id='guardar' value='Guardar' >";
-                echo "</div>";
-                
-            echo "</form>";
-
-
-            echo "<form name='formulario1' id='formulario1' style='display:none; width:100%;' action=''  onSubmit='enviarDatos2(); return false'>";
-           //  echo '<form name="formulario" onSubmit="enviarDatos();" >';
-                echo "<div>";
-                    echo "<label>Fecha de pago</label>";
-                    echo "<input type='date' name='fecha2' id='fecha2' required>";
-                echo "</div>"; 
-                echo "<div>";
-                    echo "<label>Monto pagado</label>";
-                    echo "<input type='number' step='any' placeholder='$0.00' onkeyup='operaciones(2);' name='montoPagado2' id='montoPagado2' required>";
-                echo "</div>"; 
-            echo "<div id='calculados2' name='calculados2' style='width:100%;'>";
-                echo "<div>";
-                    echo "<label>Monto acumulado</label>";
-                    echo "<input type='number' step='any' placeholder='$0.00' name='montoAcumulado2' id='montoAcumulado2' required>";
-                echo "</div>";
-                echo "<div>";
-                    echo "<label>Saldo</label>";
-                    echo "<input type='number' step='any' placeholder='$0.00' name='saldo2' id='saldo2' required>";
-                echo "</div>";
-            echo "</div>";
-
-            echo "<div id='calculados2' name='calculados2' style='width:100%;'>";
-            echo "<div>";
-                 echo "<label>Comentario</label>";
-                 echo "<input type='text'  placeholder='comentario' name='comentario' id='comentario' required>";
-                
-            echo "</div>";
-            echo "<div>";
-                echo "<label>Datos Bancarios</label>";
-                 echo "<input type='text'  placeholder='Datos bancarios' name='datosBancarios1' id='datosBancarios1'>";
-            echo "</div>";
-        echo "</div>";
-           
-
-
-                echo "<div>";
-                    echo "<input class='Mbtn btn-danger' type='submit' id='guardar' value='Guardar' >";
-                echo "</div>";
-
-            echo "</form>";
-        echo "</div>";
-    echo "</center>";
-
-
-    //Aqui se dibuja la notificacion 
-    echo '<div name="mensajeConfirmacion" id="mensajeConfirmacion"></div>'; 
-    
-    //Tabla de registros
-    echo "<div id='tablaRegistros' style='display:none;'></div>";
-  
-
     }
-
-   
-
-}
-else{
-    mensaje("No tiene acceso a ".$id_aplicacion,'');
-}
-
 ?>
+
+<div class="cd-wrapper">
+    <!-- Hero Banner institucional -->
+    <div class="cd-hero">
+        <div>
+            <h1 class="cd-hero-title">
+                <i class="fa-solid fa-hand-holding-dollar"></i> Control y Registro de Pago a Mandantes
+            </h1>
+            <div class="cd-hero-dept">
+                <i class="fa-solid fa-building-columns"></i> Módulo Financiero ITAVU 2026
+            </div>
+        </div>
+        <div class="cd-top-links">
+            <a href="md_lista.php" class="cd-top-link-btn" title="Ver lista general de mandantes">
+                <i class="fa-solid fa-list-check"></i> Lista Mandantes
+            </a>
+            <a href="md_pagomandantes.php" class="cd-top-link-btn" title="Oficio de pago a mandantes">
+                <i class="fa-solid fa-file-signature"></i> Pago Mandantes
+            </a>
+        </div>
+    </div>
+
+    <!-- Card de Selección de Mandante / Filtros -->
+    <div class="cd-card-section" style="margin-bottom: 20px;">
+        <div class="cd-card-header cd-card-header-gold">
+            <h3 class="cd-card-title">
+                <i class="fa-solid fa-filter"></i> Selección de Mandante y Ubicación
+            </h3>
+        </div>
+        <div class="cd-card-body">
+            <div class="cd-form-grid-3">
+                <div class="cd-form-group">
+                    <label for="municipio" class="cd-form-label"><i class="fa-solid fa-city" style="color:var(--cd-primary);"></i> Seleccione un municipio:</label>
+                    <select id="municipio" name="municipio" class="cd-form-control">
+                        <option value="">Seleccione un municipio...</option>
+                        <?php
+                        $sql_mun = "SELECT * FROM cat_municipios ORDER BY municipio ASC";
+                        $r_mun = $conexion->query($sql_mun);
+                        while($f_mun = $r_mun->fetch_array()){
+                            $selected = (isset($idmunicipio) && $idmunicipio == $f_mun['IdMunicipio']) ? 'selected' : '';
+                            echo "<option value='".$f_mun['IdMunicipio']."' ".$selected.">".htmlspecialchars($f_mun['municipio'])."</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+
+                <div class="cd-form-group" id="colonia">
+                    <?php if(isset($idcolonia) && isset($idmunicipio)): ?>
+                        <label for="colonia_select" class="cd-form-label"><i class="fa-solid fa-map-location-dot" style="color:var(--cd-gold-dark);"></i> Seleccione una colonia:</label>
+                        <select id="colonia_select" name="colonia" class="cd-form-control" onchange="mostrarMandantes()">
+                            <?php
+                            $sql_col = "SELECT * FROM cat_colonias WHERE IdMunicipio = ".$idmunicipio." ORDER BY colonia ASC";
+                            $r_col = $conexion->query($sql_col);
+                            while($f_col = $r_col->fetch_array()){
+                                $sel = ($idcolonia == $f_col['idcolonia']) ? 'selected' : '';
+                                echo "<option value='".$f_col['idcolonia']."' ".$sel.">".htmlspecialchars($f_col['colonia'])."</option>";
+                            }
+                            ?>
+                        </select>
+                    <?php endif; ?>
+                </div>
+
+                <div class="cd-form-group" id="Mandantes">
+                    <?php if(isset($idmandante) && isset($idcolonia) && isset($idmunicipio)): ?>
+                        <label for="mandantes" class="cd-form-label"><i class="fa-solid fa-user-tie" style="color:var(--cd-primary);"></i> Seleccione un mandante:</label>
+                        <select id="mandantes" name="mandantes" class="cd-form-control" onchange="mostrarApoderado()">
+                            <?php
+                            $sql_man = "SELECT * FROM cat_mandantes WHERE IdColonia = ".$idcolonia." and IdMunicipio=".$idmunicipio." and Cancelado = 0 ORDER BY Mandante ASC";
+                            $r_man = $conexion->query($sql_man);
+                            while($f_man = $r_man->fetch_array()){
+                                $sel = ($idmandante == $f_man['IdMandante']) ? 'selected' : '';
+                                echo "<option value='".$f_man['IdMandante']."' ".$sel.">".htmlspecialchars($f_man['Propietarios'])."</option>";
+                            }
+                            ?>
+                        </select>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+            <div class="cd-form-grid" style="margin-top: 10px;">
+                <div class="cd-form-group" id="Apoderado">
+                    <?php if(isset($idmandante) && isset($idcolonia) && isset($idmunicipio)): ?>
+                        <label for="apoderado_select" class="cd-form-label"><i class="fa-solid fa-user-shield" style="color:var(--cd-gold-dark);"></i> Seleccione un apoderado:</label>
+                        <select id="mandantes" name="mandantes" class="cd-form-control" onchange="mostrarOpciones()">
+                            <option value="">Seleccione un apoderado...</option>
+                            <?php
+                            $sql_apo = "SELECT RepresentanteLegal, IdMandante FROM cat_mandantes WHERE IdColonia = ".$idcolonia." and IdMunicipio=".$idmunicipio." and IdMandante=".$idmandante." and Cancelado = 0 ORDER BY Mandante ASC";
+                            $r_apo = $conexion->query($sql_apo);
+                            while($f_apo = $r_apo->fetch_array()){
+                                echo "<option value='".$f_apo['IdMandante']."' selected>".htmlspecialchars($f_apo['RepresentanteLegal'])."</option>";
+                            }
+                            ?>
+                        </select>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toolbar de Acciones Principales -->
+    <?php 
+    $toolbar_display = (isset($idmandante) && isset($idcolonia) && isset($idmunicipio)) ? 'display:flex;' : 'display:none;';
+    ?>
+    <div class="cd-toolbar-card" id="req_menu" style="<?php echo $toolbar_display; ?>">
+        <div class="cd-toolbar-group">
+            <a href="#registroPago" rel="MyModal:open" class="cd-btn cd-btn-primary" title="Clic para registrar un nuevo pago">
+                <i class="fa-solid fa-circle-plus"></i> Registrar Pago
+            </a>
+            
+            <?php MiToken_Init($nitavu, 'PAGO A MANDANTES-ORDEN DE PAGO'); ?>
+            <form id="reporteMandante" action="<?php echo isset($idmandante) ? 'md_reporte.php?id='.$idmandante.'&idcolonia='.$idcolonia.'&idmunicipio='.$idmunicipio : 'md_reporte.php'; ?>" method="POST" style="margin:0; display:inline-block;">
+                <input type="hidden" id="url" name="url">
+                <button type="submit" class="cd-btn cd-btn-gold" title="Clic para ver el reporte en PDF">
+                    <i class="fa-solid fa-file-pdf"></i> Crear Reporte
+                </button>
+            </form>
+
+            <a id="nuevoCargo" href="<?php echo isset($idmandante) ? 'md_nuevoCargo.php?id='.$idmandante.'&idcolonia='.$idcolonia.'&idmunicipio='.$idmunicipio : 'md_nuevoCargo.php'; ?>" class="cd-btn cd-btn-dark" title="Clic para capturar un cargo">
+                <i class="fa-solid fa-file-invoice-dollar"></i> Registrar Cargo
+            </a>
+
+            <a id="mddocumentos" href="<?php echo isset($idmandante) ? 'md_documentos.php?id='.$idmandante.'&idcolonia='.$idcolonia.'&idmunicipio='.$idmunicipio : 'md_documentos.php'; ?>" class="cd-btn cd-btn-outline-gold" title="Clic para agregar documentos al mandante">
+                <i class="fa-solid fa-folder-open"></i> Documentos
+            </a>
+        </div>
+
+        <div class="cd-toolbar-group">
+            <button type="button" id="recalculo" onclick="recalcular()" class="cd-btn cd-btn-light" title="Clic para recalcular los saldos del mandante">
+                <i class="fa-solid fa-calculator"></i> Recalcular Saldos
+            </button>
+        </div>
+    </div>
+
+    <!-- Contenedor de Alertas y Notificaciones -->
+    <div id="respuesta" style="margin-top:10px;"></div>
+    <div id="mensajeConfirmacion" style="margin-top:10px;"></div>
+
+    <!-- MODAL PRINCIPAL: REGISTRAR PAGO -->
+    <div id="registroPago" class="MyModal">
+        <h3><i class="fa-solid fa-cash-register"></i> Registrar Pago a Mandante</h3>
+        
+        <div class="cd-form-group full-width" style="margin-bottom:18px;">
+            <label for="tipo_mov" class="cd-form-label"><i class="fa-solid fa-list-check" style="color:var(--cd-primary);"></i> Seleccione Tipo de Pago:</label>
+            <select id="tipo_mov" name="tipo_mov" class="cd-form-control" onchange="seleccionarQueDivMostrar()">
+                <option value="">Seleccione una opción...</option>
+                <?php
+                $sql4 = "SELECT * FROM cat_mov_mandante ORDER BY id ASC";
+                $r4 = $conexion->query($sql4);
+                while($f4 = $r4->fetch_array()){
+                    echo "<option value='".$f4['id']."'>".htmlspecialchars($f4['nombre'])."</option>";
+                }
+                ?>
+            </select>
+        </div>
+
+        <input type="hidden" name="idmandante" id="idmandante" value="<?php echo isset($idmandante) ? $idmandante : ''; ?>" readonly>
+        <input type="hidden" name="idcolonia" id="idcolonia" value="<?php echo isset($idcolonia) ? $idcolonia : ''; ?>" readonly>
+        <input type="hidden" name="idmunicipio" id="idmunicipio" value="<?php echo isset($idmunicipio) ? $idmunicipio : ''; ?>" readonly>
+        <input type="hidden" name="nitavu" id="nitavu" value="<?php echo $nitavu; ?>" readonly>
+
+        <!-- FORMULARIO 1: ABONO PRINCIPAL (TIPO 3) -->
+        <form name="formulario" id="formulario" style="display:none;" action="" onSubmit="enviarDatos(); return false;">
+            <div class="cd-card-section" style="padding:15px; margin-bottom:15px;">
+                <div style="margin-bottom:10px;">
+                    <label class="cd-form-label" style="font-weight:600; cursor:pointer;">
+                        <input type="checkbox" id="peri2" name="peri2" value="periodo2" onClick="mostrarFecha2()"> Habilitar Rango de Fechas (Periodo)
+                    </label>
+                </div>
+                <div class="cd-form-grid">
+                    <div class="cd-form-group">
+                        <label class="cd-form-label"><i class="fa-regular fa-calendar"></i> Fecha Inicio / Pago</label>
+                        <input type="date" name="fecha" id="fecha" class="cd-form-control" required>
+                    </div>
+                    <div class="cd-form-group" id="fech2" style="display:none;">
+                        <label class="cd-form-label"><i class="fa-regular fa-calendar-check"></i> Fecha Término</label>
+                        <input type="date" name="periodo2" id="periodo2" class="cd-form-control">
+                    </div>
+                </div>
+            </div>
+
+            <div class="cd-form-grid-3">
+                <div class="cd-form-group">
+                    <label class="cd-form-label"><i class="fa-solid fa-dollar-sign"></i> Recuperación</label>
+                    <input type="number" step="any" placeholder="$0.00" onkeyup="todas();" name="recuperacion" id="recuperacion" class="cd-form-control" required>
+                </div>
+                <div class="cd-form-group">
+                    <label class="cd-form-label"><i class="fa-solid fa-percent"></i> % Amort. Anticipo</label>
+                    <input type="number" step="any" placeholder="%" onkeyup="calcularAmortizacion();" name="pamorAnt" id="pamorAnt" class="cd-form-control" required>
+                </div>
+                <div class="cd-form-group">
+                    <label class="cd-form-label"><i class="fa-solid fa-hand-holding-dollar"></i> Amortización Anticipo</label>
+                    <input type="number" step="any" placeholder="$0.00" name="amorAnticipo" id="amorAnticipo" class="cd-form-control" required>
+                </div>
+            </div>
+
+            <div class="cd-form-grid-3">
+                <div class="cd-form-group">
+                    <label class="cd-form-label"><i class="fa-solid fa-money-bill-wave"></i> Monto por Pagar</label>
+                    <input type="number" step="any" placeholder="$0.00" name="montopagar" id="montopagar" class="cd-form-control" required>
+                </div>
+                <div class="cd-form-group">
+                    <label class="cd-form-label"><i class="fa-solid fa-percent"></i> % Gastos Admon</label>
+                    <input type="number" step="any" placeholder="%" name="pgastos" id="pgastos" value="<?php echo isset($idmandante) ? GastosAdminMandante($idmandante,$idcolonia,$idmunicipio) : ''; ?>" class="cd-form-control" required>
+                </div>
+                <div class="cd-form-group">
+                    <label class="cd-form-label"><i class="fa-solid fa-file-invoice"></i> Gastos de Admon.</label>
+                    <input type="number" step="any" placeholder="$0.00" name="gastos" id="gastos" class="cd-form-control" required>
+                </div>
+            </div>
+
+            <div class="cd-form-grid-3">
+                <div class="cd-form-group">
+                    <label class="cd-form-label"><i class="fa-solid fa-percent"></i> % Gastos Escrituraciones</label>
+                    <input type="number" step="any" placeholder="%" name="pgastosesc" id="pgastosesc" value="<?php echo isset($idmandante) ? GastosEscMandante($idmandante,$idcolonia,$idmunicipio) : ''; ?>" class="cd-form-control" required>
+                </div>
+                <div class="cd-form-group">
+                    <label class="cd-form-label"><i class="fa-solid fa-file-signature"></i> Gastos Escrituración</label>
+                    <input type="number" step="any" placeholder="$0.00" name="gastosesc" id="gastosesc" class="cd-form-control" required>
+                </div>
+                <div class="cd-form-group">
+                    <label class="cd-form-label"><i class="fa-solid fa-arrow-rotate-left"></i> Devoluciones</label>
+                    <input type="number" step="any" placeholder="$0.00" name="devols" id="devols" onkeyup="calcularDevoluciones();" value="0" class="cd-form-control">
+                </div>
+            </div>
+
+            <div class="cd-form-grid-3">
+                <div class="cd-form-group">
+                    <label class="cd-form-label"><i class="fa-solid fa-tags"></i> Otros Descuentos</label>
+                    <input type="number" step="any" placeholder="$0.00" name="otrosdesc" id="otrosdesc" onkeyup="calcularDevoluciones();" value="0" class="cd-form-control">
+                </div>
+                <div class="cd-form-group">
+                    <label class="cd-form-label" style="color:var(--cd-primary); font-weight:700;"><i class="fa-solid fa-circle-check"></i> Monto Pagado</label>
+                    <input type="number" step="any" placeholder="$0.00" onkeyup="operaciones(1);" name="montoPagado" id="montoPagado" class="cd-form-control" style="border-color:var(--cd-primary); font-weight:700;" required>
+                </div>
+                <div class="cd-form-group">
+                    <label class="cd-form-label"><i class="fa-solid fa-desktop"></i> Recup. por Sistema</label>
+                    <input type="number" step="any" placeholder="$0.00" name="sistema" id="sistema" class="cd-form-control">
+                </div>
+            </div>
+
+            <div id="calculados" name="calculados" class="cd-form-grid" style="background:#f8fafc; padding:12px; border-radius:var(--cd-radius-sm); margin-bottom:15px;">
+                <div class="cd-form-group">
+                    <label class="cd-form-label"><i class="fa-solid fa-layer-group"></i> Monto Acumulado</label>
+                    <input type="number" step="any" placeholder="$0.00" name="montoAcumulado" id="montoAcumulado" class="cd-form-control" required>
+                </div>
+                <div class="cd-form-group">
+                    <label class="cd-form-label"><i class="fa-solid fa-wallet"></i> Saldo Actual</label>
+                    <input type="number" step="any" placeholder="$0.00" name="saldo" id="saldo" class="cd-form-control" required>
+                </div>
+            </div>
+
+            <h4 style="font-size:0.95rem; font-weight:700; color:var(--cd-dark); margin:15px 0 10px 0; border-bottom:2px solid var(--cd-gold-light); padding-bottom:4px;">
+                <i class="fa-solid fa-sliders"></i> Conceptos y Ajustes Adicionales (+/-)
+            </h4>
+
+            <div class="cd-form-grid">
+                <div class="cd-form-group">
+                    <label class="cd-form-label">Enganche ahorro por identificar y traspasar</label>
+                    <div style="display:flex; gap:8px;">
+                        <select id="mas_menos2" name="mas_menos2" class="cd-form-control" style="width:90px;">
+                            <option value="1">más (+)</option>
+                            <option value="2">menos (-)</option>
+                        </select>
+                        <input type="number" step="any" placeholder="$0.00" name="engancheAhorro" id="engancheAhorro" class="cd-form-control">
+                    </div>
+                </div>
+
+                <div class="cd-form-group">
+                    <label class="cd-form-label">Descuento por nómina</label>
+                    <div style="display:flex; gap:8px;">
+                        <select id="mas_menos1" name="mas_menos1" class="cd-form-control" style="width:90px;">
+                            <option value="1">más (+)</option>
+                            <option value="2">menos (-)</option>
+                        </select>
+                        <input type="number" step="any" placeholder="$0.00" name="desNomina" id="desNomina" class="cd-form-control">
+                    </div>
+                </div>
+            </div>
+
+            <div class="cd-form-grid">
+                <div class="cd-form-group">
+                    <label class="cd-form-label">Por transferencia</label>
+                    <div style="display:flex; gap:8px;">
+                        <select id="mas_menos3" name="mas_menos3" class="cd-form-control" style="width:90px;">
+                            <option value="1">más (+)</option>
+                            <option value="2">menos (-)</option>
+                        </select>
+                        <input type="number" step="any" placeholder="$0.00" name="transferencia" id="transferencia" class="cd-form-control">
+                    </div>
+                </div>
+
+                <div class="cd-form-group">
+                    <label class="cd-form-label">Por pagos universales</label>
+                    <div style="display:flex; gap:8px;">
+                        <select id="mas_menos4" name="mas_menos4" class="cd-form-control" style="width:90px;">
+                            <option value="1">más (+)</option>
+                            <option value="2">menos (-)</option>
+                        </select>
+                        <input type="number" step="any" placeholder="$0.00" name="pagosUniversales" id="pagosUniversales" class="cd-form-control">
+                    </div>
+                </div>
+            </div>
+
+            <div class="cd-form-grid">
+                <div class="cd-form-group">
+                    <label class="cd-form-label">Por concepto de escritura</label>
+                    <div style="display:flex; gap:8px;">
+                        <select id="mas_menos5" name="mas_menos5" class="cd-form-control" style="width:90px;">
+                            <option value="1">más (+)</option>
+                            <option value="2">menos (-)</option>
+                        </select>
+                        <input type="number" step="any" placeholder="$0.00" name="escritura" id="escritura" class="cd-form-control">
+                    </div>
+                </div>
+
+                <div class="cd-form-group">
+                    <label class="cd-form-label">Por cesión de derechos</label>
+                    <div style="display:flex; gap:8px;">
+                        <select id="mas_menos6" name="mas_menos6" class="cd-form-control" style="width:90px;">
+                            <option value="1">más (+)</option>
+                            <option value="2">menos (-)</option>
+                        </select>
+                        <input type="number" step="any" placeholder="$0.00" name="derechos" id="derechos" class="cd-form-control">
+                    </div>
+                </div>
+            </div>
+
+            <div class="cd-form-grid">
+                <div class="cd-form-group">
+                    <label class="cd-form-label">Por pago de derechos</label>
+                    <div style="display:flex; gap:8px;">
+                        <select id="mas_menos7" name="mas_menos7" class="cd-form-control" style="width:90px;">
+                            <option value="1">más (+)</option>
+                            <option value="2">menos (-)</option>
+                        </select>
+                        <input type="number" step="any" placeholder="$0.00" name="pagoDerechos" id="pagoDerechos" class="cd-form-control">
+                    </div>
+                </div>
+
+                <div class="cd-form-group">
+                    <label class="cd-form-label">Por pago en OXXO</label>
+                    <div style="display:flex; gap:8px;">
+                        <select id="mas_menos8" name="mas_menos8" class="cd-form-control" style="width:90px;">
+                            <option value="1">más (+)</option>
+                            <option value="2">menos (-)</option>
+                        </select>
+                        <input type="number" step="any" placeholder="$0.00" name="pagooxxo" id="pagooxxo" class="cd-form-control">
+                    </div>
+                </div>
+            </div>
+
+            <div class="cd-form-grid">
+                <div class="cd-form-group">
+                    <label class="cd-form-label">Otros Pagos</label>
+                    <div style="display:flex; gap:8px;">
+                        <select id="mas_menos9" name="mas_menos9" class="cd-form-control" style="width:90px;">
+                            <option value="1">más (+)</option>
+                            <option value="2">menos (-)</option>
+                        </select>
+                        <input type="number" step="any" placeholder="$0.00" name="pagootros" id="pagootros" class="cd-form-control">
+                    </div>
+                </div>
+
+                <div class="cd-form-group">
+                    <label class="cd-form-label"><i class="fa-solid fa-comment-dots"></i> Comentario</label>
+                    <input type="text" placeholder="Comentario general" name="comentario" id="comentario" class="cd-form-control" required>
+                </div>
+            </div>
+
+            <div class="cd-form-grid">
+                <div class="cd-form-group">
+                    <label class="cd-form-label"><i class="fa-solid fa-pen-to-square"></i> Observación para el pago</label>
+                    <input type="text" placeholder="Observación específica para el pago" name="observacionPago" id="observacionPago" class="cd-form-control">
+                </div>
+                <div class="cd-form-group">
+                    <label class="cd-form-label"><i class="fa-solid fa-building-columns"></i> Datos Bancarios</label>
+                    <input type="text" placeholder="Cuenta / Banco / Referencia" name="datosBancarios" id="datosBancarios" class="cd-form-control">
+                </div>
+            </div>
+
+            <div style="margin-top:20px; text-align:right;">
+                <button class="cd-btn cd-btn-primary" type="submit" id="guardar">
+                    <i class="fa-solid fa-floppy-disk"></i> Guardar Pago
+                </button>
+            </div>
+        </form>
+
+        <!-- FORMULARIO 2: OTROS TIPOS DE PAGO -->
+        <form name="formulario1" id="formulario1" style="display:none;" action="" onSubmit="enviarDatos2(); return false;">
+            <div class="cd-form-grid">
+                <div class="cd-form-group">
+                    <label class="cd-form-label"><i class="fa-regular fa-calendar"></i> Fecha de Pago</label>
+                    <input type="date" name="fecha2" id="fecha2" class="cd-form-control" required>
+                </div>
+                <div class="cd-form-group">
+                    <label class="cd-form-label"><i class="fa-solid fa-dollar-sign"></i> Monto Pagado</label>
+                    <input type="number" step="any" placeholder="$0.00" onkeyup="operaciones(2);" name="montoPagado2" id="montoPagado2" class="cd-form-control" required>
+                </div>
+            </div>
+
+            <div id="calculados2" name="calculados2" class="cd-form-grid" style="background:#f8fafc; padding:12px; border-radius:var(--cd-radius-sm); margin-bottom:15px;">
+                <div class="cd-form-group">
+                    <label class="cd-form-label"><i class="fa-solid fa-layer-group"></i> Monto Acumulado</label>
+                    <input type="number" step="any" placeholder="$0.00" name="montoAcumulado2" id="montoAcumulado2" class="cd-form-control" required>
+                </div>
+                <div class="cd-form-group">
+                    <label class="cd-form-label"><i class="fa-solid fa-wallet"></i> Saldo Actual</label>
+                    <input type="number" step="any" placeholder="$0.00" name="saldo2" id="saldo2" class="cd-form-control" required>
+                </div>
+            </div>
+
+            <div class="cd-form-grid">
+                <div class="cd-form-group">
+                    <label class="cd-form-label"><i class="fa-solid fa-comment-dots"></i> Comentario</label>
+                    <input type="text" placeholder="Comentario..." name="comentario" id="comentario" class="cd-form-control" required>
+                </div>
+                <div class="cd-form-group">
+                    <label class="cd-form-label"><i class="fa-solid fa-building-columns"></i> Datos Bancarios</label>
+                    <input type="text" placeholder="Datos bancarios..." name="datosBancarios1" id="datosBancarios1" class="cd-form-control">
+                </div>
+            </div>
+
+            <div style="margin-top:20px; text-align:right;">
+                <button class="cd-btn cd-btn-primary" type="submit" id="guardar2">
+                    <i class="fa-solid fa-floppy-disk"></i> Guardar Pago
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- TABLA DE REGISTROS (RENDERIZADA DIRECTAMENTE O VIA AJAX) -->
+    <div id="tablaRegistros" style="display:inline-block; width:100%;">
+        <?php
+        if (isset($idmandante) && isset($idcolonia) && isset($idmunicipio)){
+            $sql_reg = "SELECT * FROM mandantes_abonos WHERE idmandante = ".$idmandante." and idcolonia = ".$idcolonia." and idmunicipio = ".$idmunicipio." and cancelado=0 ORDER BY id DESC";
+            $rc = $conexion->query($sql_reg);
+            $total_records = $rc ? $rc->num_rows : 0;
+            if ($total_records > 0){
+        ?>
+                <div class="cd-card-section" style="margin-top:20px;">
+                    <div class="cd-card-header cd-card-header-primary">
+                        <h3 class="cd-card-title">
+                            <i class="fa-solid fa-receipt"></i> Desglose de Pagos a Mandante
+                        </h3>
+                        <span class="cd-badge cd-badge-info"><?php echo $total_records; ?> Registros</span>
+                    </div>
+                    <div class="cd-card-body" style="padding:0;">
+                        <div class="cd-table-container">
+                            <table class="cd-table">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align:center; width:50px;">ID</th>
+                                        <th>Periodo Pago</th>
+                                        <th style="text-align:right;">Recuperación</th>
+                                        <th style="text-align:right;">Gastos</th>
+                                        <th style="text-align:right;">Gastos Esc</th>
+                                        <th style="text-align:right;">Monto Pagar</th>
+                                        <th style="text-align:right;">Devols.</th>
+                                        <th style="text-align:right;">Otros Desc.</th>
+                                        <th style="text-align:right;">Amort. Ant.</th>
+                                        <th style="text-align:right;">Monto Pagado</th>
+                                        <th style="text-align:right;">Acumulado</th>
+                                        <th style="text-align:right;">Saldo</th>
+                                        <th style="text-align:center; width:190px;">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <?php
+                                $vuelta = 0;
+                                while($r = $rc->fetch_array()){
+                                    $vuelta += 1;
+                                    echo "<tr>";
+                                    echo "<td style='text-align:center;'><span class='cd-badge-id'>".$r['id']."</span></td>";
+                                    echo "<td style='font-weight:600;'>";
+                                    if($r['periodopago'] == $r['periodopago2']){
+                                        echo fechaesp($r['periodopago']);
+                                    } else {
+                                        echo fechaesp($r['periodopago'])." A ".fechaesp($r['periodopago2']);
+                                    }
+                                    echo "</td>";
+                                    echo "<td style='text-align:right;'>$".number_format((float)$r['recuperacion'], 2)."</td>";
+                                    echo "<td style='text-align:right;'>$".number_format((float)$r['gastos'], 2)."</td>";
+                                    echo "<td style='text-align:right;'>$".number_format((float)$r['gastosesc'], 2)."</td>";
+                                    echo "<td style='text-align:right;'>$".number_format((float)$r['montopagar'], 2)."</td>";
+                                    echo "<td style='text-align:right;'>$".number_format((float)$r['devols'], 2)."</td>";
+                                    echo "<td style='text-align:right;'>$".number_format((float)$r['otrosdesc'], 2)."</td>";
+                                    echo "<td style='text-align:right;'>$".number_format((float)$r['amortizacion_anticipo'], 2)."</td>";
+                                    echo "<td style='text-align:right; font-weight:700; color:var(--cd-primary);'>$".number_format((float)$r['monto_pagado'], 2)."</td>";
+                                    echo "<td style='text-align:right;'>$".number_format((float)$r['monto_acumulado'], 2)."</td>";
+                                    echo "<td style='text-align:right; font-weight:700;'>$".number_format((float)$r['saldo'], 2)."</td>";
+
+                                    // Column Acciones
+                                    echo "<td style='text-align:center;'><div class='cd-action-group'>";
+
+                                    // Adjuntos button & modal
+                                    echo "<a href='#subirAdjuntos1".$vuelta."' rel='MyModal:open' class='cd-icon-btn view' title='Documentos Adjuntos'><i class='fa-solid fa-paperclip'></i></a>";
+                                    
+                                    // Orden de Pago Form
+                                    MiToken_Init($nitavu, 'PAGO A MANDANTES-ORDEN DE PAGO');
+                                    echo "<form action='md_ordenpago.php?id=".$r['id']."&idmandante=".$idmandante."&idcolonia=".$idcolonia."&idmunicipio=".$idmunicipio."&fecha=".$r['periodopago']."' method='POST' style='margin:0; display:inline;'>";
+                                    echo "<input type='hidden' class='url1' name='url1'>";
+                                    echo "<button type='submit' class='cd-icon-btn view' title='Ver Orden de Pago PDF'><i class='fa-solid fa-file-pdf' style='color:#dc2626;'></i></button>";
+                                    echo "</form>";
+
+                                    // Abono Extra
+                                    echo "<a href='#masAbonos".$r['id']."' rel='MyModal:open' class='cd-icon-btn edit' title='Registrar Abono Extra'><i class='fa-solid fa-circle-plus'></i></a>";
+
+                                    // Editar
+                                    echo "<a href='md_modificarRegistro.php?id=".$r['id']."&idmandante=".$idmandante."&idcolonia=".$idcolonia."&idmunicipio=".$idmunicipio."' class='cd-icon-btn edit' title='Modificar Registro'><i class='fa-solid fa-pen-to-square'></i></a>";
+
+                                    // Eliminar
+                                    echo "<a href='mandantes_pago.php?ideliminar=".$r['id']."&idmandante=".$idmandante."&idcolonia=".$idcolonia."&idmunicipio=".$idmunicipio."' onclick=\"return confirm('¿Está seguro de eliminar este pago?');\" class='cd-icon-btn delete' title='Eliminar Registro'><i class='fa-solid fa-trash-can'></i></a>";
+
+                                    echo "</div>";
+
+                                    // MODAL ADJUNTOS
+                                    echo "<div id='subirAdjuntos1".$vuelta."' class='MyModal'>";
+                                    echo "<h3><i class='fa-solid fa-paperclip'></i> Documentos Adjuntos del Pago #".$r['id']."</h3>";
+                                    echo "<div>";
+                                    $adj = "SELECT idpago, ndocumento, nombre FROM documentos, mandantes_documentos WHERE mandantes_documentos.n_archivo=documentos.ndocumento and mandantes_documentos.idpago = ".$r['id']."";
+                                    $rc1 = $conexion->query($adj);
+                                    if ($rc1 && $rc1->num_rows > 0){
+                                        echo "<table class='cd-table' style='margin-bottom:15px;'>";
+                                        echo "<thead><tr><th>Archivo</th><th style='width:120px; text-align:center;'>Acción</th></tr></thead><tbody>";
+                                        while($r1 = $rc1->fetch_array()){
+                                            $archivo = "docs_mandantes/".$r1['idpago'].'_'.$r1['ndocumento'].'_'.$r1['nombre'];
+                                            echo "<tr><td><i class='fa-solid fa-file-pdf' style='color:#dc2626; margin-right:8px;'></i>".htmlspecialchars($r1['nombre'])."</td>";
+                                            echo "<td style='text-align:center;'><a href='md_descargar.php?nombre=".$archivo."' target='_self' class='cd-btn cd-btn-light' style='padding:4px 10px; font-size:0.8rem;'><i class='fa-solid fa-download'></i> Descargar</a></td></tr>";
+                                        }
+                                        echo "</tbody></table>";
+                                    } else {
+                                        echo "<p style='color:var(--cd-gray-dark); margin-bottom:15px;'><i class='fa-solid fa-info-circle'></i> No hay archivos adjuntos en este pago.</p>";
+                                    }
+                                    echo "</div>";
+
+                                    echo "<form action='mandantes_pago.php?idmandante=".$idmandante."&idcolonia=".$idcolonia."&idmunicipio=".$idmunicipio."' method='POST' enctype='multipart/form-data' class='cd-form-group'>";
+                                    echo "<label class='cd-form-label'><i class='fa-solid fa-upload'></i> Seleccione archivos anexos (PDF):</label>";
+                                    echo "<input type='hidden' name='comprobante' value='".$r['id']."'>";
+                                    echo "<input type='hidden' name='idmandante2' value='".$idmandante."'>";
+                                    echo "<input type='hidden' name='idcolonia2' value='".$idcolonia."'>";
+                                    echo "<input type='hidden' name='idmunicipio2' value='".$idmunicipio."'>";
+                                    echo "<input id='archivo[]' name='archivo[]' type='file' accept='.pdf' multiple class='cd-form-control' required style='margin-bottom:12px;'>";
+                                    echo "<button type='submit' class='cd-btn cd-btn-primary'><i class='fa-solid fa-cloud-arrow-up'></i> Subir Archivos</button>";
+                                    echo "</form>";
+                                    echo "</div>";
+
+                                    // MODAL MAS ABONOS
+                                    echo "<div id='masAbonos".$r['id']."' class='MyModal'>";
+                                    echo "<h3><i class='fa-solid fa-circle-plus'></i> Registrar Concepto Adicional - Pago #".$r['id']."</h3>";
+                                    echo "<form action='md_ingresa_abonoextra.php' method='POST'>";
+                                    echo "<input name='nitavu1' type='hidden' value='".$nitavu."'/>";
+                                    echo "<input name='idabono' type='hidden' value='".$r['id']."'/>";
+                                    echo "<div class='cd-form-grid'>";
+                                    echo "<div class='cd-form-group'><label class='cd-form-label'><i class='fa-solid fa-plus-minus'></i> Tipo de Ajuste</label>";
+                                    echo "<select id='mas_menos' name='mas_menos' class='cd-form-control'>";
+                                    echo "<option value='1'>Más (+)</option><option value='2'>Menos (-)</option></select></div>";
+
+                                    echo "<div class='cd-form-group'><label class='cd-form-label'><i class='fa-solid fa-list-check'></i> Concepto</label>";
+                                    echo "<select name='idconcepto' class='cd-form-control' id='idconcepto'>";
+                                    $sql_c = "SELECT * FROM cat_conceptos_mandabonos where Activo=1 ";
+                                    $rr = $conexion->query($sql_c);
+                                    while($f = $rr->fetch_array()){
+                                        echo "<option value='".$f['Id']."'>".htmlspecialchars($f['Concepto'])."</option>";
+                                    }
+                                    echo "</select></div>";
+                                    echo "</div>";
+
+                                    echo "<div class='cd-form-group'><label class='cd-form-label'><i class='fa-solid fa-dollar-sign'></i> Importe</label>";
+                                    echo "<input name='importe' id='importe' type='number' step='any' placeholder='$0.00' class='cd-form-control' required/></div>";
+
+                                    echo "<div style='margin-top:15px; text-align:right;'>";
+                                    echo "<button class='cd-btn cd-btn-primary' type='submit'><i class='fa-solid fa-floppy-disk'></i> Guardar Concepto</button>";
+                                    echo "</div>";
+                                    echo "</form>";
+                                    echo "</div>";
+
+                                    echo "</td></tr>";
+                                }
+                                ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+        <?php
+            }
+        }
+        ?>
+    </div>
+</div>
+
 <script>    
     $(document).on("change", "#municipio", function(event) {
-       $("#req_menu").css({'display':'none',});
-        $("#registroPago").css({'display':'none',});
-        $("#tablaRegistros").css({'display':'none',});
+        $("#req_menu").css({'display':'none'});
+        $("#registroPago").css({'display':'none'});
+        $("#tablaRegistros").css({'display':'none'});
         
         $('#Mandantes').html('');
         $('#Apoderado').html('');
-	    mostrarColonias($("#municipio option:selected").val());
-        
-        
+        mostrarColonias($("#municipio option:selected").val());
     });              
+
     function mostrarColonias(id){
-        $("#preloader").css({'display':'inline-block',});
-        $("#req_menu").css({'display':'none',});
-        $("#registroPago").css({'display':'none',});
-        $("#tablaRegistros").css({'display':'none',});
+        $("#preloader").css({'display':'inline-block'});
+        $("#req_menu").css({'display':'none'});
+        $("#registroPago").css({'display':'none'});
+        $("#tablaRegistros").css({'display':'none'});
         $('#Mandantes').html('');
         $('#Apoderado').html('');
 
@@ -1611,20 +967,19 @@ else{
             type: "get",
             data: {id: id},
             success: function(data){
-                $("#preloader").css({'display':'none',});
+                $("#preloader").css({'display':'none'});
                 $('#colonia').html(data+"\n");
             }
         });
 
-        document.getElementById("idmunicipio").value=id;        
+        document.getElementById("idmunicipio").value = id;        
     }
 
-    //mostrar mandantes     
     function mostrarMandantes(){
-        $("#req_menu").css({'display':'none',});
-        $("#registroPago").css({'display':'none',});
-        $("#tablaRegistros").css({'display':'none',});
-        $("#preloader").css({'display':'inline-block',});
+        $("#req_menu").css({'display':'none'});
+        $("#registroPago").css({'display':'none'});
+        $("#tablaRegistros").css({'display':'none'});
+        $("#preloader").css({'display':'inline-block'});
         var id = $("#colonia option:selected").val();
         var idmunicipio = $("#municipio option:selected").val();
         
@@ -1634,19 +989,19 @@ else{
             type: "get",
             data: {id: id, idmunicipio: idmunicipio },
             success: function(data){
-                $("#preloader").css({'display':'none',});
+                $("#preloader").css({'display':'none'});
                 $('#Mandantes').html(data+"\n");
             }
         });
 
-        document.getElementById("idcolonia").value=id;
+        document.getElementById("idcolonia").value = id;
     }
 
     function mostrarApoderado(){
-         $("#req_menu").css({'display':'none',});
-        $("#registroPago").css({'display':'none',});
-        $("#tablaRegistros").css({'display':'none',});
-        $("#preloader").css({'display':'inline-block',});
+        $("#req_menu").css({'display':'none'});
+        $("#registroPago").css({'display':'none'});
+        $("#tablaRegistros").css({'display':'none'});
+        $("#preloader").css({'display':'inline-block'});
         var id = $("#colonia option:selected").val();
         var idmunicipio = $("#municipio option:selected").val();
         var idmandante = $("#mandantes option:selected").val();
@@ -1656,62 +1011,52 @@ else{
             type: "get",
             data: {id: id, idmunicipio: idmunicipio, idmandante: idmandante },
             success: function(data){
-                $("#preloader").css({'display':'none',});
+                $("#preloader").css({'display':'none'});
                 $('#Apoderado').html(data+"\n");
             }
         });
-        document.getElementById("idmandante").value=idmandante;
+        document.getElementById("idmandante").value = idmandante;
     }
 
-  
     function mostrarOpciones(){
-        //alert('entroActualizar');
-        $("#req_menu").css({'display':'inline-block',});
-        $("#tablaRegistros").css({'display':'inline-block',});
+        $("#req_menu").css({'display':'flex'});
+        $("#tablaRegistros").css({'display':'block'});
         
         var id = $("#mandantes option:selected").val();
-        //alert($("#mandantes option:selected").val());
         idcolonia = document.getElementById("idcolonia").value;
         idmunicipio = document.getElementById("idmunicipio").value;
         nitavu = document.getElementById('nitavu').value;
 
         var URLactual = window.location;    
-       
-        document.getElementById('url').value = URLactual;
-      
-        //alert(id+','+idcolonia+','+idmunicipio);
-        //history.pushState(null, "", 'mandantes_pago.php?idmandante='+id+'&idcolonia='+idcolonia+'&idmunicipio='+idmunicipio');
-       //console.log('idmandante:'+id+'idcolonia'+idcolonia+'idmunicipio'+idmunicipio);
+        if(document.getElementById('url')) {
+            document.getElementById('url').value = URLactual;
+        }
+
         $.ajax({
-            
             url: "md_registrosMandante.php",
             type: "get",
             data: {id: id, idcolonia: idcolonia, idmunicipio: idmunicipio, nitavu: nitavu },
             success: function(data){
-                $("#preloader").css({'display':'none',});
-                //document.getElementById("reporteMandante").href = "md_reporte.php?id="+id+"&idcolonia="+idcolonia+"&idmunicipio="+idmunicipio;
-                document.forms['reporteMandante'].action = "md_reporte.php?id="+id+"&idcolonia="+idcolonia+"&idmunicipio="+idmunicipio;
-                document.getElementById("nuevoCargo").href = "md_nuevoCargo.php?id="+id+"&idcolonia="+idcolonia+"&idmunicipio="+idmunicipio;
-                document.getElementById("mddocumentos").href = "md_documentos.php?id="+id+"&idcolonia="+idcolonia+"&idmunicipio="+idmunicipio;
+                $("#preloader").css({'display':'none'});
+                if(document.forms['reporteMandante']) {
+                    document.forms['reporteMandante'].action = "md_reporte.php?id="+id+"&idcolonia="+idcolonia+"&idmunicipio="+idmunicipio;
+                }
+                if(document.getElementById("nuevoCargo")) {
+                    document.getElementById("nuevoCargo").href = "md_nuevoCargo.php?id="+id+"&idcolonia="+idcolonia+"&idmunicipio="+idmunicipio;
+                }
+                if(document.getElementById("mddocumentos")) {
+                    document.getElementById("mddocumentos").href = "md_documentos.php?id="+id+"&idcolonia="+idcolonia+"&idmunicipio="+idmunicipio;
+                }
                              
-                //alert(data);
                 $('#tablaRegistros').html(data+"\n");
-                //document.getElementById('url1').value = URLactual;
                 $('.url1').val(URLactual);   
-                $('url').val(URLactual); 
-                
-                //console.log('puso los registros');
+                $('#url').val(URLactual); 
             }
         });
-        document.getElementById("idmandante").value=id;
-        
+        document.getElementById("idmandante").value = id;
     }
 
     function enviarDatos(){
-        //idmandante = document.formulario.idmandante.value;
-        //idcolonia = document.formulario.idcolonia.value;
-        //idmunicipio = document.formulario.idmunicipio.value;
-
         idmandante = document.getElementById("idmandante").value;
         idcolonia = document.getElementById("idcolonia").value;
         idmunicipio = document.getElementById("idmunicipio").value;
@@ -1722,7 +1067,6 @@ else{
         pgastos = document.formulario.pgastos.value;
         gastos = document.formulario.gastos.value;
         montopagar = document.formulario.montopagar.value;
-        //pdevols = document.formulario.pdevols.value;
         pdevols = 0;
         devols = document.formulario.devols.value;
         otrosdesc = document.formulario.otrosdesc.value;
@@ -1732,7 +1076,7 @@ else{
         montoAcumulado = document.formulario.montoAcumulado.value;
         saldo = document.formulario.saldo.value;
         sistema = document.formulario.sistema.value;
-        //engancheTraspaso = document.formulario.engancheTraspaso.value;
+
         var signo1 = $("#mas_menos1 option:selected").val();
         desNomina = document.formulario.desNomina.value;
         var signo2 = $("#mas_menos2 option:selected").val();
@@ -1751,20 +1095,16 @@ else{
         var signo9 = $("#mas_menos9 option:selected").val();
         pagooxxo = document.formulario.pagooxxo.value;
         pagootros = document.formulario.pagootros.value;
-        //centavo = document.formulario.centavo.value;
         centavo = 0;
         comentario = document.formulario.comentario.value;
         observacionPago = document.formulario.observacionPago.value;
         datosbancarios = document.formulario.datosBancarios.value;
 
-
         pgastosesc = document.formulario.pgastosesc.value;
         gastosesc = document.formulario.gastosesc.value;
-        //alert(signo1+','+signo2+','+signo3+','+signo3);
-        
        
         var idTipoMov = $("#tipo_mov option:selected").val();
-        //window.open("md_ordenpago.php?idmandante="+idmandante+"&idcolonia="+idcolonia+"&idmunicipio="+idmunicipio);
+
         $.ajax({
             url: "md_ingresardatosBD.php",
             type: "post",
@@ -1773,17 +1113,14 @@ else{
             signo2: signo2, engancheAhorro:engancheAhorro, signo3: signo3, transferencia:transferencia, signo4:signo4, pagosUniversales: pagosUniversales, signo5: signo5, escritura: escritura, signo6:signo6,
             derechos: derechos, signo7: signo7, pagoDerechos: pagoDerechos, signo8: signo8, pagooxxo: pagooxxo, centavo: centavo, comentario: comentario, observacionPago:observacionPago, idTipoMov:idTipoMov, datosbancarios:datosbancarios,signo9: signo9, pagootros: pagootros, pgastosesc: pgastosesc, gastosesc: gastosesc , otrosdesc:otrosdesc, nitavu1: <?php echo $nitavu; ?>},
             success: function(data){
-              //  console.log(data);
-              
-                 $('#mensajeConfirmacion').html(data+"\n");
-                $("#mensajeConfirmacion").css({'display':'inline-block',}).slideUp(4000).delay(10000).fadeOut(4000);
+                $('#mensajeConfirmacion').html(data+"\n");
+                $("#mensajeConfirmacion").css({'display':'inline-block'}).slideUp(4000).delay(10000).fadeOut(4000);
                 document.formulario.fecha.value = "";
-                document.formulario.periodo2.value="";
+                document.formulario.periodo2.value = "";
                 document.formulario.recuperacion.value = "";
                 document.formulario.pgastos.value = "";
                 document.formulario.gastos.value = "";
                 document.formulario.montopagar.value = "";
-                //document.formulario.pdevols.value = "";
                 document.formulario.devols.value = "";
                 document.formulario.otrosdesc.value = "";
                 document.formulario.pamorAnt.value = "";
@@ -1791,8 +1128,7 @@ else{
                 document.formulario.montoPagado.value = "";
                 document.formulario.montoAcumulado.value = "";
                 document.formulario.saldo.value = "";
-                document.formulario.sistema.value="";
-                //document.formulario.engancheTraspaso.value="";
+                document.formulario.sistema.value = "";
                 document.formulario.desNomina.value = "";
                 document.formulario.engancheAhorro.value = "";
                 document.formulario.transferencia.value = "";
@@ -1802,20 +1138,16 @@ else{
                 document.formulario.pagoDerechos.value = "";
                 document.formulario.pagooxxo.value = "";
                 document.formulario.pagootros.value = "";
-                document.formulario.gastosesc.value="";
-                //document.formulario.centavo.value="";
+                document.formulario.gastosesc.value = "";
                 document.formulario.comentario.value = "";
                 document.formulario.observacionPago.value = "";
                 document.formulario.datosBancarios.value = "";
                 mostrarOpciones();
             }
         });
-
     }
 
     function enviarDatos2(){
-        //alert('entro2');
-        
         idmandante = document.getElementById("idmandante").value;
         idcolonia = document.getElementById("idcolonia").value;
         idmunicipio = document.getElementById("idmunicipio").value;
@@ -1825,23 +1157,22 @@ else{
         montoAcumulado2 = document.formulario1.montoAcumulado2.value;
         saldo2 = document.formulario1.saldo2.value;
         comentario = document.formulario1.comentario.value;
-        datosbancarios=document.formulario1.datosBancarios1.value;
+        datosbancarios = document.formulario1.datosBancarios1.value;
         
         var idTipoMov = $("#tipo_mov option:selected").val();
-        //window.open("md_ordenpago.php?idmandante="+idmandante+"&idcolonia="+idcolonia+"&idmunicipio="+idmunicipio);
+
         $.ajax({
             url: "md_ingresardatosBD.php",
             type: "post",
             data: {idmandante: idmandante, idcolonia: idcolonia, idmunicipio: idmunicipio, fecha2:fecha2, montoPagado2: montoPagado2,montoAcumulado2: montoAcumulado2, saldo2: saldo2, comentario: comentario, idTipoMov:idTipoMov ,datosbancarios:datosbancarios,nitavu1: <?php echo $nitavu; ?>},
             success: function(data){
-                //console.log(data);
                 $('#mensajeConfirmacion').html(data+"\n");
-                $("#mensajeConfirmacion").css({'display':'inline-block',}).slideUp(4000).delay(10000).fadeOut(4000);
+                $("#mensajeConfirmacion").css({'display':'inline-block'}).slideUp(4000).delay(10000).fadeOut(4000);
                 document.formulario1.fecha2.value = "";
                 document.formulario1.montoPagado2.value = "";
                 document.formulario1.montoAcumulado2.value = "";
                 document.formulario1.saldo2.value = "";
-                document.formulario1.comentario.value="";
+                document.formulario1.comentario.value = "";
             
                 mostrarOpciones();
             }
@@ -1849,7 +1180,6 @@ else{
     }
 
     function pasarId(vuelta){
-        
         idComprobante = document.getElementById('idComprobante'+vuelta).value;
         idmandante = document.getElementById('idmandante1').value;
         idcolonia = document.getElementById('idcolonia1').value;
@@ -1860,31 +1190,21 @@ else{
         document.getElementById('idmunicipio2').value = idmunicipio;
     }
 
-   function seleccionarQueDivMostrar(){
-       var id = $("#tipo_mov option:selected").val();
-       //alert(id);
-       if(id == 3){
-          
-        
+    function seleccionarQueDivMostrar(){
+        var id = $("#tipo_mov option:selected").val();
+        if(id == 3){
+            buscarGastosAdmin();
+            buscarGastosEsc();
+            buscarAmortizacionAnt();
+            $("#formulario").css({'display':'block'});
+            $("#formulario1").css({'display':'none'});
+        } else {
+            $("#formulario1").css({'display':'block'});
+            $("#formulario").css({'display':'none'});
+        }
+    }
 
-        buscarGastosAdmin();
-        buscarGastosEsc();
-        buscarAmortizacionAnt();
-       
-           $("#formulario").css({'display':'inline-block',});
-           $("#formulario1").css({'display':'none',});
-
-           
-
-       }else{
-            $("#formulario1").css({'display':'inline-block',});
-            $("#formulario").css({'display':'none',});
-       }
-       
-      
-   }
-
-   function recalcular(){
+    function recalcular(){
         idmandante = document.getElementById("idmandante").value;
         idcolonia = document.getElementById("idcolonia").value;
         idmunicipio = document.getElementById("idmunicipio").value;
@@ -1899,19 +1219,16 @@ else{
                 $('#respuesta').html(data+"\n");
             }
         });
-   }
-   
-
+    }
 </script>
 
 <script>
 function mostrarFecha2(){
     if (peri2.checked == true){
-        $("#fech2").css({'display':'inline-block',});
-    }else{
-        $("#fech2").css({'display':'none',});
+        $("#fech2").css({'display':'flex'});
+    } else {
+        $("#fech2").css({'display':'none'});
     }
-
 }
 
 function mostrarDecimales(){    
@@ -1919,188 +1236,130 @@ function mostrarDecimales(){
                     .toFixed(2)
                     .toString()
                     .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    
-    document.getElementById("display").value = this.value.replace(/,/g, "")
-    
+    document.getElementById("display").value = this.value.replace(/,/g, "");
 }
 
 function operaciones(){
-    //alert('entro');
     var idmunicipio = $("#municipio option:selected").val();
     var idmandante =  $("#mandantes option:selected").val();
     var idcolonia =  $("#colonia option:selected").val();
     
     var pago = document.getElementById("montoPagado").value;
-    pago = $('#montopagar').val() - $('#devols').val()-$('#gastos').val()-$('#gastosesc').val()-$("#otrosdesc").val();
-
-
-   // pago = pago - $('#amorAnticipo').val();
-    
+    pago = $('#montopagar').val() - $('#devols').val() - $('#gastos').val() - $('#gastosesc').val() - $("#otrosdesc").val();
     $('#montoPagado').val(pago);
 
     $.ajax({
-       url: "md_operaciones.php",
-      type: "post",
-      data: {idmandante:idmandante, idcolonia:idcolonia, idmunicipio:idmunicipio, pago:pago},
-      success: function(data){
-         // console.log(data);
-          //if(num==2){
-            //$('#calculados2').html(data+"\n");
-          //}else{
+        url: "md_operaciones.php",
+        type: "post",
+        data: {idmandante:idmandante, idcolonia:idcolonia, idmunicipio:idmunicipio, pago:pago},
+        success: function(data){
             $('#calculados').html(data+"\n");
-          //}
-       
-     
-       //montoAcumulado
-       //saldo
-      }
-   });
+        }
+    });
 }
 
 function todas(){
-  
     calcularAmortizacion();
-     
-    calcularMontoPorPagar()
+    calcularMontoPorPagar();
     buscarGastosEsc();
     calcularGastosEsc();
     buscarGastosAdmin();
     calcularGastosAdmin();
     calcularDevoluciones();
 }
+
 function buscarGastosAdmin(){
-   // alert('entro');
     var idmunicipio = $("#municipio option:selected").val();
     var idmandante =  $("#mandantes option:selected").val();
     var idcolonia =  $("#colonia option:selected").val();
 
     $.ajax({
-       url: "md_gastosAdmin.php",
-      type: "post",
-      data: {idmandante:idmandante, idcolonia:idcolonia, idmunicipio:idmunicipio},
-      success: function(data){
-        //  console.log(data);
-          $('#pgastos').val(data);
-      }
-   });
-
+        url: "md_gastosAdmin.php",
+        type: "post",
+        data: {idmandante:idmandante, idcolonia:idcolonia, idmunicipio:idmunicipio},
+        success: function(data){
+            $('#pgastos').val(data);
+        }
+    });
 }
 
 function buscarGastosEsc(){
-   // alert('entro');
     var idmunicipio = $("#municipio option:selected").val();
     var idmandante =  $("#mandantes option:selected").val();
     var idcolonia =  $("#colonia option:selected").val();
 
     $.ajax({
-       url: "md_gastosEsc.php",
-      type: "post",
-      data: {idmandante:idmandante, idcolonia:idcolonia, idmunicipio:idmunicipio},
-      success: function(data){
-          //console.log(data);
-          $('#pgastosesc').val(data);
-      }
-   });
-
+        url: "md_gastosEsc.php",
+        type: "post",
+        data: {idmandante:idmandante, idcolonia:idcolonia, idmunicipio:idmunicipio},
+        success: function(data){
+            $('#pgastosesc').val(data);
+        }
+    });
 }
+
 function buscarAmortizacionAnt(){
-   // alert('entro');
     var idmunicipio = $("#municipio option:selected").val();
     var idmandante =  $("#mandantes option:selected").val();
     var idcolonia =  $("#colonia option:selected").val();
 
     $.ajax({
-       url: "md_amortizacionAnt.php",
-      type: "post",
-      data: {idmandante:idmandante, idcolonia:idcolonia, idmunicipio:idmunicipio},
-      success: function(data){
-         // console.log(data);
-          $('#pamorAnt').val(data);
-      }
-   });
-
+        url: "md_amortizacionAnt.php",
+        type: "post",
+        data: {idmandante:idmandante, idcolonia:idcolonia, idmunicipio:idmunicipio},
+        success: function(data){
+            $('#pamorAnt').val(data);
+        }
+    });
 }
+
 function calcularGastosAdmin(){
-    
-   // var pago = $('#recuperacion').val();//antes
     var pago = $('#montopagar').val();
     var porcentaje = $('#pgastos').val();
     var res = (pago * porcentaje) / 100;
-    res = Math.round(res)
+    res = Math.round(res);
     $('#gastos').val(res);
-    //calcularMontoPorPagar();
 }
 
 function calcularGastosEsc(){
-    
-    ///var pago = $('#recuperacion').val();
-    
     var pago = $('#montopagar').val();
-    //console.log(pago);
     var porcentaje = $('#pgastosesc').val();
     var res = (pago * porcentaje) / 100;
-    res = Math.round(res)
+    res = Math.round(res);
     $('#gastosesc').val(res);
-   // calcularMontoPorPagar();
 }
+
 function calcularMontoPorPagar(){
-    
     var pago = $('#recuperacion').val();
-     //var gastos = $('#gastos').val();
-     var amor_ant = $('#amorAnticipo').val();
-    //antes
-    //var pago = $('#recuperacion').val();
-    // var gastos = $('#gastos').val();
-    // var gastos = $('#gastosesc').val();
+    var amor_ant = $('#amorAnticipo').val();
     var res = pago - amor_ant;
     $('#montopagar').val(res);
-    
 }
 
 function calcularDevoluciones(){
-    //var pago = $('#montopagar').val();
-   // var porcentaje = $('#pdevols').val(); 
-   // var res = (pago * porcentaje) / 100;
-   // $('#devols').val(res);
     operaciones();
 }
 
 function calcularAmortizacion(){
-   // var pago = $('#montopagar').val(); 
-  var pago = $('#recuperacion').val();
-  var porcentaje = $('#pamorAnt').val(); 
-  var res = (pago * porcentaje) / 100;
-  res = Math.round(res)
-    //console.log(porcentaje);
-   // console.log(res);
+    var pago = $('#recuperacion').val();
+    var porcentaje = $('#pamorAnt').val(); 
+    var res = (pago * porcentaje) / 100;
+    res = Math.round(res);
     $('#amorAnticipo').val(res);
-    //operaciones();
-
 }
 
 $(document).ready(function() {
-   // debugger;
     var URLactual = window.location;    
-    document.getElementById('url').value = URLactual;
+    if(document.getElementById('url')) {
+        document.getElementById('url').value = URLactual;
+    }
     $('.url1').val(URLactual);
 });
-
-
-
-
-
-
 </script>
-<br><br><br>
-<br>
-<br>
-<br><br><br>
-<br>
-<br>
-<br><br><br>
-<br>
-<br>
-<br><br><br>
-<br>
-<br>
-<?php include ("./lib/body_footer.php"); ?>
+
+<?php 
+} else {
+    mensaje("No tiene acceso a ".$id_aplicacion,'');
+}
+include ("./lib/body_footer.php"); 
+?>

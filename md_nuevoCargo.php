@@ -1,775 +1,617 @@
-<?php include ("./lib/body_head.php"); include ("./lib/body_menu.php"); ?>
+<?php 
+include ("./lib/body_head.php"); 
+include ("./lib/body_menu.php"); 
+?>
+<link rel="stylesheet" href="lib/laura.css" />
+<link rel="stylesheet" href="lib/plataforma_modern.css" />
 <script>
-//mostrar colonias
-    $(document).on("change", "#cargo", function(event) {
-
-        if($("#cargo").val()==1){
-            $("#mandato").css({'display':'inline-block'});
-            $("#adendum").css({'display':'none'});
-            /*$("#fechaMan").css({'display':'inline-block',});
-            $("#fechaAdendum").css({'display':'none',});
-            $("#fechaFiniquito").css({'display':'none',});
-            $("#pcredito").css({'display':'inline-block',});
-            $("#costoLotes").css({'display':'inline-block',});
-            $("#costom2").css({'display':'inline-block',});
-            $("#suptotal").css({'display':'inline-block',});
-            $("#supcomer").css({'display':'inline-block',});
-            $("#pmandante").css({'display':'inline-block',});
-            $("#pitavu").css({'display':'inline-block',});
-            $("#paTotal").css({'display':'inline-block',});
-            $("#paComer").css({'display':'inline-block',});
-            $("#programaLotes").css({'display':'inline-block',});
-            $("#programaSuelo").css({'display':'inline-block',});
-            $("#guardar").css({'display':'inline-block',});
-            $("#relleno").css({'display':'none',});*/
-        }else{
-            $("#adendum").css({'display':'inline-block'});
-            $("#mandato").css({'display':'none'});
-            /*$("#fechaMan").css({'display':'none',});
-            $("#fechaAdendum").css({'display':'inline-block',});
-            $("#fechaFiniquito").css({'display':'inline-block',});
-            $("#pcredito").css({'display':'inline-block',});
-            $("#costoLotes").css({'display':'inline-block',});
-            $("#costom2").css({'display':'inline-block',});
-            $("#suptotal").css({'display':'inline-block',});
-            $("#supcomer").css({'display':'inline-block',});
-            $("#pmandante").css({'display':'inline-block',});
-            $("#pitavu").css({'display':'inline-block',});
-            $("#paTotal").css({'display':'inline-block',});
-            $("#paComer").css({'display':'inline-block',});
-            $("#programaLotes").css({'display':'inline-block',});
-            $("#programaSuelo").css({'display':'inline-block',});
-            $("#guardar").css({'display':'inline-block',});
-            $("#relleno").css({'display':'inline-block',});*/
-        }
-       
-        
-        
-    });
-
+$(document).on("change", "#cargo", function(event) {
+    if($("#cargo").val() == 1){
+        $("#mandato").css({'display':'block'});
+        $("#adendum").css({'display':'none'});
+    } else {
+        $("#adendum").css({'display':'block'});
+        $("#mandato").css({'display':'none'});
+    }
+});
 </script>
+
 <?php
 require("config.php");
 $id_aplicacion = 'ap70';
 xd_update('ap70',$nitavu);//guarda la experiencia del usuario
 echo "<div id='AppDetalle'>".app_detalle($id_aplicacion, $nitavu)."</div>";
 //PROCESO PARA TOCAR LA PUERTA DE SAN PEDRO
-$nivel =aplicacion_nivel($id_aplicacion, $nitavu);
+$nivel = aplicacion_nivel($id_aplicacion, $nitavu);
 
-if (sanpedro($id_aplicacion, $nitavu)==TRUE){
+if (sanpedro($id_aplicacion, $nitavu) == TRUE){
 
     if(isset($_GET['id']) and isset($_GET['idcolonia']) and isset($_GET['idmunicipio'])){
         $idmandante = $_GET['id'];
-        $idcolonia =  $_GET['idcolonia'];
+        $idcolonia = $_GET['idcolonia'];
         $idmunicipio = $_GET['idmunicipio'];
 
-        //ELIMINAR UN CARGO
+        // ELIMINAR UN CARGO
         if(isset($_POST['eliminarCargo'])){
             $id = $_POST['eliminarCargo'];
             $sql = 'UPDATE mandantes_cargos SET Cancelado = 1 WHERE id = '.$id.'';
-            //echo $sql;
-            if($conexion->query($sql)==TRUE){  
+            if($conexion->query($sql) == TRUE){  
                 mensaje('Se elimino correctamente el registro.', 'md_nuevoCargo.php?id='.$idmandante.'&idcolonia='.$idcolonia.'&idmunicipio='.$idmunicipio.'');
             }else{
                 mensaje('Hubo un error, favor de intentarlo nuevamente.', 'md_nuevoCargo.php?id='.$idmandante.'&idcolonia='.$idcolonia.'&idmunicipio='.$idmunicipio.'');
-
             }
         }
 
         historia($nitavu,'Entre a capturar un nuevo cargo para el mandante: idmandante: '.$idmandante.' idcolonia: '.$idcolonia.' idmunicipio:'.$idmunicipio.'');
-   
-        echo "<br><br>";
+?>
 
-        echo '<a id="regCargo" href="mandantes_pago.php?idmandante='.$idmandante.'&idcolonia='.$idcolonia.'&idmunicipio='.$idmunicipio.'" title="Clic para regresar a la página anterior"><ins>Regresar</ins></a>';
+<div class="cd-wrapper">
+    <!-- Hero Banner -->
+    <div class="cd-hero">
+        <div>
+            <h1 class="cd-hero-title">
+                <i class="fa-solid fa-file-invoice-dollar"></i> Registro y Edición de Cargos del Mandato
+            </h1>
+            <div class="cd-hero-dept">
+                <i class="fa-solid fa-city"></i> <?php echo strtoupper(nombreMunicipio($idmunicipio)); ?> | <i class="fa-solid fa-map-location-dot"></i> <?php echo strtoupper(nombreColonia($idmunicipio,$idcolonia)); ?> | <i class="fa-solid fa-user-tie"></i> <?php echo strtoupper(nombreMandante($idmunicipio,$idcolonia,$idmandante)); ?>
+            </div>
+        </div>
+        <div class="cd-top-links">
+            <a href="mandantes_pago.php?idmandante=<?php echo $idmandante; ?>&idcolonia=<?php echo $idcolonia; ?>&idmunicipio=<?php echo $idmunicipio; ?>" class="cd-top-link-btn" title="Regresar a pago">
+                <i class="fa-solid fa-arrow-left"></i> Regresar a Pago
+            </a>
+        </div>
+    </div>
 
-        echo "<center><h4>INGRESA LOS DATOS DEL NUEVO MANDANDATO</h4>";
-        
-        echo "<label>MUNICIPIO: <b>".strtoupper(nombreMunicipio($idmunicipio))."</b></label>";
-        echo "<br><label>COLONIA: <b>".strtoupper(nombreColonia($idmunicipio,$idcolonia))."</b></label>";
-        echo "<br><label>MANDANTE: <b>".strtoupper(nombreMandante($idmunicipio,$idcolonia,$idmandante))."</b></label>";
-       echo "<hr>";
-        echo "<button class='Mbtn btn-danger' onclick=location.href='md_nuevoCargo.php?id=".$idmandante."&idcolonia=".$idcolonia."&idmunicipio=".$idmunicipio."&nuevo=1' title='Clic para registrar nuevo cargo'>Registrar Nuevo</button></center>";
-        
-        //ANTERIORES
-        echo "<form action='md_nuevoCargo.php?id=".$idmandante."&idcolonia=".$idcolonia."&idmunicipio=".$idmunicipio."' method='POST'>";
-        $sql1 = "SELECT * FROM mandantes_cargos WHERE idmandante = ".$idmandante." and idcolonia =".$idcolonia." and idmunicipio=".$idmunicipio." and Cancelado = 0";
-        //echo $sql1;
-        $rc = $conexion -> query($sql1);
+    <!-- Toolbar Registrar Nuevo Cargo -->
+    <div class="cd-toolbar-card" style="margin-bottom:20px;">
+        <div class="cd-toolbar-group">
+            <a href="md_nuevoCargo.php?id=<?php echo $idmandante; ?>&idcolonia=<?php echo $idcolonia; ?>&idmunicipio=<?php echo $idmunicipio; ?>&nuevo=1" class="cd-btn cd-btn-primary" title="Registrar un nuevo cargo o adendum">
+                <i class="fa-solid fa-circle-plus"></i> Registrar Nuevo Cargo / Mandato
+            </a>
+        </div>
+    </div>
 
-        if ($rc->num_rows>0){
-        
-            echo "<table class='tabla'>";
-                echo "<th>Tipo</th>";
-                echo "<th>Fecha Mandato</th>";
-                echo "<th>Fecha Adendum</th>";
-                echo "<th>Plazo Crédito</th>";
-                echo "<th>Observaciones</th>";
-                echo "<th>Modificar</th>";
-                echo "<th>Eliminar</th>";
-                while($r1 = $rc -> fetch_array()){
-                    echo "<tr>";
-                    
-                        
-                        if($r1['tipo']==1){
-                            echo "<td>Mandato</td>";
-                        }else{
-                            echo "<td>Adendum</td>";
+    <!-- Lista de Cargos Registrados -->
+    <form action="md_nuevoCargo.php?id=<?php echo $idmandante; ?>&idcolonia=<?php echo $idcolonia; ?>&idmunicipio=<?php echo $idmunicipio; ?>" method="POST">
+        <div class="cd-card-section" style="margin-bottom:24px;">
+            <div class="cd-card-header cd-card-header-gold">
+                <h3 class="cd-card-title">
+                    <i class="fa-solid fa-list"></i> Cargos Registrados del Mandante
+                </h3>
+            </div>
+            <div class="cd-card-body" style="padding:0;">
+                <div class="cd-table-container">
+                    <?php
+                    $sql1 = "SELECT * FROM mandantes_cargos WHERE idmandante = ".$idmandante." and idcolonia =".$idcolonia." and idmunicipio=".$idmunicipio." and Cancelado = 0";
+                    $rc = $conexion->query($sql1);
+
+                    if ($rc && $rc->num_rows > 0){
+                        echo "<table class='cd-table'>";
+                        echo "<thead><tr>";
+                        echo "<th>Tipo</th>";
+                        echo "<th>Fecha Mandato</th>";
+                        echo "<th>Fecha Adendum</th>";
+                        echo "<th>Plazo Crédito</th>";
+                        echo "<th>Observaciones</th>";
+                        echo "<th style='width:70px; text-align:center;'>Editar</th>";
+                        echo "<th style='width:70px; text-align:center;'>Eliminar</th>";
+                        echo "</tr></thead><tbody>";
+
+                        while($r1 = $rc->fetch_array()){
+                            echo "<tr>";
+                            echo "<td><span class='cd-badge ".($r1['tipo']==1 ? 'cd-badge-info' : 'cd-badge-warning')."'>".($r1['tipo']==1 ? 'MANDATO' : 'ADENDUM')."</span></td>";
+                            echo "<td>".htmlspecialchars($r1['fecha_mandato'])."</td>";
+                            echo "<td>".htmlspecialchars($r1['fecha_adendum'])."</td>";
+                            echo "<td>".htmlspecialchars($r1['plazo_credito'])."</td>";
+                            echo "<td>".htmlspecialchars($r1['observaciones'])."</td>";
+                            echo "<td style='text-align:center;'><button type='submit' name='editar' value='".$r1['id']."' class='cd-icon-btn edit' title='Modificar Cargo'><i class='fa-solid fa-pen-to-square'></i></button></td>";
+                            echo "<td style='text-align:center;'><button type='submit' name='eliminarCargo' value='".$r1['id']."' onclick=\"return confirm('¿Desea eliminar este cargo?');\" class='cd-icon-btn delete' title='Eliminar Cargo'><i class='fa-solid fa-trash-can'></i></button></td>";
+                            echo "</tr>";
                         }
-                        
-                        echo "<td>".$r1['fecha_mandato']."</td>";
-                        echo "<td>".$r1['fecha_adendum']."</td>";
-                        echo "<td>".$r1['plazo_credito']."</td>";
-                        echo "<td>".$r1['observaciones']."</td>";
-                        echo "<td>";
+                        echo "</tbody></table>";
+                    } else {
+                        echo "<div style='padding:30px; text-align:center;'><p style='color:var(--cd-gray-dark); font-weight:600; margin:0;'>No hay cargos registrados aún para este mandante.</p></div>";
+                    }
+                    ?>
+                </div>
+            </div>
+        </div>
+    </form>
 
-                        echo "<button  type='submit' id='editar' name='editar'  class='Mbtn btn-danger' value='".$r1['id']."'  title='Clic para editar el registro'><img src='./icon/edit2.png' style='widht:30px; height:30px;'></button></td>";
-                        echo "<td>";                       
-                        echo "<button  type='submit' id='eliminarCargo' name='eliminarCargo' class='Mbtn btn-danger' value='".$r1['id']."' title='Clic para editar el registro'><img src='./icon/eliminar2.png' style='widht:30px; height:30px;'></button></td>";
-                        echo "</tr>";
-                }
-            echo "</table>";
-        }
-        echo "</form>";
-                
-       
-        if(isset($_POST['editar'])){
-            $id =$_POST['editar'];
-
-            echo "<div id='registroCargo' class='nuevoCargo'>";
-            $sql = "SELECT * FROM mandantes_cargos WHERE id= ".$id." ";
-            //echo $sql;
-            $rc = $conexion -> query($sql);
-            while($r = $rc -> fetch_array()){
+    <?php
+    // EDITAR CARGO EXISTENTE
+    if(isset($_POST['editar'])){
+        $id = $_POST['editar'];
+        $sql = "SELECT * FROM mandantes_cargos WHERE id= ".$id." ";
+        $rc = $conexion->query($sql);
+        if ($rc && $rc->num_rows > 0){
+            while($r = $rc->fetch_array()){
                 $tipo = $r['tipo'];
-                echo "<center>";
-            //and idmandante=".$idmandante." and idcolonia=".$idcolonia." and idmunicipio=".$idmunicipio."
-                if($tipo == 1 ){
-                    
-                        echo "<form id='mandato' id='mandato' action='mandantes_pago.php?idmandante=".$idmandante."&idcolonia=".$idcolonia."&idmunicipio=".$idmunicipio."' method='POST' >";
-                       
-                            echo "<input type='hidden' name='id' id='id' value='".$r['id']."'>";
-                            echo "<div id='fechaMan' name='fechaMan' > ";
-                                echo "<label>Fecha del mandato</label>";
-                                echo "<input type='date' name='fechaMan' id='fechaMan' value='".$r['fecha_mandato']."'>";
-                            echo "</div>";
-                            /*echo "<div>";
-                                echo "<label>Fecha del convenio tripartita</label>";
-                                echo "<input type='date' name='fechaTri' id='fechaTri' required>";
-                            echo "</div>";*/
-                            
-                            echo "<div id='pcredito' >";
-                                echo "<label>Plazo de crédito</label>";
-                                echo "<input type='text' placeholder='mensualidades' name='plazoCredito' id='plazoCredito' value='".$r['plazo_credito']."'>";
-                            echo "</div>";
-                            echo "<div id='costoLotes' >";
-                                echo "<label>Costo lotes</label>";
-                                echo "<input type='number' step='any' placeholder='costo lotes $' name='costoLotes' id='costoLotes' value='".$r['costo_lotes']."'>";
-                            echo "</div>";
-                            echo "<div id='costom2' >";
-                                echo "<label>Costo lote por metro cuadrado</label>";
-                                echo "<input type='number' step='any' placeholder='costo lotes X metro cuadrado' name='LoteM2' id='LoteM2' value='".$r['costo_pormetro']."'>";
-                            echo "</div>";
-                            echo "<div id='suptotal' >";
-                                echo "<label>Superficie total</label>";
-                                echo "<input type='text' placeholder='MTS' name='superficie' id='superficie' value='".$r['superficie']."'>";
-                            echo "</div>";
-                            echo "<div id='supcomer' >";
-                                echo "<label>Superficie para comercializar</label>";
-                                echo "<input type='text' placeholder='MTS' name='supComercializar' id='supComercializar' value='".$r['superficie_comercializar']."'>";
-                            echo "</div>";
-                        
-                            echo "<div id='porAmorAnt' >";
-                            echo "<label>Amortización anticipio</label>";
-                            echo "<input type='text'  name='porAmorAnt' id='porAmorAnt' value='".$r['amortizacion_anticipo']."'>";
-                            echo "</div>";
-                    
-
-                            echo "<div id='pmandante' >";
-                                echo "<label>Porcentaje Mandante</label>";
-                                echo "<input type='number' step='any' placeholder='%' name='porMan' id='porMan' value='".$r['porcentaje_mandante']."'>";
-                            echo "</div>";
-                            echo "<div id='pitavu' >";
-                                echo "<label>Porcentaje ITAVU</label>";
-                                echo "<input type='number' step='any' placeholder='%' name='porItavu' id='porItavu' value='".$r['porcentaje_itavu']."'>";
-                            echo "</div>";
-
-                            echo "<div id='pesc' >";
-                            echo "<label>Porcentaje Escrituracion</label>";// value='".$r['porcentaje_esc']."'
-                            echo "<input type='number' step='any' placeholder='%' name='porEsc' id='porEsc'  value='".$r['porcentaje_escrituracion']."'>";
-                            echo "</div>";
-
-                            echo "<div id='paTotal' >";
-                                echo "<label>Pago total al mandante de acuerdo al contrato</label>";
-                                echo "<input type='number' step='any' placeholder='$0.00' name='monpagar' id='monpagar' value='".$r['monto_pagar']."'>";
-                            echo "</div>";
-                            echo "<div id='paComer' >";
-                                echo "<label>Recuperación total de acuerdo a la tabla de comercialización</label>";
-                                echo "<input type='number' step='any' placeholder='$0.00' name='monpagarComer' id='monpagarComer' value='".$r['monto_pagarcomercializacion']."'>";
-                            echo "</div>";
-                            
-                                                
-                            //echo "<div>";
-                                echo "<center><table style='width:80%;'>";
-                                echo "<td>";
-                                    echo "<label>Lotes para donación</label>";
-                                    echo "<input type='number' step='any' placeholder='lotes para donacion' name='lotesdonacion' id='lotesdonacion' value='".$r['donacion']."'>";
-                                echo "</td>";
-                                echo "<td>";
-                                    echo "<label>Lotes de área verde</label>";
-                                    echo "<input type='number' step='any' placeholder='lotes área verde' name='lotesareav' id='lotesareav' value='".$r['area_verde']."'>";
-                                echo "</td>";
-                            //echo "</div>";
-                            //echo "<div>";
-                                echo "<td>";
-                                    echo "<label>Lotes equipamiento urbano</label>";
-                                    echo "<input type='number' step='any' placeholder='lotes eq. urbano' name='loteseq' id='loteseq' value='".$r['equi_urbano']."'>";
-                                echo "</td>";
-                                    //echo "</div>";
-                            // echo "<div>";
-                                echo "<td>";  
-                                    echo "<label>Lotes Reserva del Mandante</label>";
-                                    echo "<input type='number' step='any' placeholder='lotes de reserva del mandante' name='lotesreserva' id='lotesreserva' value='".$r['reserva_mandante']."'>";
-                                echo "</td>";
-                            echo "</table></center>";
-                            //echo "</div>";
-        
-                            //--------------------------------------
-                            echo "<div id='programaLotes' >";
-                                echo "<label><b>Programa Lotes</b></label><BR>";
-                                echo "<div>";
-                                    echo "<label>Total lotes</label>";
-                                    echo "<input type='number' step='any' placeholder='' name='totLotesL' id='totLotesL' value='".$r['total_lotesLotes']."'>";
-                                echo "</div>";
-                                echo "<div>";
-                                    echo "<label>Lotes para comercializar</label>";
-                                    echo "<input type='number' step='any' placeholder='' name='lotesXComercialzarL' id='lotesXComercialzarL' value='".$r['lotes_porcomercializarLotes']."'>";
-                                echo "</div>";
-                                echo "<div>";
-                                    echo "<label>Lotes contratados</label>";
-                                    echo "<input type='number' step='any' placeholder='' name='lotesConL' id='lotesConL' value='".$r['lotes_contratadosLotes']."'>";
-                                echo "</div>";
-                                echo "<div>";
-                                    echo "<label>Lotes sin contrato</label>";
-                                    echo "<input type='number' step='any' placeholder='' name='lotesSinConL' id='lotesSinConL' value='".$r['lotes_sincontratoLotes']."'>";
-                                echo "</div>";
-                            echo "</div>";
-                            
-                            //-------------------------------------------
-                            echo "<div id='programaSuelo' >";
-                                echo "<label><b>Programa Suelo Legal</b></label><br>";
-                                echo "<div>";
-                                    echo "<label>Total lotes</label>";
-                                    echo "<input type='number' step='any' placeholder='' name='totLotesS' id='totLotesS' value='".$r['total_lotesSuelo']."'>";
-                                echo "</div>";                       
-                                echo "<div>";
-                                 echo "<label>Lotes para comercializar</label>";
-                                    echo "<input type='number' step='any' placeholder='' name='lotesXComercialzarS' id='lotesXComercialzarS' value='".$r['lotes_porcomercializarSuelo']."'>";
-                                echo "</div>";
-                                echo "<div>";
-                                    echo "<label>Lotes contratados</label>";
-                                    echo "<input type='number' step='any' placeholder='' name='lotesConS' id='lotesConS' value='".$r['lotes_contratadosSuelo']."'>";
-                                echo "</div>";
-                                echo "<div>";
-                                    echo "<label>Lotes sin contrato</label>";
-                                    echo "<input type='number' step='any' placeholder='' name='lotesSinConS' id='lotesSinConS' value='".$r['lotes_sincontratoSuelo']."'>";
-                                echo "</div>";
+    ?>
+                <div class="cd-card-section">
+                    <div class="cd-card-header cd-card-header-primary">
+                        <h3 class="cd-card-title">
+                            <i class="fa-solid fa-pen-to-square"></i> Modificar <?php echo ($tipo == 1) ? 'Mandato' : 'Adendum'; ?>
+                        </h3>
+                    </div>
+                    <div class="cd-card-body">
+                        <?php if($tipo == 1): ?>
+                            <form id="mandato" action="mandantes_pago.php?idmandante=<?php echo $idmandante; ?>&idcolonia=<?php echo $idcolonia; ?>&idmunicipio=<?php echo $idmunicipio; ?>" method="POST">
+                                <input type="hidden" name="id" value="<?php echo $r['id']; ?>">
+                                <input type="hidden" name="editar" value="1">
                                 
-                            echo "</div>";
-                            echo "<br>";
-                            echo "<div style='width:100%;'>";
-                                echo "<label>Observaciones: </label>";
-                                echo "<textarea name='observaciones' id='observaciones'>".$r['observaciones']."</textarea>";
-                            echo "</div>";
-                            
-        
-                            echo "<div id='guardar' >";
-                                echo "<input class='Mbtn btn-danger' type='submit' id='editar' name='editar' value='Guardar' style='width:50%;'>";
-                            echo "</div>";
-                        echo "<br><br>";
-                        
-                        echo "</form>";
-                    
-                }else{
-                    
-                        echo "<form id='adendum' action='mandantes_pago.php?idmandante=".$idmandante."&idcolonia=".$idcolonia."&idmunicipio=".$idmunicipio."' method='POST' >";
-                            
-                                /*echo "<div>";
-                                    echo "<label>Fecha del convenio tripartita</label>";
-                                    echo "<input type='date' name='fechaTri' id='fechaTri' required>";
-                                echo "</div>";*/
-                                echo "<input type='hidden' name='id' id='id' value='".$r['id']."'>";
-                                echo "<div id='fechaAdendum' >";
-                                    echo "<label>Fecha adendum</label>";
-                                    echo "<input type='date' name='fechaAdendum' id='fechaAdendum' value='".$r['fecha_adendum']."'>";
-                                echo "</div>";
-                                echo "<div id='fechaFiniquito' >";
-                                    echo "<label>Fecha adendum finiquito</label>";
-                                    
-                                    echo "<input type='date' name='fechaAdendumFiniquito' id='fechaAdendumFiniquito' value='".$r['fecha_adendumfiniquito']."'>";
-                                echo "</div>";
-                                echo "<div id='pcredito' >";
-                                    echo "<label>Plazo de crédito</label>";
-                                    echo "<input type='text' placeholder='mensualidades' name='plazoCredito' id='plazoCredito' value='".$r['plazo_credito']."'>";
-                                echo "</div>";
-                                echo "<div id='costoLotes' >";
-                                    echo "<label>Costo lotes</label>";
-                                    echo "<input type='number' step='any' placeholder='costo lotes $' name='costoLotes' id='costoLotes' value='".$r['costo_lotes']."'>";
-                                echo "</div>";
-                                echo "<div id='costom2' >";
-                                    echo "<label>Costo lote por metro cuadrado</label>";
-                                    echo "<input type='number' step='any' placeholder='costo lotes X metro cuadrado' name='LoteM2' id='LoteM2' value='".$r['costo_pormetro']."'>";
-                                echo "</div>";
-                                echo "<div id='suptotal' >";
-                                    echo "<label>Superficie total</label>";
-                                    echo "<input type='text' placeholder='MTS' name='superficie' id='superficie' value='".$r['superficie']."'>";
-                                echo "</div>";
-                                echo "<div id='supcomer' >";
-                                    echo "<label>Superficie para comercializar</label>";
-                                    echo "<input type='text' placeholder='MTS' name='supComercializar' id='supComercializar' value='".$r['superficie_comercializar']."'>";
-                                echo "</div>";
-                                
+                                <div class="cd-form-grid-3">
+                                    <div class="cd-form-group">
+                                        <label class="cd-form-label"><i class="fa-regular fa-calendar"></i> Fecha del Mandato</label>
+                                        <input type="date" name="fechaMan" value="<?php echo $r['fecha_mandato']; ?>" class="cd-form-control" required>
+                                    </div>
+                                    <div class="cd-form-group">
+                                        <label class="cd-form-label"><i class="fa-solid fa-clock"></i> Plazo de Crédito</label>
+                                        <input type="text" placeholder="Mensualidades" name="plazoCredito" value="<?php echo htmlspecialchars($r['plazo_credito']); ?>" class="cd-form-control">
+                                    </div>
+                                    <div class="cd-form-group">
+                                        <label class="cd-form-label"><i class="fa-solid fa-dollar-sign"></i> Costo Lotes</label>
+                                        <input type="number" step="any" placeholder="$" name="costoLotes" value="<?php echo $r['costo_lotes']; ?>" class="cd-form-control">
+                                    </div>
+                                </div>
 
-                                echo "<div id='porAmorAnt' >";
-                                echo "<label>Amortización anticipio</label>";
-                                echo "<input type='text'  name='porAmorAnt' id='porAmorAnt' value='".$r['amortizacion_anticipo']."'>";
-                                echo "</div>";
+                                <div class="cd-form-grid-3">
+                                    <div class="cd-form-group">
+                                        <label class="cd-form-label"><i class="fa-solid fa-ruler-combined"></i> Costo m²</label>
+                                        <input type="number" step="any" placeholder="$ X m²" name="LoteM2" value="<?php echo $r['costo_pormetro']; ?>" class="cd-form-control">
+                                    </div>
+                                    <div class="cd-form-group">
+                                        <label class="cd-form-label"><i class="fa-solid fa-chart-area"></i> Superficie Total (m²)</label>
+                                        <input type="text" placeholder="m²" name="superficie" value="<?php echo htmlspecialchars($r['superficie']); ?>" class="cd-form-control">
+                                    </div>
+                                    <div class="cd-form-group">
+                                        <label class="cd-form-label"><i class="fa-solid fa-store"></i> Superficie Comercializar</label>
+                                        <input type="text" placeholder="m²" name="supComercializar" value="<?php echo htmlspecialchars($r['superficie_comercializar']); ?>" class="cd-form-control">
+                                    </div>
+                                </div>
 
-                                echo "<div id='pmandante' >";
-                                    echo "<label>Porcentaje Mandante</label>";
-                                    echo "<input type='number' step='any' placeholder='%' name='porMan' id='porMan' value='".$r['porcentaje_mandante']."'>";
-                                echo "</div>";
-                                echo "<div id='pitavu' >";
-                                    echo "<label>Porcentaje ITAVU</label>";
-                                    echo "<input type='number' step='any' placeholder='%' name='porItavu' id='porItavu' value='".$r['porcentaje_itavu']."'>";
-                                echo "</div>";
+                                <div class="cd-form-grid-3">
+                                    <div class="cd-form-group">
+                                        <label class="cd-form-label"><i class="fa-solid fa-percent"></i> % Mandante</label>
+                                        <input type="number" step="any" placeholder="%" name="porMan" value="<?php echo $r['porcentaje_mandante']; ?>" class="cd-form-control">
+                                    </div>
+                                    <div class="cd-form-group">
+                                        <label class="cd-form-label"><i class="fa-solid fa-percent"></i> % ITAVU</label>
+                                        <input type="number" step="any" placeholder="%" name="porItavu" value="<?php echo $r['porcentaje_itavu']; ?>" class="cd-form-control">
+                                    </div>
+                                    <div class="cd-form-group">
+                                        <label class="cd-form-label"><i class="fa-solid fa-percent"></i> % Escrituración</label>
+                                        <input type="number" step="any" placeholder="%" name="porEsc" value="<?php echo $r['porcentaje_escrituracion']; ?>" class="cd-form-control">
+                                    </div>
+                                </div>
 
-                                echo "<div id='pesc' >";
-                                echo "<label>Porcentaje Escrituracion</label>";// value='".$r['porcentaje_esc']."'
-                                echo "<input type='number' step='any' placeholder='%' name='porEsc' id='porEsc' value='".$r['porcentaje_escrituracion']."'>";
-                                echo "</div>";
+                                <div class="cd-form-grid">
+                                    <div class="cd-form-group">
+                                        <label class="cd-form-label"><i class="fa-solid fa-hand-holding-dollar"></i> Amortización Anticipo</label>
+                                        <input type="text" name="porAmorAnt" value="<?php echo htmlspecialchars($r['amortizacion_anticipo']); ?>" class="cd-form-control">
+                                    </div>
+                                    <div class="cd-form-group">
+                                        <label class="cd-form-label"><i class="fa-solid fa-money-bill-wave"></i> Pago Total Contrato</label>
+                                        <input type="number" step="any" placeholder="$0.00" name="monpagar" value="<?php echo $r['monto_pagar']; ?>" class="cd-form-control">
+                                    </div>
+                                </div>
 
-                                echo "<div id='paTotal' >";
-                                    echo "<label>Pago total al mandante de acuerdo al contrato</label>";
-                                    echo "<input type='number' step='any' placeholder='$0.00' name='monpagar' id='monpagar' value='".$r['monto_pagar']."'>";
-                                echo "</div>";
-                                echo "<div id='paComer' >";
-                                    echo "<label>Recuperación total de acuerdo a la tabla de comercialización</label>";
-                                    echo "<input type='number' step='any' placeholder='$0.00' name='monpagarComer' id='monpagarComer' value='".$r['monto_pagarcomercializacion']."'>";
-                                echo "</div>";
-                                echo "<div id='relleno'>";
-                                    //echo "<label>Relleno</label>";
-                                    //echo "<input type='number' step='any' placeholder='$0.00' name='relleno' id='relleno' required>";
-                                echo "</div>";
-                                //echo "<div>";
-                                    echo "<center><table style='width:80%;'>";
-                                    echo "<td>";
-                                    echo "<label>Lotes para donación</label>";
-                                    echo "<input type='number' step='any' placeholder='lotes para donacion' name='lotesdonacion' id='lotesdonacion' value='".$r['donacion']."'>";
-                                echo "</td>";
-                                    echo "<td>";
-                                        echo "<label>Lotes de área verde</label>";
-                                        echo "<input type='number' step='any' placeholder='lotes área verde' name='lotesareav' id='lotesareav' value='".$r['area_verde']."'>";
-                                    echo "</td>";
-                                //echo "</div>";
-                                //echo "<div>";
-                                    echo "<td>";
-                                        echo "<label>Lotes equipamiento urbano</label>";
-                                        echo "<input type='number' step='any' placeholder='lotes eq. urbano' name='loteseq' id='loteseq' value='".$r['equi_urbano']."'>";
-                                    echo "</td>";
-                                        //echo "</div>";
-                                // echo "<div>";
-                                    echo "<td>";  
-                                        echo "<label>Lotes Reserva del Mandante</label>";
-                                        echo "<input type='number' step='any' placeholder='lotes de reserva del mandante' name='lotesreserva' id='lotesreserva' value='".$r['reserva_mandante']."'>";
-                                    echo "</td>";
-                                echo "</table></center>";
-                                //echo "</div>";
-            
-                                
-                                
-                                //--------------------------------------
-                                echo "<div id='programaLotes' >";
-                                    echo "<label><b>Programa Lotes</b></label><br>";
-                                    echo "<div>";
-                                        echo "<label>Total lotes</label>";
-                                        echo "<input type='number' step='any' placeholder='' name='totLotesL' id='totLotesL' value='".$r['total_lotesLotes']."'>";
-                                    echo "</div>";
-                                    echo "<div>";
-                                    echo "<label>Lotes para comercializar</label>";
-                                    echo "<input type='number' step='any' placeholder='' name='lotesXComercialzarL' id='lotesXComercialzarL' value='".$r['lotes_porcomercializarLotes']."'>";
-                                echo "</div>";
-                                    echo "<div>";
-                                        echo "<label>Lotes contratados</label>";
-                                        echo "<input type='number' step='any' placeholder='' name='lotesConL' id='lotesConL' value='".$r['lotes_contratadosLotes']."'>";
-                                    echo "</div>";
-                                    echo "<div>";
-                                        echo "<label>Lotes sin contrato</label>";
-                                        echo "<input type='number' step='any' placeholder='' name='lotesSinConL' id='lotesSinConL' value='".$r['lotes_sincontratoLotes']."'>";
-                                    echo "</div>";
-                                echo "</div>";
-                                //-------------------------------------------
-                                echo "<div id='programaSuelo'>";
-                                    echo "<label><b>Programa Suelo Legal</b></label><br>";
-                                    echo "<div>";
-                                        echo "<label>Total lotes</label>";
-                                        echo "<input type='number' step='any' placeholder='' name='totLotesS' id='totLotesS' value='".$r['total_lotesSuelo']."'>";
-                                    echo "</div>";
-                                    echo "<div>";
-                                    echo "<label>Lotes para comercializar</label>";
-                                    echo "<input type='number' step='any' placeholder='' name='lotesXComercialzarS' id='lotesXComercialzarS' value='".$r['lotes_porcomercializarSuelo']."'>";
-                                echo "</div>";
-                                    echo "<div>";
-                                        echo "<label>Lotes contratados</label>";
-                                        echo "<input type='number' step='any' placeholder='' name='lotesConS' id='lotesConS' value='".$r['lotes_contratadosSuelo']."'>";
-                                    echo "</div>";
-                                    echo "<div>";
-                                        echo "<label>Lotes sin contrato</label>";
-                                        echo "<input type='number' step='any' placeholder='' name='lotesSinConS' id='lotesSinConS' value='".$r['lotes_sincontratoSuelo']."'>";
-                                    echo "</div>";
-                                echo "</div>";
-                                echo "<br>";
-                                echo "<div style='width:100%;'>";
-                                    echo "<label>Observaciones: </label>";
-                                    echo "<textarea name='observaciones' id='observaciones'>".$r['observaciones']."</textarea>";
-                                echo "</div>";
-            
-                                echo "<div id='guardar' >";
-                                    echo "<input class='Mbtn btn-danger' type='submit' id='editar' name='editar' value='Guardar' style='width:50%;'>";
-                                echo "</div>";
-                            echo "<br><br>";
-                            
-                        echo "</form>";
-                }
-                echo "</center>";
-            }  
-            echo "</div>";
+                                <div class="cd-form-group">
+                                    <label class="cd-form-label"><i class="fa-solid fa-chart-line"></i> Recuperación Tabla Comercialización</label>
+                                    <input type="number" step="any" placeholder="$0.00" name="monpagarComer" value="<?php echo $r['monto_pagarcomercializacion']; ?>" class="cd-form-control">
+                                </div>
+
+                                <div class="cd-form-grid-3">
+                                    <div class="cd-form-group">
+                                        <label class="cd-form-label">Lotes Donación</label>
+                                        <input type="number" step="any" name="lotesdonacion" value="<?php echo $r['donacion']; ?>" class="cd-form-control">
+                                    </div>
+                                    <div class="cd-form-group">
+                                        <label class="cd-form-label">Lotes Área Verde</label>
+                                        <input type="number" step="any" name="lotesareav" value="<?php echo $r['area_verde']; ?>" class="cd-form-control">
+                                    </div>
+                                    <div class="cd-form-group">
+                                        <label class="cd-form-label">Lotes Eq. Urbano</label>
+                                        <input type="number" step="any" name="loteseq" value="<?php echo $r['equi_urbano']; ?>" class="cd-form-control">
+                                    </div>
+                                </div>
+
+                                <div class="cd-form-group">
+                                    <label class="cd-form-label">Lotes Reserva Mandante</label>
+                                    <input type="number" step="any" name="lotesreserva" value="<?php echo $r['reserva_mandante']; ?>" class="cd-form-control">
+                                </div>
+
+                                <!-- Programa Lotes / Suelo Legal -->
+                                <div class="cd-form-grid" style="background:#f8fafc; padding:15px; border-radius:var(--cd-radius-sm); margin-bottom:15px;">
+                                    <div>
+                                        <h4 style="margin:0 0 10px 0; font-size:0.9rem; font-weight:700; color:var(--cd-primary);">Programa Lotes</h4>
+                                        <div class="cd-form-group"><label class="cd-form-label">Total</label><input type="number" name="totLotesL" value="<?php echo $r['total_lotesLotes']; ?>" class="cd-form-control"></div>
+                                        <div class="cd-form-group"><label class="cd-form-label">Para Comercializar</label><input type="number" name="lotesXComercialzarL" value="<?php echo $r['lotes_porcomercializarLotes']; ?>" class="cd-form-control"></div>
+                                        <div class="cd-form-group"><label class="cd-form-label">Contratados</label><input type="number" name="lotesConL" value="<?php echo $r['lotes_contratadosLotes']; ?>" class="cd-form-control"></div>
+                                        <div class="cd-form-group"><label class="cd-form-label">Sin Contrato</label><input type="number" name="lotesSinConL" value="<?php echo $r['lotes_sincontratoLotes']; ?>" class="cd-form-control"></div>
+                                    </div>
+
+                                    <div>
+                                        <h4 style="margin:0 0 10px 0; font-size:0.9rem; font-weight:700; color:var(--cd-gold-dark);">Programa Suelo Legal</h4>
+                                        <div class="cd-form-group"><label class="cd-form-label">Total</label><input type="number" name="totLotesS" value="<?php echo $r['total_lotesSuelo']; ?>" class="cd-form-control"></div>
+                                        <div class="cd-form-group"><label class="cd-form-label">Para Comercializar</label><input type="number" name="lotesXComercialzarS" value="<?php echo $r['lotes_porcomercializarSuelo']; ?>" class="cd-form-control"></div>
+                                        <div class="cd-form-group"><label class="cd-form-label">Contratados</label><input type="number" name="lotesConS" value="<?php echo $r['lotes_contratadosSuelo']; ?>" class="cd-form-control"></div>
+                                        <div class="cd-form-group"><label class="cd-form-label">Sin Contrato</label><input type="number" name="lotesSinConS" value="<?php echo $r['lotes_sincontratoSuelo']; ?>" class="cd-form-control"></div>
+                                    </div>
+                                </div>
+
+                                <div class="cd-form-group">
+                                    <label class="cd-form-label"><i class="fa-solid fa-comment"></i> Observaciones</label>
+                                    <textarea name="observaciones" class="cd-form-control" style="min-height:80px;"><?php echo htmlspecialchars($r['observaciones']); ?></textarea>
+                                </div>
+
+                                <div style="margin-top:20px; text-align:right;">
+                                    <button type="submit" class="cd-btn cd-btn-primary"><i class="fa-solid fa-floppy-disk"></i> Guardar Mandato</button>
+                                </div>
+                            </form>
+                        <?php else: ?>
+                            <form id="adendum" action="mandantes_pago.php?idmandante=<?php echo $idmandante; ?>&idcolonia=<?php echo $idcolonia; ?>&idmunicipio=<?php echo $idmunicipio; ?>" method="POST">
+                                <input type="hidden" name="id" value="<?php echo $r['id']; ?>">
+                                <input type="hidden" name="editar" value="1">
+
+                                <div class="cd-form-grid-3">
+                                    <div class="cd-form-group">
+                                        <label class="cd-form-label"><i class="fa-regular fa-calendar"></i> Fecha Adendum</label>
+                                        <input type="date" name="fechaAdendum" value="<?php echo $r['fecha_adendum']; ?>" class="cd-form-control" required>
+                                    </div>
+                                    <div class="cd-form-group">
+                                        <label class="cd-form-label"><i class="fa-regular fa-calendar-check"></i> Fecha Adendum Finiquito</label>
+                                        <input type="date" name="fechaAdendumFiniquito" value="<?php echo $r['fecha_adendumfiniquito']; ?>" class="cd-form-control">
+                                    </div>
+                                    <div class="cd-form-group">
+                                        <label class="cd-form-label"><i class="fa-solid fa-clock"></i> Plazo de Crédito</label>
+                                        <input type="text" placeholder="Mensualidades" name="plazoCredito" value="<?php echo htmlspecialchars($r['plazo_credito']); ?>" class="cd-form-control">
+                                    </div>
+                                </div>
+
+                                <div class="cd-form-grid-3">
+                                    <div class="cd-form-group">
+                                        <label class="cd-form-label"><i class="fa-solid fa-dollar-sign"></i> Costo Lotes</label>
+                                        <input type="number" step="any" placeholder="$" name="costoLotes" value="<?php echo $r['costo_lotes']; ?>" class="cd-form-control">
+                                    </div>
+                                    <div class="cd-form-group">
+                                        <label class="cd-form-label"><i class="fa-solid fa-ruler-combined"></i> Costo m²</label>
+                                        <input type="number" step="any" placeholder="$ X m²" name="LoteM2" value="<?php echo $r['costo_pormetro']; ?>" class="cd-form-control">
+                                    </div>
+                                    <div class="cd-form-group">
+                                        <label class="cd-form-label"><i class="fa-solid fa-chart-area"></i> Superficie Total (m²)</label>
+                                        <input type="text" placeholder="m²" name="superficie" value="<?php echo htmlspecialchars($r['superficie']); ?>" class="cd-form-control">
+                                    </div>
+                                </div>
+
+                                <div class="cd-form-grid-3">
+                                    <div class="cd-form-group">
+                                        <label class="cd-form-label"><i class="fa-solid fa-store"></i> Superficie Comercializar</label>
+                                        <input type="text" placeholder="m²" name="supComercializar" value="<?php echo htmlspecialchars($r['superficie_comercializar']); ?>" class="cd-form-control">
+                                    </div>
+                                    <div class="cd-form-group">
+                                        <label class="cd-form-label"><i class="fa-solid fa-percent"></i> % Mandante</label>
+                                        <input type="number" step="any" placeholder="%" name="porMan" value="<?php echo $r['porcentaje_mandante']; ?>" class="cd-form-control">
+                                    </div>
+                                    <div class="cd-form-group">
+                                        <label class="cd-form-label"><i class="fa-solid fa-percent"></i> % ITAVU</label>
+                                        <input type="number" step="any" placeholder="%" name="porItavu" value="<?php echo $r['porcentaje_itavu']; ?>" class="cd-form-control">
+                                    </div>
+                                </div>
+
+                                <div class="cd-form-grid">
+                                    <div class="cd-form-group">
+                                        <label class="cd-form-label"><i class="fa-solid fa-percent"></i> % Escrituración</label>
+                                        <input type="number" step="any" placeholder="%" name="porEsc" value="<?php echo $r['porcentaje_escrituracion']; ?>" class="cd-form-control">
+                                    </div>
+                                    <div class="cd-form-group">
+                                        <label class="cd-form-label"><i class="fa-solid fa-hand-holding-dollar"></i> Amortización Anticipo</label>
+                                        <input type="text" name="porAmorAnt" value="<?php echo htmlspecialchars($r['amortizacion_anticipo']); ?>" class="cd-form-control">
+                                    </div>
+                                </div>
+
+                                <div class="cd-form-grid">
+                                    <div class="cd-form-group">
+                                        <label class="cd-form-label"><i class="fa-solid fa-money-bill-wave"></i> Pago Total Contrato</label>
+                                        <input type="number" step="any" placeholder="$0.00" name="monpagar" value="<?php echo $r['monto_pagar']; ?>" class="cd-form-control">
+                                    </div>
+                                    <div class="cd-form-group">
+                                        <label class="cd-form-label"><i class="fa-solid fa-chart-line"></i> Recuperación Tabla Comercialización</label>
+                                        <input type="number" step="any" placeholder="$0.00" name="monpagarComer" value="<?php echo $r['monto_pagarcomercializacion']; ?>" class="cd-form-control">
+                                    </div>
+                                </div>
+
+                                <div class="cd-form-grid-3">
+                                    <div class="cd-form-group"><label class="cd-form-label">Lotes Donación</label><input type="number" step="any" name="lotesdonacion" value="<?php echo $r['donacion']; ?>" class="cd-form-control"></div>
+                                    <div class="cd-form-group"><label class="cd-form-label">Lotes Área Verde</label><input type="number" step="any" name="lotesareav" value="<?php echo $r['area_verde']; ?>" class="cd-form-control"></div>
+                                    <div class="cd-form-group"><label class="cd-form-label">Lotes Eq. Urbano</label><input type="number" step="any" name="loteseq" value="<?php echo $r['equi_urbano']; ?>" class="cd-form-control"></div>
+                                </div>
+
+                                <div class="cd-form-group">
+                                    <label class="cd-form-label">Lotes Reserva Mandante</label>
+                                    <input type="number" step="any" name="lotesreserva" value="<?php echo $r['reserva_mandante']; ?>" class="cd-form-control">
+                                </div>
+
+                                <!-- Programa Lotes / Suelo Legal -->
+                                <div class="cd-form-grid" style="background:#f8fafc; padding:15px; border-radius:var(--cd-radius-sm); margin-bottom:15px;">
+                                    <div>
+                                        <h4 style="margin:0 0 10px 0; font-size:0.9rem; font-weight:700; color:var(--cd-primary);">Programa Lotes</h4>
+                                        <div class="cd-form-group"><label class="cd-form-label">Total</label><input type="number" name="totLotesL" value="<?php echo $r['total_lotesLotes']; ?>" class="cd-form-control"></div>
+                                        <div class="cd-form-group"><label class="cd-form-label">Para Comercializar</label><input type="number" name="lotesXComercialzarL" value="<?php echo $r['lotes_porcomercializarLotes']; ?>" class="cd-form-control"></div>
+                                        <div class="cd-form-group"><label class="cd-form-label">Contratados</label><input type="number" name="lotesConL" value="<?php echo $r['lotes_contratadosLotes']; ?>" class="cd-form-control"></div>
+                                        <div class="cd-form-group"><label class="cd-form-label">Sin Contrato</label><input type="number" name="lotesSinConL" value="<?php echo $r['lotes_sincontratoLotes']; ?>" class="cd-form-control"></div>
+                                    </div>
+
+                                    <div>
+                                        <h4 style="margin:0 0 10px 0; font-size:0.9rem; font-weight:700; color:var(--cd-gold-dark);">Programa Suelo Legal</h4>
+                                        <div class="cd-form-group"><label class="cd-form-label">Total</label><input type="number" name="totLotesS" value="<?php echo $r['total_lotesSuelo']; ?>" class="cd-form-control"></div>
+                                        <div class="cd-form-group"><label class="cd-form-label">Para Comercializar</label><input type="number" name="lotesXComercialzarS" value="<?php echo $r['lotes_porcomercializarSuelo']; ?>" class="cd-form-control"></div>
+                                        <div class="cd-form-group"><label class="cd-form-label">Contratados</label><input type="number" name="lotesConS" value="<?php echo $r['lotes_contratadosSuelo']; ?>" class="cd-form-control"></div>
+                                        <div class="cd-form-group"><label class="cd-form-label">Sin Contrato</label><input type="number" name="lotesSinConS" value="<?php echo $r['lotes_sincontratoSuelo']; ?>" class="cd-form-control"></div>
+                                    </div>
+                                </div>
+
+                                <div class="cd-form-group">
+                                    <label class="cd-form-label"><i class="fa-solid fa-comment"></i> Observaciones</label>
+                                    <textarea name="observaciones" class="cd-form-control" style="min-height:80px;"><?php echo htmlspecialchars($r['observaciones']); ?></textarea>
+                                </div>
+
+                                <div style="margin-top:20px; text-align:right;">
+                                    <button type="submit" class="cd-btn cd-btn-primary"><i class="fa-solid fa-floppy-disk"></i> Guardar Adendum</button>
+                                </div>
+                            </form>
+                        <?php endif; ?>
+                    </div>
+                </div>
+    <?php
+            }
         }
-
-        if(isset($_GET['nuevo'])){
-
-            echo "<div id='registroCargo' class='nuevoCargo'>";
-            echo "<center>";
-                echo "<label>Tipo de cargo:";
-                    echo "<select id='cargo' name='cargo' >";
-                        echo "<option >Seleccione una opción...</option>";
-                        echo "<option value='1'>MANDATO</option>";
-                        echo "<option value='2'>ADENDUM</option>";
-                    echo "</select>";
-                echo "</label>";
-    
-               echo "<form id='mandato' style='display:none;' action='mandantes_pago.php?idmandante=".$idmandante."&idcolonia=".$idcolonia."&idmunicipio=".$idmunicipio."' method='POST'>";
-                       
-                        echo "<div id='fechaMan' > ";
-                            echo "<label>Fecha del mandato</label>";
-                            echo "<input type='date' name='fechaMan' id='fechaMan' required>";
-                        echo "</div>";
-                        /*echo "<div>";
-                            echo "<label>Fecha del convenio tripartita</label>";
-                            echo "<input type='date' name='fechaTri' id='fechaTri' required>";
-                        echo "</div>";*/
-                        
-                        echo "<div id='pcredito' >";
-                            echo "<label>Plazo de crédito</label>";
-                            echo "<input type='text' placeholder='mensualidades' name='plazoCredito' id='plazoCredito' required>";
-                        echo "</div>";
-                        echo "<div id='costoLotes' >";
-                            echo "<label>Costo lotes</label>";
-                            echo "<input type='number' step='any' placeholder='costo lotes $' name='costoLotes' id='costoLotes' required>";
-                        echo "</div>";
-                        echo "<div id='costom2' >";
-                            echo "<label>Costo lote por metro cuadrado</label>";
-                            echo "<input type='number' step='any' placeholder='costo lotes X metro cuadrado' name='LoteM2' id='LoteM2' required>";
-                        echo "</div>";
-                        echo "<div id='suptotal' >";
-                            echo "<label>Superficie total</label>";
-                            echo "<input type='text' placeholder='MTS' name='superficie' id='superficie' required>";
-                        echo "</div>";
-                        echo "<div id='supcomer' >";
-                            echo "<label>Superficie para comercializar</label>";
-                            echo "<input type='text' placeholder='MTS' name='supComercializar' id='supComercializar' required>";
-                        echo "</div>";
-
-                        echo "<div id='porAmorAnt' >";
-                        echo "<label>Amortización anticipio</label>";
-                        echo "<input type='text'  name='porAmorAnt' id='porAmorAnt' required>";
-                        echo "</div>";
-                       
-                        echo "<div id='pmandante' >";
-                            echo "<label>Porcentaje Mandante</label>";
-                            echo "<input type='number' step='any' placeholder='%' name='porMan' id='porMan' required>";
-                        echo "</div>";
-                        echo "<div id='pitavu' >";
-                            echo "<label>Porcentaje ITAVU</label>";
-                            echo "<input type='number' step='any' placeholder='%' name='porItavu' id='porItavu' required>";
-                        echo "</div>";
-
-                        echo "<div id='pesc' >";
-                        echo "<label>Porcentaje Escrituracion</label>";
-                        echo "<input type='number' step='any' placeholder='%' name='porEsc' id='porEsc' required>";
-                        echo "</div>";
-
-                        echo "<div id='paTotal' >";
-                            echo "<label>Pago total al mandante de acuerdo al contrato</label>";
-                            echo "<input type='number' step='any' placeholder='$0.00' name='monpagar' id='monpagar' required>";
-                        echo "</div>";
-                        echo "<div id='paComer' >";
-                            echo "<label>Recuperación total de acuerdo a la tabla de comercialización</label>";
-                            echo "<input type='number' step='any' placeholder='$0.00' name='monpagarComer' id='monpagarComer' required>";
-                        echo "</div>";
-                         
-                                            
-                        //echo "<div>";
-                            echo "<center><table style='width:80%;'>";
-                            echo "<td>";
-                            echo "<label>Lotes para donación</label>";
-                            echo "<input type='number' step='any' placeholder='lotes para donacion' name='lotesdonacion' id='lotesdonacion' >";
-                        echo "</td>";
-                            echo "<td>";
-                                echo "<label>Lotes de área verde</label>";
-                                echo "<input type='number' step='any' placeholder='lotes área verde' name='lotesareav' id='lotesareav'>";
-                            echo "</td>";
-                        //echo "</div>";
-                        //echo "<div>";
-                            echo "<td>";
-                                echo "<label>Lotes equipamiento urbano</label>";
-                                echo "<input type='number' step='any' placeholder='lotes eq. urbano' name='loteseq' id='loteseq'>";
-                            echo "</td>";
-                                //echo "</div>";
-                        // echo "<div>";
-                            echo "<td>";  
-                                echo "<label>Lotes Reserva del Mandante</label>";
-                                echo "<input type='number' step='any' placeholder='lotes de reserva del mandante' name='lotesreserva' id='lotesreserva'>";
-                            echo "</td>";
-                        echo "</table></center>";
-                        //echo "</div>";
-    
-                        //--------------------------------------
-                        echo "<div id='programaLotes' >";
-                            echo "<label><b>Programa Lotes</b></label><br>";
-                            echo "<div>";
-                                echo "<label>Total lotes</label>";
-                                echo "<input type='number' step='any' placeholder='' name='totLotesL' id='totLotesL'>";
-                            echo "</div>";
-                            echo "<div>";
-                                    echo "<label>Lotes para comercializar</label>";
-                                    echo "<input type='number' step='any' placeholder='' name='lotesXComercialzarL' id='lotesXComercialzarL' >";
-                                echo "</div>";
-                            echo "<div>";
-                                echo "<label>Lotes contratados</label>";
-                                echo "<input type='number' step='any' placeholder='' name='lotesConL' id='lotesConL'>";
-                            echo "</div>";
-                            echo "<div>";
-                                echo "<label>Lotes sin contrato</label>";
-                                echo "<input type='number' step='any' placeholder='' name='lotesSinConL' id='lotesSinConL'>";
-                            echo "</div>";
-                        echo "</div>";
-                           
-                        //-------------------------------------------
-                        echo "<div id='programaSuelo' >";
-                            echo "<label><b>Programa Suelo Legal</b></label><br>";
-                            echo "<div>";
-                                echo "<label>Total lotes</label>";
-                                echo "<input type='number' step='any' placeholder='' name='totLotesS' id='totLotesS'>";
-                            echo "</div>";
-                            echo "<div>";
-                                    echo "<label>Lotes para comercializar</label>";
-                                    echo "<input type='number' step='any' placeholder='' name='lotesXComercialzarS' id='lotesXComercialzarS'>";
-                                echo "</div>";
-                            echo "<div>";
-                                echo "<label>Lotes contratados</label>";
-                                echo "<input type='number' step='any' placeholder='' name='lotesConS' id='lotesConS'>";
-                            echo "</div>";
-                            echo "<div>";
-                                echo "<label>Lotes sin contrato</label>";
-                                echo "<input type='number' step='any' placeholder='' name='lotesSinConS' id='lotesSinConS'>";
-                            echo "</div>";
-                            
-                        echo "</div>";
-                        echo "<br>";
-                        echo "<div style='width:100%;'>";
-                            echo "<label>Observaciones: </label>";
-                            echo "<textarea name='observaciones' id='observaciones'></textarea>";
-                        echo "</div>";
-                        
-    
-                        echo "<div id='guardar' >";
-                            echo "<input class='Mbtn btn-danger' type='submit' id='guardar' name='guardar' value='Guardar' style='width:50%;'>";
-                        echo "</div>";
-                    echo "<br><br>";
-                    
-                echo "</form>";
-    
-                echo "<form id='adendum' style='display:none;' action='mandantes_pago.php?idmandante=".$idmandante."&idcolonia=".$idcolonia."&idmunicipio=".$idmunicipio."' method='POST' >";
-                       
-                        /*echo "<div>";
-                            echo "<label>Fecha del convenio tripartita</label>";
-                            echo "<input type='date' name='fechaTri' id='fechaTri' required>";
-                        echo "</div>";*/
-                        echo "<div id='fechaAdendum' >";
-                            echo "<label>Fecha adendum</label>";
-                            echo "<input type='date' name='fechaAdendum' id='fechaAdendum' required>";
-                        echo "</div>";
-                        echo "<div id='fechaFiniquito' >";
-                            echo "<label>Fecha adendum finiquito</label>";
-                            echo "<input type='date' name='fechaAdendumFiniquito' id='fechaAdendumFiniquito'>";
-                        echo "</div>";
-                        echo "<div id='pcredito' >";
-                            echo "<label>Plazo de crédito</label>";
-                            echo "<input type='text' placeholder='mensualidades' name='plazoCredito' id='plazoCredito' required>";
-                        echo "</div>";
-                        echo "<div id='costoLotes' >";
-                            echo "<label>Costo lotes</label>";
-                            echo "<input type='number' step='any' placeholder='costo lotes $' name='costoLotes' id='costoLotes' required>";
-                        echo "</div>";
-                        echo "<div id='costom2' >";
-                            echo "<label>Costo lote por metro cuadrado</label>";
-                            echo "<input type='number' step='any' placeholder='costo lotes X metro cuadrado' name='LoteM2' id='LoteM2' required>";
-                        echo "</div>";
-                        echo "<div id='suptotal' >";
-                            echo "<label>Superficie total</label>";
-                            echo "<input type='text' placeholder='MTS' name='superficie' id='superficie' required>";
-                        echo "</div>";
-                        echo "<div id='supcomer' >";
-                            echo "<label>Superficie para comercializar</label>";
-                            echo "<input type='text' placeholder='MTS' name='supComercializar' id='supComercializar' required>";
-                        echo "</div>";
-                        
-                        echo "<div id='pmandante' >";
-                            echo "<label>Porcentaje Mandante</label>";
-                            echo "<input type='number' step='any' placeholder='%' name='porMan' id='porMan' required>";
-                        echo "</div>";
-                        echo "<div id='pitavu' >";
-                            echo "<label>Porcentaje ITAVU</label>";
-                            echo "<input type='number' step='any' placeholder='%' name='porItavu' id='porItavu' required>";
-                        echo "</div>";
-                        echo "<div id='pesc' >";
-                        echo "<label>Porcentaje Escrituracion</label>";
-                        echo "<input type='number' step='any' placeholder='%' name='porEsc' id='porEsc' required>";
-                        echo "</div>";
-
-                        echo "<div id='paTotal' >";
-                            echo "<label>Pago total al mandante de acuerdo al contrato</label>";
-                            echo "<input type='number' step='any' placeholder='$0.00' name='monpagar' id='monpagar' required>";
-                        echo "</div>";
-                        echo "<div id='paComer' >";
-                            echo "<label>Recuperación total de acuerdo a la tabla de comercialización</label>";
-                            echo "<input type='number' step='any' placeholder='$0.00' name='monpagarComer' id='monpagarComer' required>";
-                        echo "</div>";
-                        echo "<div id='relleno'>";
-                            //echo "<label>Relleno</label>";
-                            //echo "<input type='number' step='any' placeholder='$0.00' name='relleno' id='relleno' required>";
-                        echo "</div>";
-                         //echo "<div>";
-                            echo "<center><table style='width:80%;'>";
-                            echo "<td>";
-                            echo "<label>Lotes para donación</label>";
-                            echo "<input type='number' step='any' placeholder='lotes para donacion' name='lotesdonacion' id='lotesdonacion'>";
-                        echo "</td>";
-                            echo "<td>";
-                                echo "<label>Lotes de área verde</label>";
-                                echo "<input type='number' step='any' placeholder='lotes área verde' name='lotesareav' id='lotesareav'>";
-                            echo "</td>";
-                        //echo "</div>";
-                        //echo "<div>";
-                            echo "<td>";
-                                echo "<label>Lotes equipamiento urbano</label>";
-                                echo "<input type='number' step='any' placeholder='lotes eq. urbano' name='loteseq' id='loteseq'>";
-                            echo "</td>";
-                                //echo "</div>";
-                        // echo "<div>";
-                            echo "<td>";  
-                                echo "<label>Lotes Reserva del Mandante</label>";
-                                echo "<input type='number' step='any' placeholder='lotes de reserva del mandante' name='lotesreserva' id='lotesreserva'>";
-                            echo "</td>";
-                        echo "</table></center>";
-                        //echo "</div>";
-    
-                        
-                        
-                        //--------------------------------------
-                        echo "<div id='programaLotes' >";
-                            echo "<label><b>Programa Lotes</b></label><br>";
-                            echo "<div>";
-                                echo "<label>Total lotes</label>";
-                                echo "<input type='number' step='any' placeholder='' name='totLotesL' id='totLotesL'>";
-                            echo "</div>";
-                            echo "<div>";
-                                    echo "<label>Lotes para comercializar</label>";
-                                    echo "<input type='number' step='any' placeholder='' name='lotesXComercialzarL' id='lotesXComercialzarL' >";
-                                echo "</div>";
-                            echo "<div>";
-                                echo "<label>Lotes contratados</label>";
-                                echo "<input type='number' step='any' placeholder='' name='lotesConL' id='lotesConL'>";
-                            echo "</div>";
-                            echo "<div>";
-                                echo "<label>Lotes sin contrato</label>";
-                                echo "<input type='number' step='any' placeholder='' name='lotesSinConL' id='lotesSinConL'>";
-                            echo "</div>";
-                        echo "</div>";
-                        //-------------------------------------------
-                        echo "<div id='programaSuelo'>";
-                            echo "<label><b>Programa Suelo Legal</b></label><br>";
-                            echo "<div>";
-                                echo "<label>Total lotes</label>";
-                                echo "<input type='number' step='any' placeholder='' name='totLotesS' id='totLotesS'>";
-                            echo "</div>";
-                            echo "<div>";
-                                    echo "<label>Lotes para comercializar</label>";
-                                    echo "<input type='number' step='any' placeholder='' name='lotesXComercialzarS' id='lotesXComercialzarS' >";
-                                echo "</div>";
-                            echo "<div>";
-                                echo "<label>Lotes contratados</label>";
-                                echo "<input type='number' step='any' placeholder='' name='lotesConS' id='lotesConS'>";
-                            echo "</div>";
-                            echo "<div>";
-                                echo "<label>Lotes sin contrato</label>";
-                                echo "<input type='number' step='any' placeholder='' name='lotesSinConS' id='lotesSinConS'>";
-                            echo "</div>";
-                        echo "</div>";
-                        echo "<br>";
-                        echo "<div style='width:100%;'>";
-                            echo "<label>Observaciones: </label>";
-                            echo "<textarea name='observaciones' id='observaciones'></textarea>";
-                        echo "</div>";
-    
-                        echo "<div id='guardar' >";
-                            echo "<input class='Mbtn btn-danger' type='submit' id='guardar' name='guardar' value='Guardar' style='width:50%;'>";
-                        echo "</div>";
-                    echo "<br><br>";
-                    
-                echo "</form>";
-                echo "</center>";
-            echo "</div>";
-        }
-       
-
-        
-
     }
 
-    
-    
-   
+    // REGISTRAR NUEVO CARGO O ADENDUM
+    if(isset($_GET['nuevo'])){
+    ?>
+        <div class="cd-card-section">
+            <div class="cd-card-header cd-card-header-primary">
+                <h3 class="cd-card-title">
+                    <i class="fa-solid fa-plus-circle"></i> Registrar Nuevo Cargo o Adendum
+                </h3>
+            </div>
+            <div class="cd-card-body">
+                <div class="cd-form-group" style="margin-bottom:20px;">
+                    <label for="cargo" class="cd-form-label"><i class="fa-solid fa-list-check" style="color:var(--cd-primary);"></i> Seleccione Tipo de Cargo:</label>
+                    <select id="cargo" name="cargo" class="cd-form-control">
+                        <option value="">Seleccione una opción...</option>
+                        <option value="1">MANDATO</option>
+                        <option value="2">ADENDUM</option>
+                    </select>
+                </div>
 
+                <!-- FORM MANDATO -->
+                <form id="mandato" style="display:none;" action="mandantes_pago.php?idmandante=<?php echo $idmandante; ?>&idcolonia=<?php echo $idcolonia; ?>&idmunicipio=<?php echo $idmunicipio; ?>" method="POST">
+                    <input type="hidden" name="guardar" value="1">
+                    
+                    <div class="cd-form-grid-3">
+                        <div class="cd-form-group">
+                            <label class="cd-form-label"><i class="fa-regular fa-calendar"></i> Fecha del Mandato</label>
+                            <input type="date" name="fechaMan" class="cd-form-control" required>
+                        </div>
+                        <div class="cd-form-group">
+                            <label class="cd-form-label"><i class="fa-solid fa-clock"></i> Plazo de Crédito</label>
+                            <input type="text" placeholder="Mensualidades" name="plazoCredito" class="cd-form-control" required>
+                        </div>
+                        <div class="cd-form-group">
+                            <label class="cd-form-label"><i class="fa-solid fa-dollar-sign"></i> Costo Lotes</label>
+                            <input type="number" step="any" placeholder="$" name="costoLotes" class="cd-form-control" required>
+                        </div>
+                    </div>
 
+                    <div class="cd-form-grid-3">
+                        <div class="cd-form-group">
+                            <label class="cd-form-label"><i class="fa-solid fa-ruler-combined"></i> Costo m²</label>
+                            <input type="number" step="any" placeholder="$ X m²" name="LoteM2" class="cd-form-control" required>
+                        </div>
+                        <div class="cd-form-group">
+                            <label class="cd-form-label"><i class="fa-solid fa-chart-area"></i> Superficie Total (m²)</label>
+                            <input type="text" placeholder="m²" name="superficie" class="cd-form-control" required>
+                        </div>
+                        <div class="cd-form-group">
+                            <label class="cd-form-label"><i class="fa-solid fa-store"></i> Superficie Comercializar</label>
+                            <input type="text" placeholder="m²" name="supComercializar" class="cd-form-control" required>
+                        </div>
+                    </div>
 
+                    <div class="cd-form-grid-3">
+                        <div class="cd-form-group">
+                            <label class="cd-form-label"><i class="fa-solid fa-percent"></i> % Mandante</label>
+                            <input type="number" step="any" placeholder="%" name="porMan" class="cd-form-control" required>
+                        </div>
+                        <div class="cd-form-group">
+                            <label class="cd-form-label"><i class="fa-solid fa-percent"></i> % ITAVU</label>
+                            <input type="number" step="any" placeholder="%" name="porItavu" class="cd-form-control" required>
+                        </div>
+                        <div class="cd-form-group">
+                            <label class="cd-form-label"><i class="fa-solid fa-percent"></i> % Escrituración</label>
+                            <input type="number" step="any" placeholder="%" name="porEsc" class="cd-form-control" required>
+                        </div>
+                    </div>
 
-}
-else{
+                    <div class="cd-form-grid">
+                        <div class="cd-form-group">
+                            <label class="cd-form-label"><i class="fa-solid fa-hand-holding-dollar"></i> Amortización Anticipo</label>
+                            <input type="text" name="porAmorAnt" class="cd-form-control" required>
+                        </div>
+                        <div class="cd-form-group">
+                            <label class="cd-form-label"><i class="fa-solid fa-money-bill-wave"></i> Pago Total Contrato</label>
+                            <input type="number" step="any" placeholder="$0.00" name="monpagar" class="cd-form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="cd-form-group">
+                        <label class="cd-form-label"><i class="fa-solid fa-chart-line"></i> Recuperación Tabla Comercialización</label>
+                        <input type="number" step="any" placeholder="$0.00" name="monpagarComer" class="cd-form-control" required>
+                    </div>
+
+                    <div class="cd-form-grid-3">
+                        <div class="cd-form-group"><label class="cd-form-label">Lotes Donación</label><input type="number" step="any" name="lotesdonacion" class="cd-form-control"></div>
+                        <div class="cd-form-group"><label class="cd-form-label">Lotes Área Verde</label><input type="number" step="any" name="lotesareav" class="cd-form-control"></div>
+                        <div class="cd-form-group"><label class="cd-form-label">Lotes Eq. Urbano</label><input type="number" step="any" name="loteseq" class="cd-form-control"></div>
+                    </div>
+
+                    <div class="cd-form-group">
+                        <label class="cd-form-label">Lotes Reserva Mandante</label>
+                        <input type="number" step="any" name="lotesreserva" class="cd-form-control">
+                    </div>
+
+                    <div class="cd-form-grid" style="background:#f8fafc; padding:15px; border-radius:var(--cd-radius-sm); margin-bottom:15px;">
+                        <div>
+                            <h4 style="margin:0 0 10px 0; font-size:0.9rem; font-weight:700; color:var(--cd-primary);">Programa Lotes</h4>
+                            <div class="cd-form-group"><label class="cd-form-label">Total</label><input type="number" name="totLotesL" class="cd-form-control"></div>
+                            <div class="cd-form-group"><label class="cd-form-label">Para Comercializar</label><input type="number" name="lotesXComercialzarL" class="cd-form-control"></div>
+                            <div class="cd-form-group"><label class="cd-form-label">Contratados</label><input type="number" name="lotesConL" class="cd-form-control"></div>
+                            <div class="cd-form-group"><label class="cd-form-label">Sin Contrato</label><input type="number" name="lotesSinConL" class="cd-form-control"></div>
+                        </div>
+
+                        <div>
+                            <h4 style="margin:0 0 10px 0; font-size:0.9rem; font-weight:700; color:var(--cd-gold-dark);">Programa Suelo Legal</h4>
+                            <div class="cd-form-group"><label class="cd-form-label">Total</label><input type="number" name="totLotesS" class="cd-form-control"></div>
+                            <div class="cd-form-group"><label class="cd-form-label">Para Comercializar</label><input type="number" name="lotesXComercialzarS" class="cd-form-control"></div>
+                            <div class="cd-form-group"><label class="cd-form-label">Contratados</label><input type="number" name="lotesConS" class="cd-form-control"></div>
+                            <div class="cd-form-group"><label class="cd-form-label">Sin Contrato</label><input type="number" name="lotesSinConS" class="cd-form-control"></div>
+                        </div>
+                    </div>
+
+                    <div class="cd-form-group">
+                        <label class="cd-form-label"><i class="fa-solid fa-comment"></i> Observaciones</label>
+                        <textarea name="observaciones" class="cd-form-control" style="min-height:80px;"></textarea>
+                    </div>
+
+                    <div style="margin-top:20px; text-align:right;">
+                        <button type="submit" class="cd-btn cd-btn-primary"><i class="fa-solid fa-floppy-disk"></i> Guardar Mandato</button>
+                    </div>
+                </form>
+
+                <!-- FORM ADENDUM -->
+                <form id="adendum" style="display:none;" action="mandantes_pago.php?idmandante=<?php echo $idmandante; ?>&idcolonia=<?php echo $idcolonia; ?>&idmunicipio=<?php echo $idmunicipio; ?>" method="POST">
+                    <input type="hidden" name="guardar" value="1">
+                    
+                    <div class="cd-form-grid-3">
+                        <div class="cd-form-group">
+                            <label class="cd-form-label"><i class="fa-regular fa-calendar"></i> Fecha Adendum</label>
+                            <input type="date" name="fechaAdendum" class="cd-form-control" required>
+                        </div>
+                        <div class="cd-form-group">
+                            <label class="cd-form-label"><i class="fa-regular fa-calendar-check"></i> Fecha Adendum Finiquito</label>
+                            <input type="date" name="fechaAdendumFiniquito" class="cd-form-control">
+                        </div>
+                        <div class="cd-form-group">
+                            <label class="cd-form-label"><i class="fa-solid fa-clock"></i> Plazo de Crédito</label>
+                            <input type="text" placeholder="Mensualidades" name="plazoCredito" class="cd-form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="cd-form-grid-3">
+                        <div class="cd-form-group">
+                            <label class="cd-form-label"><i class="fa-solid fa-dollar-sign"></i> Costo Lotes</label>
+                            <input type="number" step="any" placeholder="$" name="costoLotes" class="cd-form-control" required>
+                        </div>
+                        <div class="cd-form-group">
+                            <label class="cd-form-label"><i class="fa-solid fa-ruler-combined"></i> Costo m²</label>
+                            <input type="number" step="any" placeholder="$ X m²" name="LoteM2" class="cd-form-control" required>
+                        </div>
+                        <div class="cd-form-group">
+                            <label class="cd-form-label"><i class="fa-solid fa-chart-area"></i> Superficie Total (m²)</label>
+                            <input type="text" placeholder="m²" name="superficie" class="cd-form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="cd-form-grid-3">
+                        <div class="cd-form-group">
+                            <label class="cd-form-label"><i class="fa-solid fa-store"></i> Superficie Comercializar</label>
+                            <input type="text" placeholder="m²" name="supComercializar" class="cd-form-control" required>
+                        </div>
+                        <div class="cd-form-group">
+                            <label class="cd-form-label"><i class="fa-solid fa-percent"></i> % Mandante</label>
+                            <input type="number" step="any" placeholder="%" name="porMan" class="cd-form-control" required>
+                        </div>
+                        <div class="cd-form-group">
+                            <label class="cd-form-label"><i class="fa-solid fa-percent"></i> % ITAVU</label>
+                            <input type="number" step="any" placeholder="%" name="porItavu" class="cd-form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="cd-form-grid">
+                        <div class="cd-form-group">
+                            <label class="cd-form-label"><i class="fa-solid fa-percent"></i> % Escrituración</label>
+                            <input type="number" step="any" placeholder="%" name="porEsc" class="cd-form-control" required>
+                        </div>
+                        <div class="cd-form-group">
+                            <label class="cd-form-label"><i class="fa-solid fa-hand-holding-dollar"></i> Amortización Anticipo</label>
+                            <input type="text" name="porAmorAnt" class="cd-form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="cd-form-grid">
+                        <div class="cd-form-group">
+                            <label class="cd-form-label"><i class="fa-solid fa-money-bill-wave"></i> Pago Total Contrato</label>
+                            <input type="number" step="any" placeholder="$0.00" name="monpagar" class="cd-form-control" required>
+                        </div>
+                        <div class="cd-form-group">
+                            <label class="cd-form-label"><i class="fa-solid fa-chart-line"></i> Recuperación Tabla Comercialización</label>
+                            <input type="number" step="any" placeholder="$0.00" name="monpagarComer" class="cd-form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="cd-form-grid-3">
+                        <div class="cd-form-group"><label class="cd-form-label">Lotes Donación</label><input type="number" step="any" name="lotesdonacion" class="cd-form-control"></div>
+                        <div class="cd-form-group"><label class="cd-form-label">Lotes Área Verde</label><input type="number" step="any" name="lotesareav" class="cd-form-control"></div>
+                        <div class="cd-form-group"><label class="cd-form-label">Lotes Eq. Urbano</label><input type="number" step="any" name="loteseq" class="cd-form-control"></div>
+                    </div>
+
+                    <div class="cd-form-group">
+                        <label class="cd-form-label">Lotes Reserva Mandante</label>
+                        <input type="number" step="any" name="lotesreserva" class="cd-form-control">
+                    </div>
+
+                    <div class="cd-form-grid" style="background:#f8fafc; padding:15px; border-radius:var(--cd-radius-sm); margin-bottom:15px;">
+                        <div>
+                            <h4 style="margin:0 0 10px 0; font-size:0.9rem; font-weight:700; color:var(--cd-primary);">Programa Lotes</h4>
+                            <div class="cd-form-group"><label class="cd-form-label">Total</label><input type="number" name="totLotesL" class="cd-form-control"></div>
+                            <div class="cd-form-group"><label class="cd-form-label">Para Comercializar</label><input type="number" name="lotesXComercialzarL" class="cd-form-control"></div>
+                            <div class="cd-form-group"><label class="cd-form-label">Contratados</label><input type="number" name="lotesConL" class="cd-form-control"></div>
+                            <div class="cd-form-group"><label class="cd-form-label">Sin Contrato</label><input type="number" name="lotesSinConL" class="cd-form-control"></div>
+                        </div>
+
+                        <div>
+                            <h4 style="margin:0 0 10px 0; font-size:0.9rem; font-weight:700; color:var(--cd-gold-dark);">Programa Suelo Legal</h4>
+                            <div class="cd-form-group"><label class="cd-form-label">Total</label><input type="number" name="totLotesS" class="cd-form-control"></div>
+                            <div class="cd-form-group"><label class="cd-form-label">Para Comercializar</label><input type="number" name="lotesXComercialzarS" class="cd-form-control"></div>
+                            <div class="cd-form-group"><label class="cd-form-label">Contratados</label><input type="number" name="lotesConS" class="cd-form-control"></div>
+                            <div class="cd-form-group"><label class="cd-form-label">Sin Contrato</label><input type="number" name="lotesSinConS" class="cd-form-control"></div>
+                        </div>
+                    </div>
+
+                    <div class="cd-form-group">
+                        <label class="cd-form-label"><i class="fa-solid fa-comment"></i> Observaciones</label>
+                        <textarea name="observaciones" class="cd-form-control" style="min-height:80px;"></textarea>
+                    </div>
+
+                    <div style="margin-top:20px; text-align:right;">
+                        <button type="submit" class="cd-btn cd-btn-primary"><i class="fa-solid fa-floppy-disk"></i> Guardar Adendum</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    <?php
+    }
+    ?>
+</div>
+
+<?php
+    }
+} else {
     mensaje("No tiene acceso a ".$id_aplicacion,'');
 }
-
+include ("./lib/body_footer.php"); 
 ?>
-<br><br><br>
-<br>
-<br>
-<br><br><br>
-<br>
-<br>
-<br><br><br>
-<br>
-<br>
-<br><br><br>
-<br>
-<br>
-<?php include ("./lib/body_footer.php"); ?>
