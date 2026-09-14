@@ -1,6 +1,8 @@
 <?php include ("./lib/body_head.php"); include ("./lib/body_menu.php"); ?>
 <link rel="stylesheet" href="lib/laura.css" />
 <link rel="stylesheet" href="lib/plataforma_modern.css" />
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <?php
 require("config.php");
 $id_aplicacion = 'ap70';
@@ -435,12 +437,13 @@ if (sanpedro($id_aplicacion, $nitavu) == TRUE){
                 <div class="cd-form-group" id="Apoderado">
                     <?php if(isset($idmandante) && isset($idcolonia) && isset($idmunicipio)): ?>
                         <label for="apoderado_select" class="cd-form-label"><i class="fa-solid fa-user-shield" style="color:var(--cd-gold-dark);"></i> Seleccione un apoderado:</label>
-                        <select id="mandantes" name="mandantes" class="cd-form-control" onchange="mostrarOpciones()">
+                        <select id="apoderado_select" name="apoderado" class="cd-form-control" onchange="mostrarOpciones()">
                             <option value="">Seleccione un apoderado...</option>
                             <?php
                             $sql_apo = "SELECT RepresentanteLegal, IdMandante FROM cat_mandantes WHERE IdColonia = ".$idcolonia." and IdMunicipio=".$idmunicipio." and IdMandante=".$idmandante." and Cancelado = 0 ORDER BY Mandante ASC";
                             $r_apo = $conexion->query($sql_apo);
                             while($f_apo = $r_apo->fetch_array()){
+                                if(trim((string)$f_apo['RepresentanteLegal']) === ''){ continue; }
                                 echo "<option value='".$f_apo['IdMandante']."' selected>".htmlspecialchars($f_apo['RepresentanteLegal'])."</option>";
                             }
                             ?>
@@ -944,6 +947,42 @@ if (sanpedro($id_aplicacion, $nitavu) == TRUE){
 </div>
 
 <script>    
+    function obtenerIdColoniaSeleccionada(){
+        if($("#colonia").length){
+            return $("#colonia option:selected").val();
+        }
+        if($("#colonia_select").length){
+            return $("#colonia_select option:selected").val();
+        }
+        return "";
+    }
+
+    function inicializarSelect2Filtros(contexto){
+        if(typeof $.fn.select2 !== 'function'){
+            return;
+        }
+
+        var $base = contexto ? $(contexto) : $(document);
+        var selectores = ['#municipio', '#colonia', '#colonia_select', '#mandantes', '#apoderado_select'];
+
+        for(var i = 0; i < selectores.length; i++){
+            $base.find(selectores[i]).each(function(){
+                if(!$(this).is('select')){
+                    return;
+                }
+                if($(this).hasClass('select2-hidden-accessible')){
+                    $(this).select2('destroy');
+                }
+
+                $(this).select2({
+                    width: '100%',
+                    placeholder: $(this).find('option:first').text() || 'Seleccione una opcion...',
+                    allowClear: true
+                });
+            });
+        }
+    }
+
     $(document).on("change", "#municipio", function(event) {
         $("#req_menu").css({'display':'none'});
         $("#registroPago").css({'display':'none'});
@@ -969,6 +1008,7 @@ if (sanpedro($id_aplicacion, $nitavu) == TRUE){
             success: function(data){
                 $("#preloader").css({'display':'none'});
                 $('#colonia').html(data+"\n");
+                inicializarSelect2Filtros('#colonia');
             }
         });
 
@@ -980,7 +1020,7 @@ if (sanpedro($id_aplicacion, $nitavu) == TRUE){
         $("#registroPago").css({'display':'none'});
         $("#tablaRegistros").css({'display':'none'});
         $("#preloader").css({'display':'inline-block'});
-        var id = $("#colonia option:selected").val();
+        var id = obtenerIdColoniaSeleccionada();
         var idmunicipio = $("#municipio option:selected").val();
         
         $('#Apoderado').html('');
@@ -991,6 +1031,7 @@ if (sanpedro($id_aplicacion, $nitavu) == TRUE){
             success: function(data){
                 $("#preloader").css({'display':'none'});
                 $('#Mandantes').html(data+"\n");
+                inicializarSelect2Filtros('#Mandantes');
             }
         });
 
@@ -1002,7 +1043,7 @@ if (sanpedro($id_aplicacion, $nitavu) == TRUE){
         $("#registroPago").css({'display':'none'});
         $("#tablaRegistros").css({'display':'none'});
         $("#preloader").css({'display':'inline-block'});
-        var id = $("#colonia option:selected").val();
+        var id = obtenerIdColoniaSeleccionada();
         var idmunicipio = $("#municipio option:selected").val();
         var idmandante = $("#mandantes option:selected").val();
 
@@ -1013,6 +1054,9 @@ if (sanpedro($id_aplicacion, $nitavu) == TRUE){
             success: function(data){
                 $("#preloader").css({'display':'none'});
                 $('#Apoderado').html(data+"\n");
+                inicializarSelect2Filtros('#Apoderado');
+                // La carga de datos depende del mandante, no de seleccionar apoderado.
+                mostrarOpciones();
             }
         });
         document.getElementById("idmandante").value = idmandante;
@@ -1022,7 +1066,7 @@ if (sanpedro($id_aplicacion, $nitavu) == TRUE){
         $("#req_menu").css({'display':'flex'});
         $("#tablaRegistros").css({'display':'block'});
         
-        var id = $("#mandantes option:selected").val();
+        var id = document.getElementById("idmandante").value;
         idcolonia = document.getElementById("idcolonia").value;
         idmunicipio = document.getElementById("idmunicipio").value;
         nitavu = document.getElementById('nitavu').value;
@@ -1038,8 +1082,9 @@ if (sanpedro($id_aplicacion, $nitavu) == TRUE){
             data: {id: id, idcolonia: idcolonia, idmunicipio: idmunicipio, nitavu: nitavu },
             success: function(data){
                 $("#preloader").css({'display':'none'});
-                if(document.forms['reporteMandante']) {
-                    document.forms['reporteMandante'].action = "md_reporte.php?id="+id+"&idcolonia="+idcolonia+"&idmunicipio="+idmunicipio;
+                var formReporte = document.getElementById('reporteMandante');
+                if(formReporte) {
+                    formReporte.action = "md_reporte.php?id="+id+"&idcolonia="+idcolonia+"&idmunicipio="+idmunicipio;
                 }
                 if(document.getElementById("nuevoCargo")) {
                     document.getElementById("nuevoCargo").href = "md_nuevoCargo.php?id="+id+"&idcolonia="+idcolonia+"&idmunicipio="+idmunicipio;
@@ -1242,7 +1287,7 @@ function mostrarDecimales(){
 function operaciones(){
     var idmunicipio = $("#municipio option:selected").val();
     var idmandante =  $("#mandantes option:selected").val();
-    var idcolonia =  $("#colonia option:selected").val();
+    var idcolonia =  obtenerIdColoniaSeleccionada();
     
     var pago = document.getElementById("montoPagado").value;
     pago = $('#montopagar').val() - $('#devols').val() - $('#gastos').val() - $('#gastosesc').val() - $("#otrosdesc").val();
@@ -1271,7 +1316,7 @@ function todas(){
 function buscarGastosAdmin(){
     var idmunicipio = $("#municipio option:selected").val();
     var idmandante =  $("#mandantes option:selected").val();
-    var idcolonia =  $("#colonia option:selected").val();
+    var idcolonia =  obtenerIdColoniaSeleccionada();
 
     $.ajax({
         url: "md_gastosAdmin.php",
@@ -1286,7 +1331,7 @@ function buscarGastosAdmin(){
 function buscarGastosEsc(){
     var idmunicipio = $("#municipio option:selected").val();
     var idmandante =  $("#mandantes option:selected").val();
-    var idcolonia =  $("#colonia option:selected").val();
+    var idcolonia =  obtenerIdColoniaSeleccionada();
 
     $.ajax({
         url: "md_gastosEsc.php",
@@ -1301,7 +1346,7 @@ function buscarGastosEsc(){
 function buscarAmortizacionAnt(){
     var idmunicipio = $("#municipio option:selected").val();
     var idmandante =  $("#mandantes option:selected").val();
-    var idcolonia =  $("#colonia option:selected").val();
+    var idcolonia =  obtenerIdColoniaSeleccionada();
 
     $.ajax({
         url: "md_amortizacionAnt.php",
@@ -1349,6 +1394,7 @@ function calcularAmortizacion(){
 }
 
 $(document).ready(function() {
+    inicializarSelect2Filtros();
     var URLactual = window.location;    
     if(document.getElementById('url')) {
         document.getElementById('url').value = URLactual;

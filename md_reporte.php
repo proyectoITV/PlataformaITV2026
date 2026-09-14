@@ -7,11 +7,16 @@ require_once('lib/funciones.php');
 require_once('pdf/tcpdf.php');
 require('lib/flor_funciones.php');
 
-$idmandante = $_GET['id'];
-$idcolonia = $_GET['idcolonia'];
-$idmunicipio = $_GET['idmunicipio'];
+$idmandante = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+$idcolonia = isset($_GET['idcolonia']) ? (int)$_GET['idcolonia'] : 0;
+$idmunicipio = isset($_GET['idmunicipio']) ? (int)$_GET['idmunicipio'] : 0;
 
-$url = $_POST['url'];
+$url = isset($_POST['url']) ? $_POST['url'] : '';
+
+if($idmandante <= 0 || $idcolonia <= 0 || $idmunicipio <= 0){
+    mensaje('No se recibieron los parametros del mandante para generar el reporte. Seleccione municipio, colonia y mandante nuevamente.','mandantes_pago.php');
+    exit;
+}
 //$urlnueva = explode('/', $url);
 
 $HayToken = MiToken($nitavu, 'xxxxx'); // Token disponible por usuario
@@ -429,10 +434,39 @@ $pdf->writeHTML($html, true, false, true, false, '');
 
 // reset pointer to the last page
 $pdf->lastPage();
-//Close and output PDF document}
-ob_end_clean();
-$pdf->Output('reporte.pdf', 'I');
-MiToken_Close($nita|cvu, $HayToken); //Cierro el Token
+
+// 1. Obtener los bytes del PDF en memoria
+$pdfData = $pdf->Output('reporte.pdf', 'S');
+
+// 2. Limpiar todos los niveles de buffers de salida activos
+while (ob_get_level()) {
+    ob_end_clean();
+}
+
+$filename = 'reporte.pdf';
+$filesize = strlen($pdfData);
+
+// 3. Cabeceras HTTP completas para previsualización (inline) y descarga en Chromium
+header('Content-Type: application/pdf');
+header('Content-Disposition: inline; filename="' . $filename . '"; filename*=UTF-8\'\'' . rawurlencode($filename));
+header('Content-Length: ' . $filesize);
+header('Accept-Ranges: bytes');
+header('Cache-Control: private, max-age=3600, must-revalidate');
+header('Pragma: public');
+header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+header('Expires: ' . gmdate('D, d M Y H:i:s', time() + 3600) . ' GMT');
+
+// 4. Salida del binario del PDF
+echo $pdfData;
+
+// NOTA: Se comenta el cierre inmediato del token para evitar que la segunda petición
+// en segundo plano lanzada por el botón de descarga del visor de Chromium falle
+// con "ERROR: el enlace caduco, intentalo nuevamente".
+// if (function_exists('MiToken_Close')) {
+//     MiToken_Close($nitavu, $HayToken);
+// }
+
+exit;
 
 }
 
