@@ -59,6 +59,12 @@ if (isset($_GET['msg'])) {
 </nav>
 
 <?php
+// Aviso y modal institucional de mantenimiento programado
+include("modal_aviso_mantenimiento.php");
+?>
+
+
+<?php
 $nip = nitavu_nip($nitavu);
 if ($nip == $nitavu) {
   echo "<div id='avisos' style='background: linear-gradient(135deg, #7c121d 0%, #990000 100%); color: white; padding: 10px 24px; text-align: center; border-bottom: 3px solid #bc955c; font-size: 13px; font-weight: 600;'>";

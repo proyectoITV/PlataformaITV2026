@@ -1,0 +1,1792 @@
+<?php
+include("./lib/body_head.php");
+include("./lib/body_menu.php");
+require_once('lib/laura_funciones.php');
+require_once('lib/funciones.php');
+
+$id_aplicacion = "ap139";
+$nivel = aplicacion_nivel($id_aplicacion, $nitavu);
+$wa_db = $Vivienda;
+if ($wa_db && method_exists($wa_db, 'set_charset')) {
+    $wa_db->set_charset("utf8mb4");
+}
+
+function wa_a_utf8($cadena)
+{
+    $cadena = (string)$cadena;
+    if ($cadena === '') {
+        return '';
+    }
+    if (mb_check_encoding($cadena, 'UTF-8')) {
+        return $cadena;
+    }
+    return mb_convert_encoding($cadena, 'UTF-8', 'Windows-1252, ISO-8859-1, UTF-8');
+}
+
+function wa_e($texto)
+{
+    return htmlspecialchars((string)$texto, ENT_QUOTES, 'UTF-8');
+}
+
+function wa_normaliza_telefono($telefono)
+{
+    $solo_numeros = preg_replace('/\D+/', '', (string)$telefono);
+    if ($solo_numeros === null) {
+        return '';
+    }
+
+    if (strlen($solo_numeros) === 10) {
+        return '52' . $solo_numeros;
+    }
+
+    if (strlen($solo_numeros) === 12 && substr($solo_numeros, 0, 2) === '52') {
+        return $solo_numeros;
+    }
+
+    if (strlen($solo_numeros) === 13 && substr($solo_numeros, 0, 3) === '521') {
+        return '52' . substr($solo_numeros, 3);
+    }
+
+    if (strlen($solo_numeros) > 12) {
+        return '';
+    }
+
+    return $solo_numeros;
+}
+
+function wa_mensaje_personalizado($plantilla, $nombre, $paquete)
+{
+    $mensaje = str_replace('{NOMBRE}', (string)$nombre, (string)$plantilla);
+    $mensaje = str_replace('{PAQUETE}', (string)$paquete, $mensaje);
+    return $mensaje;
+}
+
+function wa_columna_existe($conexion, $tabla, $columna)
+{
+    $tabla_db = $conexion->real_escape_string($tabla);
+    $col_db = $conexion->real_escape_string($columna);
+    $sql = "SELECT count(*) as n FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME='" . $tabla_db . "' AND COLUMN_NAME='" . $col_db . "'";
+    $r = $conexion->query($sql);
+    if ($r && $r->num_rows > 0) {
+        $f = $r->fetch_assoc();
+        return ((int)$f['n'] > 0);
+    }
+    return FALSE;
+}
+
+function wa_tabla_existe($conexion, $tabla)
+{
+    $tabla_db = $conexion->real_escape_string($tabla);
+    $sql = "SELECT count(*) as n FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME='" . $tabla_db . "'";
+    $r = $conexion->query($sql);
+    if ($r && $r->num_rows > 0) {
+        $f = $r->fetch_assoc();
+        return ((int)$f['n'] > 0);
+    }
+    return FALSE;
+}
+
+function wa_validar_estructura($conexion)
+{
+    $resp = array(
+        'ok' => TRUE,
+        'faltantes' => array(),
+        'emisores_ok' => FALSE,
+        'col_id_emisor' => FALSE,
+        'col_emisor_telefono' => FALSE
+    );
+
+    $tablas_core = array('wa_noti_config', 'wa_noti_temas', 'wa_noti_contactos');
+    foreach ($tablas_core as $tb) {
+        if (!wa_tabla_existe($conexion, $tb)) {
+            $resp['faltantes'][] = $tb;
+        }
+    }
+
+    if (count($resp['faltantes']) > 0) {
+        $resp['ok'] = FALSE;
+        return $resp;
+    }
+
+    $resp['emisores_ok'] = wa_tabla_existe($conexion, 'wa_noti_emisores');
+    $resp['col_id_emisor'] = wa_columna_existe($conexion, 'wa_noti_contactos', 'id_emisor');
+    $resp['col_emisor_telefono'] = wa_columna_existe($conexion, 'wa_noti_contactos', 'emisor_telefono');
+
+    return $resp;
+}
+
+if (sanpedro($id_aplicacion, $nitavu) == TRUE) {
+    echo "<div id='AppDetalle'>" . app_detalle($id_aplicacion, $nitavu) . "</div>";
+    xd_update($id_aplicacion, $nitavu);
+    historia($nitavu, "[" . $id_aplicacion . "] Entro al modulo de Notificaciones WhatsApp");
+
+    $wa_schema = wa_validar_estructura($wa_db);
+    if ($wa_schema['ok'] !== TRUE) {
+        echo "<div class='container'><div class='alert alert-danger' style='margin-top:15px;'>";
+        echo "Faltan tablas requeridas en produccion_vivienda: " . wa_e(implode(', ', $wa_schema['faltantes'])) . ".";
+        echo "</div></div>";
+        include("./lib/body_footer.php");
+        exit;
+    }
+
+    $wa_emisores_habilitado = ($wa_schema['emisores_ok'] === TRUE);
+    $wa_cols_emisor_habilitadas = ($wa_schema['col_id_emisor'] === TRUE && $wa_schema['col_emisor_telefono'] === TRUE);
+
+    $tema_seleccionado = isset($_GET['tema']) ? (int)$_GET['tema'] : 0;
+
+    if (isset($_POST['accion']) && $_POST['accion'] == 'guardar_config' && (int)$nivel === 1) {
+        $limite_diario = isset($_POST['limite_diario']) ? (int)$_POST['limite_diario'] : 90;
+        if ($limite_diario < 1) {
+            $limite_diario = 90;
+        }
+        if ($limite_diario > 5000) {
+            $limite_diario = 5000;
+        }
+
+        $sql_cfg = "UPDATE wa_noti_config SET limite_diario='" . $limite_diario . "', actualizado_por='" . (int)$nitavu . "' WHERE id=1";
+        if ($wa_db->query($sql_cfg) == TRUE) {
+            historia($nitavu, "Actualizo limite diario de mensajes WhatsApp a " . $limite_diario);
+            mensaje("Se actualizo el limite diario correctamente.", "notificaciones_whatsapp.php");
+        } else {
+            mensaje("Ocurrio un error al guardar el limite diario.", "notificaciones_whatsapp.php");
+        }
+    }
+
+    if (isset($_POST['accion']) && $_POST['accion'] == 'crear_tema' && (int)$nivel === 1) {
+        $asunto = trim(isset($_POST['asunto']) ? $_POST['asunto'] : '');
+        $mensaje_plantilla = trim(isset($_POST['mensaje']) ? $_POST['mensaje'] : '');
+        $imagen_url = trim(isset($_POST['imagen_url']) ? $_POST['imagen_url'] : '');
+
+        if ($asunto == '' || $mensaje_plantilla == '') {
+            mensaje("Debe capturar el asunto y el mensaje.", "notificaciones_whatsapp.php");
+        }
+
+        $asunto_db = $wa_db->real_escape_string($asunto);
+        $mensaje_db = $wa_db->real_escape_string($mensaje_plantilla);
+        $imagen_db = $wa_db->real_escape_string($imagen_url);
+
+        $sql_tema = "INSERT INTO wa_noti_temas (asunto, mensaje, imagen_url, creado_por) VALUES ('" . $asunto_db . "', '" . $mensaje_db . "', '" . $imagen_db . "', '" . (int)$nitavu . "')";
+        if ($wa_db->query($sql_tema) == TRUE) {
+            $nuevo_tema_id = (int)$wa_db->insert_id;
+            historia($nitavu, "Creo tema de notificacion WhatsApp: " . $asunto . " (ID " . $nuevo_tema_id . ")");
+            mensaje("Tema creado correctamente.", "notificaciones_whatsapp.php?tema=" . $nuevo_tema_id);
+        } else {
+            mensaje("No se pudo crear el tema. Revise los datos e intente de nuevo.", "notificaciones_whatsapp.php");
+        }
+    }
+
+    if (isset($_POST['accion']) && $_POST['accion'] == 'guardar_emisor' && (int)$nivel === 1 && $wa_emisores_habilitado) {
+        $alias_emisor = trim(isset($_POST['alias_emisor']) ? $_POST['alias_emisor'] : '');
+        $telefono_emisor_raw = trim(isset($_POST['telefono_emisor']) ? $_POST['telefono_emisor'] : '');
+        $telefono_emisor = wa_normaliza_telefono($telefono_emisor_raw);
+        $nitavu_asignado = isset($_POST['nitavu_asignado']) ? (int)$_POST['nitavu_asignado'] : 0;
+
+        if ($alias_emisor == '' || $telefono_emisor == '') {
+            mensaje("Debe capturar alias y telefono del emisor.", "notificaciones_whatsapp.php");
+        }
+
+        $sql_emisor_dup = "SELECT count(*) as n FROM wa_noti_emisores WHERE telefono_emisor='" . $wa_db->real_escape_string($telefono_emisor) . "' AND activo=1";
+        $r_emisor_dup = $wa_db->query($sql_emisor_dup);
+        $f_emisor_dup = $r_emisor_dup ? $r_emisor_dup->fetch_assoc() : array('n' => 0);
+        if ((int)$f_emisor_dup['n'] > 0) {
+            mensaje("Ese telefono emisor ya existe y esta activo.", "notificaciones_whatsapp.php");
+        }
+
+        $sql_emisor_ins = "INSERT INTO wa_noti_emisores (alias_emisor, telefono_emisor, nitavu_asignado, activo, creado_por) VALUES ('" . $wa_db->real_escape_string($alias_emisor) . "', '" . $wa_db->real_escape_string($telefono_emisor) . "', '" . $nitavu_asignado . "', 1, '" . (int)$nitavu . "')";
+        if ($wa_db->query($sql_emisor_ins) == TRUE) {
+            historia($nitavu, "Registro telefono emisor WhatsApp " . $telefono_emisor . " alias " . $alias_emisor);
+            mensaje("Telefono emisor guardado correctamente.", "notificaciones_whatsapp.php");
+        } else {
+            mensaje("No se pudo guardar el telefono emisor.", "notificaciones_whatsapp.php");
+        }
+    }
+
+    if (isset($_POST['accion']) && $_POST['accion'] == 'estado_emisor' && (int)$nivel === 1 && $wa_emisores_habilitado) {
+        $id_emisor_admin = isset($_POST['id_emisor_admin']) ? (int)$_POST['id_emisor_admin'] : 0;
+        $nuevo_estado_emisor = isset($_POST['nuevo_estado_emisor']) ? (int)$_POST['nuevo_estado_emisor'] : 0;
+        if ($id_emisor_admin > 0 && ($nuevo_estado_emisor === 0 || $nuevo_estado_emisor === 1)) {
+            $sql_estado_emisor = "UPDATE wa_noti_emisores SET activo='" . $nuevo_estado_emisor . "' WHERE id='" . $id_emisor_admin . "'";
+            if ($wa_db->query($sql_estado_emisor) == TRUE) {
+                historia($nitavu, "Actualizo estado del emisor WhatsApp " . $id_emisor_admin . " a " . $nuevo_estado_emisor);
+                mensaje("Se actualizo el estado del emisor.", "notificaciones_whatsapp.php");
+            }
+        }
+        mensaje("No se pudo actualizar el estado del emisor.", "notificaciones_whatsapp.php");
+    }
+
+    if (isset($_POST['accion']) && $_POST['accion'] == 'importar_lista' && (int)$nivel === 1) {
+        $id_tema_importar = isset($_POST['id_tema']) ? (int)$_POST['id_tema'] : 0;
+        if ($id_tema_importar <= 0) {
+            mensaje("Seleccione un tema para importar.", "notificaciones_whatsapp.php");
+        }
+
+        if (!isset($_FILES['archivo_lista']) || !isset($_FILES['archivo_lista']['tmp_name']) || $_FILES['archivo_lista']['tmp_name'] == '') {
+            mensaje("Debe seleccionar un archivo CSV.", "notificaciones_whatsapp.php?tema=" . $id_tema_importar);
+        }
+
+        $tmp = $_FILES['archivo_lista']['tmp_name'];
+        $fp = fopen($tmp, 'r');
+        if ($fp === FALSE) {
+            mensaje("No fue posible leer el archivo cargado.", "notificaciones_whatsapp.php?tema=" . $id_tema_importar);
+        }
+
+        $linea_1 = fgets($fp);
+        rewind($fp);
+        $delimitador = ',';
+        if ($linea_1 !== FALSE) {
+            $coma = substr_count($linea_1, ',');
+            $punto_coma = substr_count($linea_1, ';');
+            if ($punto_coma > $coma) {
+                $delimitador = ';';
+            }
+        }
+
+        $insertados = 0;
+        $duplicados = 0;
+        $invalidos = 0;
+        $bloqueados_erroneo = 0;
+        $fila = 0;
+
+        while (($row = fgetcsv($fp, 0, $delimitador)) !== FALSE) {
+            $fila++;
+            if (!isset($row[0])) {
+                continue;
+            }
+
+            $telefono_raw = trim((string)$row[0]);
+            $nombre_raw = wa_a_utf8(isset($row[1]) ? trim((string)$row[1]) : '');
+            $paquete_raw = wa_a_utf8(isset($row[2]) ? trim((string)$row[2]) : '');
+
+            if ($fila == 1) {
+                $encabezado_detectado = (
+                    stripos($telefono_raw, 'telefono') !== FALSE ||
+                    stripos($telefono_raw, 'celular') !== FALSE ||
+                    stripos($nombre_raw, 'nombre') !== FALSE ||
+                    stripos($paquete_raw, 'paquete') !== FALSE ||
+                    stripos($paquete_raw, 'peticion') !== FALSE
+                );
+                if ($encabezado_detectado) {
+                    continue;
+                }
+            }
+
+            if ($telefono_raw == '' && $nombre_raw == '' && $paquete_raw == '') {
+                continue;
+            }
+
+            $telefono_norm = wa_normaliza_telefono($telefono_raw);
+            if ($telefono_norm == '' || strlen($telefono_norm) < 10) {
+                $invalidos++;
+                continue;
+            }
+
+            $sql_err = "SELECT count(*) as n FROM wa_noti_contactos WHERE telefono='" . $wa_db->real_escape_string($telefono_norm) . "' AND estatus='numero_erroneo'";
+            $r_err = $wa_db->query($sql_err);
+            $f_err = $r_err ? $r_err->fetch_assoc() : array('n' => 0);
+            if ((int)$f_err['n'] > 0) {
+                $bloqueados_erroneo++;
+                continue;
+            }
+
+            $sql_dup = "SELECT count(*) as n FROM wa_noti_contactos WHERE id_tema='" . $id_tema_importar . "' AND telefono='" . $wa_db->real_escape_string($telefono_norm) . "'";
+            $r_dup = $wa_db->query($sql_dup);
+            $f_dup = $r_dup ? $r_dup->fetch_assoc() : array('n' => 0);
+            if ((int)$f_dup['n'] > 0) {
+                $duplicados++;
+                continue;
+            }
+
+            $nombre_db = $wa_db->real_escape_string($nombre_raw);
+            $paquete_db = $wa_db->real_escape_string($paquete_raw);
+            $tel_db = $wa_db->real_escape_string($telefono_norm);
+            $sql_ins = "INSERT INTO wa_noti_contactos (id_tema, telefono, nombre, paquete, estatus, creado_por) VALUES ('" . $id_tema_importar . "', '" . $tel_db . "', '" . $nombre_db . "', '" . $paquete_db . "', 'pendiente', '" . (int)$nitavu . "')";
+
+            if ($wa_db->query($sql_ins) == TRUE) {
+                $insertados++;
+            }
+        }
+        fclose($fp);
+
+        historia($nitavu, "Importo lista WhatsApp tema " . $id_tema_importar . " (" . $insertados . " insertados)");
+        $msg = "Importacion completada. Insertados: " . $insertados . ", Duplicados: " . $duplicados . ", Invalidos: " . $invalidos . ", Bloqueados por numero erroneo: " . $bloqueados_erroneo;
+        mensaje($msg, "notificaciones_whatsapp.php?tema=" . $id_tema_importar);
+    }
+
+    if (isset($_POST['accion']) && $_POST['accion'] == 'actualizar_estatus') {
+        $id_contacto = isset($_POST['id_contacto']) ? (int)$_POST['id_contacto'] : 0;
+        $nuevo_estatus = isset($_POST['nuevo_estatus']) ? trim($_POST['nuevo_estatus']) : '';
+        $id_tema_form = isset($_POST['id_tema']) ? (int)$_POST['id_tema'] : 0;
+        $observacion = isset($_POST['observacion']) ? trim($_POST['observacion']) : '';
+
+        $permitidos = array('pendiente', 'enviado', 'entregado', 'rechazado', 'numero_erroneo');
+        if ($id_contacto > 0 && in_array($nuevo_estatus, $permitidos, TRUE)) {
+            $obs_db = $wa_db->real_escape_string($observacion);
+            $sql_up = "UPDATE wa_noti_contactos SET estatus='" . $wa_db->real_escape_string($nuevo_estatus) . "', observacion='" . $obs_db . "'";
+            if ($nuevo_estatus === 'enviado') {
+                $id_emisor = isset($_POST['id_emisor']) ? (int)$_POST['id_emisor'] : 0;
+                $emisor_tel_db = '';
+                $emisor_id_sql = 'NULL';
+                if ($id_emisor > 0 && $wa_emisores_habilitado && $wa_cols_emisor_habilitadas) {
+                    $sql_em = "SELECT id, telefono_emisor FROM wa_noti_emisores WHERE id='" . $id_emisor . "' AND activo=1 AND (nitavu_asignado=0 OR nitavu_asignado='" . (int)$nitavu . "') LIMIT 1";
+                    $r_em = $wa_db->query($sql_em);
+                    if ($r_em && $r_em->num_rows > 0) {
+                        $f_em = $r_em->fetch_assoc();
+                        $emisor_tel_db = $wa_db->real_escape_string($f_em['telefono_emisor']);
+                        $emisor_id_sql = (int)$f_em['id'];
+                    }
+                }
+                $sql_up .= ", fecha_envio=NOW(), enviado_por='" . (int)$nitavu . "'";
+                if ($wa_cols_emisor_habilitadas) {
+                    $sql_up .= ", id_emisor=" . $emisor_id_sql . ", emisor_telefono='" . $emisor_tel_db . "'";
+                }
+            }
+            $sql_up .= " WHERE id='" . $id_contacto . "'";
+
+            if ($wa_db->query($sql_up) == TRUE) {
+                historia($nitavu, "Actualizo estatus WhatsApp de contacto " . $id_contacto . " a " . $nuevo_estatus);
+                mensaje("Estatus actualizado.", "notificaciones_whatsapp.php?tema=" . $id_tema_form);
+            }
+        }
+
+        mensaje("No fue posible actualizar el estatus.", "notificaciones_whatsapp.php?tema=" . $id_tema_form);
+    }
+
+    $limite_diario = 90;
+    $r_cfg = $wa_db->query("SELECT limite_diario FROM wa_noti_config WHERE id=1 LIMIT 1");
+    if ($r_cfg && $r_cfg->num_rows > 0) {
+        $f_cfg = $r_cfg->fetch_assoc();
+        $limite_diario = (int)$f_cfg['limite_diario'];
+    }
+
+    $enviados_hoy_global = 0;
+    $r_hoy = $wa_db->query("SELECT count(*) as n FROM wa_noti_contactos WHERE DATE(fecha_envio)=CURDATE() AND estatus='enviado'");
+    if ($r_hoy && $r_hoy->num_rows > 0) {
+        $f_hoy = $r_hoy->fetch_assoc();
+        $enviados_hoy_global = (int)$f_hoy['n'];
+    }
+
+    $temas = array();
+    $sql_temas = "SELECT
+        t.*,
+        (SELECT count(*) FROM wa_noti_contactos c WHERE c.id_tema=t.id) as total,
+        (SELECT count(*) FROM wa_noti_contactos c WHERE c.id_tema=t.id AND c.estatus='pendiente') as pendientes,
+        (SELECT count(*) FROM wa_noti_contactos c WHERE c.id_tema=t.id AND c.estatus='enviado') as enviados,
+        (SELECT count(*) FROM wa_noti_contactos c WHERE c.id_tema=t.id AND c.estatus='entregado') as entregados,
+        (SELECT count(*) FROM wa_noti_contactos c WHERE c.id_tema=t.id AND c.estatus='rechazado') as rechazados,
+        (SELECT count(*) FROM wa_noti_contactos c WHERE c.id_tema=t.id AND c.estatus='numero_erroneo') as errones
+        FROM wa_noti_temas t
+        WHERE t.activo=1
+        ORDER BY t.id DESC";
+    $r_temas = $wa_db->query($sql_temas);
+    if ($r_temas) {
+        while ($f_t = $r_temas->fetch_assoc()) {
+            $temas[] = $f_t;
+        }
+    }
+
+    if ($tema_seleccionado === 0 && count($temas) > 0) {
+        $tema_seleccionado = (int)$temas[0]['id'];
+    }
+
+    $tema_actual = null;
+    foreach ($temas as $t) {
+        if ((int)$t['id'] === (int)$tema_seleccionado) {
+            $tema_actual = $t;
+            break;
+        }
+    }
+
+    $contactos = array();
+    if ($tema_actual !== null) {
+        $sql_contactos = "SELECT * FROM wa_noti_contactos WHERE id_tema='" . (int)$tema_seleccionado . "' ORDER BY FIELD(estatus,'pendiente','enviado','entregado','rechazado','numero_erroneo'), id ASC LIMIT 250";
+        $r_contactos = $wa_db->query($sql_contactos);
+        if ($r_contactos) {
+            while ($f_c = $r_contactos->fetch_assoc()) {
+                $contactos[] = $f_c;
+            }
+        }
+    }
+
+    $emisores_disponibles = array();
+    if ($wa_emisores_habilitado) {
+        $sql_emisores = "SELECT * FROM wa_noti_emisores WHERE activo=1 AND (nitavu_asignado=0 OR nitavu_asignado='" . (int)$nitavu . "') ORDER BY id ASC";
+        $r_emisores = $wa_db->query($sql_emisores);
+        if ($r_emisores) {
+            while ($f_emisor = $r_emisores->fetch_assoc()) {
+                $emisores_disponibles[] = $f_emisor;
+            }
+        }
+    }
+
+    $emisores_admin = array();
+    if ((int)$nivel === 1 && $wa_emisores_habilitado) {
+        $sql_emisores_admin = "SELECT * FROM wa_noti_emisores ORDER BY activo DESC, id DESC";
+        $r_emisores_admin = $wa_db->query($sql_emisores_admin);
+        if ($r_emisores_admin) {
+            while ($f_emisor_admin = $r_emisores_admin->fetch_assoc()) {
+                if ((int)$f_emisor_admin['nitavu_asignado'] > 0) {
+                    $f_emisor_admin['nombre_asignado'] = nitavu_nombre((int)$f_emisor_admin['nitavu_asignado']);
+                } else {
+                    $f_emisor_admin['nombre_asignado'] = 'SIN ASIGNAR';
+                }
+                $emisores_admin[] = $f_emisor_admin;
+            }
+        }
+    }
+
+    $audit_desde = isset($_GET['audit_desde']) ? trim($_GET['audit_desde']) : date('Y-m-01');
+    $audit_hasta = isset($_GET['audit_hasta']) ? trim($_GET['audit_hasta']) : date('Y-m-d');
+    $audit_tema = isset($_GET['audit_tema']) ? (int)$_GET['audit_tema'] : 0;
+    $audit_emisor = isset($_GET['audit_emisor']) ? (int)$_GET['audit_emisor'] : 0;
+    $audit_operador = isset($_GET['audit_operador']) ? (int)$_GET['audit_operador'] : 0;
+
+    $auditoria = array();
+    if ((int)$nivel === 1) {
+        $sql_aud = "SELECT
+            c.id,
+            c.telefono,
+            c.nombre,
+            c.paquete,
+            c.estatus,
+            c.fecha_envio,
+            c.enviado_por,
+            c.emisor_telefono,
+            IFNULL(t.asunto,'SIN TEMA') as asunto
+            FROM wa_noti_contactos c
+            LEFT JOIN wa_noti_temas t ON t.id = c.id_tema
+            WHERE c.fecha_envio IS NOT NULL";
+
+        $desde_db = $wa_db->real_escape_string($audit_desde);
+        $hasta_db = $wa_db->real_escape_string($audit_hasta);
+        $sql_aud .= " AND DATE(c.fecha_envio) BETWEEN '" . $desde_db . "' AND '" . $hasta_db . "'";
+
+        if ($audit_tema > 0) {
+            $sql_aud .= " AND c.id_tema='" . $audit_tema . "'";
+        }
+        if ($audit_emisor > 0) {
+            $sql_aud .= " AND c.id_emisor='" . $audit_emisor . "'";
+        }
+        if ($audit_operador > 0) {
+            $sql_aud .= " AND c.enviado_por='" . $audit_operador . "'";
+        }
+
+        $sql_aud .= " ORDER BY c.fecha_envio DESC LIMIT 500";
+        $r_aud = $wa_db->query($sql_aud);
+        if ($r_aud) {
+            while ($f_aud = $r_aud->fetch_assoc()) {
+                $f_aud['operador'] = ((int)$f_aud['enviado_por'] > 0) ? nitavu_nombre((int)$f_aud['enviado_por']) : '';
+                $auditoria[] = $f_aud;
+            }
+        }
+    }
+
+    $tab_activo = 'operacion';
+    if (isset($_GET['tab'])) {
+        $tab_activo = $_GET['tab'];
+    } elseif (isset($_GET['audit_desde']) || isset($_GET['audit_tema']) || isset($_GET['audit_emisor']) || isset($_GET['audit_operador'])) {
+        $tab_activo = 'auditoria';
+    }
+
+    $porcentaje_limite = ($limite_diario > 0) ? min(100, round(($enviados_hoy_global / $limite_diario) * 100)) : 0;
+    $bar_color = ($porcentaje_limite >= 95) ? 'bg-danger' : (($porcentaje_limite >= 80) ? 'bg-warning' : 'bg-success');
+
+    echo "<style>
+    :root {
+        /* Manual de Identidad Institucional */
+        /* PANTONE 187 C - Color Primario (RGB: 171, 0, 51) */
+        --wa-primary: #ab0033;
+        --wa-primary-80: #bc335c;
+        --wa-primary-60: #cd6685;
+        --wa-primary-40: #dd99ad;
+        --wa-primary-20: #eeccd6;
+        --wa-primary-10: rgba(171, 0, 51, 0.08);
+
+        /* PANTONE 465 C - Secundario / Ocre (RGB: 188, 149, 92) */
+        --wa-sec: #bc955c;
+        --wa-sec-80: #c9aa7d;
+        --wa-sec-60: #d7bfa0;
+        --wa-sec-40: #e4d5c4;
+        --wa-sec-20: #f2eae7;
+
+        /* PANTONE 468 C - Arena / Neutro Calido (RGB: 221, 201, 163) */
+        --wa-sand: #ddc9a3;
+        --wa-sand-20: rgba(221, 201, 163, 0.25);
+
+        /* PANTONE Cool Gray 11 C - Neutro Oscuro (RGB: 84, 86, 90) */
+        --wa-gray: #54565a;
+        --wa-gray-60: rgba(84, 86, 90, 0.60);
+        --wa-gray-20: rgba(84, 86, 90, 0.20);
+
+        --wa-dark: #7a0024;
+        --wa-accent: #25d366; /* Verde WhatsApp solo para iconos y envio directo */
+        --wa-light: #f8fafc;
+        --wa-card-bg: #ffffff;
+        --wa-border: rgba(84, 86, 90, 0.18);
+        --wa-text-main: #2b2c2e;
+        --wa-text-muted: #54565a;
+    }
+
+    .wa-wrapper {
+        max-width: 1440px;
+        margin: 0 auto;
+        padding: 10px 15px 40px;
+    }
+
+    /* Hero Header Institucional */
+    .wa-hero {
+        background: linear-gradient(135deg, #7a0024 0%, #ab0033 60%, #bc955c 100%);
+        border-radius: 18px;
+        padding: 24px 30px;
+        color: #ffffff;
+        box-shadow: 0 8px 24px -4px rgba(171, 0, 51, 0.28);
+        border-bottom: 3px solid #bc955c;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 24px;
+    }
+    .wa-hero::before {
+        content: '';
+        position: absolute;
+        right: -30px;
+        top: -40px;
+        width: 220px;
+        height: 220px;
+        background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+    .wa-hero-title {
+        font-size: 25px;
+        font-weight: 700;
+        letter-spacing: -0.4px;
+        margin: 0 0 6px 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .wa-hero-subtitle {
+        font-size: 14.5px;
+        opacity: 0.92;
+        margin: 0;
+        font-weight: 400;
+    }
+    .wa-hero-chip {
+        background: rgba(255, 255, 255, 0.18);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        color: #ffffff;
+        border-radius: 30px;
+        padding: 5px 14px;
+        font-size: 13px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+    }
+
+    /* KPI Grid */
+    .wa-kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    .wa-kpi-card {
+        background: #ffffff;
+        border: 1px solid var(--wa-border);
+        border-radius: 16px;
+        padding: 18px 20px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .wa-kpi-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+    }
+    .wa-kpi-label {
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--wa-text-muted);
+        margin-bottom: 4px;
+    }
+    .wa-kpi-value {
+        font-size: 26px;
+        font-weight: 700;
+        color: var(--wa-text-main);
+        line-height: 1.15;
+    }
+    .wa-kpi-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        flex-shrink: 0;
+        margin-left: 12px;
+    }
+    .wa-icon-green { background: #dcfce7; color: #16a34a; }
+    .wa-icon-blue { background: #e0f2fe; color: #0284c7; }
+    .wa-icon-amber { background: #fef3c7; color: #d97706; }
+    .wa-icon-purple { background: #f3e8ff; color: #9333ea; }
+
+    /* Segmented Tabs Navigation */
+    .wa-nav-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        background: #f1f5f9;
+        padding: 6px;
+        border-radius: 14px;
+        margin-bottom: 24px;
+        border: 1px solid var(--wa-border);
+    }
+    .wa-nav-btn {
+        flex: 1;
+        min-width: 170px;
+        text-align: center;
+        padding: 10px 18px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 13.5px;
+        color: #475569;
+        text-decoration: none;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    .wa-nav-btn:hover {
+        color: var(--wa-dark);
+        background: rgba(255, 255, 255, 0.7);
+    }
+    .wa-nav-btn.active {
+        background: #ffffff;
+        color: var(--wa-dark);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+    .wa-tab-badge {
+        font-size: 11px;
+        padding: 2px 7px;
+        border-radius: 12px;
+        background: #e2e8f0;
+        color: #334155;
+    }
+    .wa-nav-btn.active .wa-tab-badge {
+        background: var(--wa-primary);
+        color: #fff;
+    }
+
+    /* Tab Panes */
+    .wa-tab-pane {
+        display: none;
+    }
+    .wa-tab-pane.active {
+        display: block;
+        animation: waFadeIn 0.25s ease-out;
+    }
+    @keyframes waFadeIn {
+        from { opacity: 0; transform: translateY(5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Modern Boxes */
+    .wa-box {
+        background: #ffffff;
+        border: 1px solid var(--wa-border);
+        border-radius: 16px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+        margin-bottom: 22px;
+        overflow: hidden;
+    }
+    .wa-box-header {
+        padding: 16px 22px;
+        border-bottom: 1px solid #f1f5f9;
+        border-left: 4px solid var(--wa-primary);
+        background: #fafbfc;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    .wa-box-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--wa-text-main);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .wa-box-body {
+        padding: 22px;
+    }
+
+    /* Theme Pills */
+    .wa-theme-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 20px;
+    }
+    .wa-theme-pill {
+        padding: 8px 16px;
+        border-radius: 24px;
+        background: #f8fafc;
+        border: 1px solid #cbd5e1;
+        color: #334155;
+        text-decoration: none;
+        font-size: 13.5px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+    }
+    .wa-theme-pill:hover {
+        background: #e2e8f0;
+        color: var(--wa-dark);
+    }
+    .wa-theme-pill.active {
+        background: var(--wa-primary);
+        border-color: var(--wa-dark);
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(171, 0, 51, 0.25);
+    }
+
+    /* Sub KPI Bar */
+    .wa-substats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: 12px;
+        margin-bottom: 22px;
+    }
+    .wa-substat {
+        background: #f8fafc;
+        border: 1px solid var(--wa-border);
+        border-radius: 12px;
+        padding: 12px 14px;
+        text-align: center;
+        transition: transform 0.15s ease;
+    }
+    .wa-substat:hover {
+        transform: translateY(-2px);
+    }
+    .wa-substat-num {
+        font-size: 22px;
+        font-weight: 700;
+        display: block;
+        line-height: 1.15;
+    }
+    .wa-substat-lbl {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--wa-text-muted);
+        margin-top: 4px;
+        letter-spacing: 0.5px;
+    }
+
+    /* Status Badges */
+    .wa-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+    .wa-badge-p { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+    .wa-badge-e { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+    .wa-badge-ok { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+    .wa-badge-r { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+    .wa-badge-x { background: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff; }
+
+    /* Tables */
+    .wa-table {
+        margin-bottom: 0;
+        vertical-align: middle;
+    }
+    .wa-table thead th {
+        background: #f8fafc;
+        color: #475569;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid #e2e8f0;
+        padding: 13px 14px;
+        white-space: nowrap;
+    }
+    .wa-table tbody td {
+        padding: 13px 14px;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 13px;
+        vertical-align: middle;
+    }
+    .wa-table tbody tr:hover {
+        background: #fbfcfe;
+    }
+
+    /* WhatsApp Button & Action Buttons */
+    .wa-btn-wa {
+        background: #25d366;
+        color: #ffffff !important;
+        border: none;
+        border-radius: 8px;
+        padding: 7px 14px;
+        font-size: 12.5px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        text-decoration: none;
+        box-shadow: 0 3px 8px rgba(37, 211, 102, 0.28);
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
+    .wa-btn-wa:hover {
+        background: #1ebc57;
+        color: #ffffff !important;
+        transform: translateY(-1px);
+        box-shadow: 0 5px 12px rgba(37, 211, 102, 0.38);
+    }
+    .wa-btn-action {
+        border-radius: 6px;
+        padding: 5px 9px;
+        font-size: 11.5px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    /* Chat bubble preview in table */
+    .wa-chat-bubble {
+        background: #eef8f2;
+        border: 1px solid #c8e6c9;
+        border-left: 4px solid #25d366;
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-size: 12px;
+        line-height: 1.4;
+        color: #1f2937;
+        max-width: 310px;
+        position: relative;
+    }
+    .wa-copy-btn {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: #64748b;
+        border-radius: 4px;
+        padding: 2px 6px;
+        font-size: 10.5px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        margin-top: 4px;
+    }
+    .wa-copy-btn:hover {
+        background: #f1f5f9;
+        color: #0f172a;
+    }
+
+    /* Template banner */
+    .wa-template-banner {
+        background: rgba(221, 201, 163, 0.18);
+        border: 1px solid rgba(188, 149, 92, 0.40);
+        border-left: 4px solid var(--wa-sec);
+        border-radius: 12px;
+        padding: 14px 18px;
+        margin-bottom: 18px;
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+    }
+
+    /* Clean Input styling */
+    .form-control, .form-select {
+        border-radius: 8px;
+        border: 1px solid #cbd5e1;
+        font-size: 13.5px;
+        padding: 8px 12px;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: var(--wa-primary);
+        box-shadow: 0 0 0 3px rgba(171, 0, 51, 0.15);
+    }
+    .form-label {
+        font-weight: 600;
+        font-size: 13px;
+        color: #334155;
+        margin-bottom: 5px;
+    }
+    .wa-btn-primary {
+        background: var(--wa-primary);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 16px;
+        font-weight: 600;
+        font-size: 13.5px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s;
+    }
+    .wa-btn-primary:hover {
+        background: var(--wa-dark);
+        color: #fff;
+        transform: translateY(-1px);
+    }
+    </style>";
+
+    echo "<div class='wa-wrapper'>";
+
+    // 1. HERO BANNER
+    echo "<div class='wa-hero'>";
+    echo "<div class='d-flex flex-wrap justify-content-between align-items-center gap-3'>";
+    echo "<div>";
+    echo "<h1 class='wa-hero-title'><i class='fa fa-whatsapp' style='font-size:32px; color:#25d366;'></i> Centro de Notificaciones WhatsApp</h1>";
+    echo "<p class='wa-hero-subtitle'>Coordinación de Delegación ITAVU | Notificación oportuna y directa a beneficiarios</p>";
+    echo "</div>";
+    echo "<div class='d-flex flex-wrap align-items-center gap-2'>";
+    if ((int)$nivel === 1) {
+        echo "<span class='wa-hero-chip'><i class='fa fa-shield'></i> Administrador</span>";
+    } else {
+        echo "<span class='wa-hero-chip'><i class='fa fa-user'></i> Operativo</span>";
+    }
+    echo "<span class='wa-hero-chip'><i class='fa fa-calendar'></i> " . date('d/m/Y') . "</span>";
+    echo "</div>";
+    echo "</div>";
+    echo "</div>";
+
+    // 2. KPIS GLOBALES SIMÉTRICOS
+    echo "<div class='wa-kpi-grid'>";
+
+    // KPI 1: Envíos hoy vs Límite
+    echo "<div class='wa-kpi-card'>";
+    echo "<div class='w-100'>";
+    echo "<div class='d-flex justify-content-between align-items-center mb-1'>";
+    echo "<span class='wa-kpi-label'>Envíos Hoy (Global)</span>";
+    echo "<span class='badge " . ($porcentaje_limite >= 95 ? "bg-danger" : "bg-success") . "' style='font-size:11px;'>" . $porcentaje_limite . "%</span>";
+    echo "</div>";
+    echo "<div class='wa-kpi-value'>" . $enviados_hoy_global . " <span style='font-size:16px; font-weight:500; color:#94a3b8;'>/ " . $limite_diario . "</span></div>";
+    echo "<div class='progress mt-2' style='height:7px; border-radius:10px; background:#f1f5f9;'>";
+    echo "<div class='progress-bar " . $bar_color . "' role='progressbar' style='width: " . $porcentaje_limite . "%;' aria-valuenow='" . $porcentaje_limite . "' aria-valuemin='0' aria-valuemax='100'></div>";
+    echo "</div>";
+    echo "</div>";
+    echo "<div class='wa-kpi-icon wa-icon-green'><i class='fa fa-paper-plane'></i></div>";
+    echo "</div>";
+
+    // KPI 2: Temas activos
+    echo "<div class='wa-kpi-card'>";
+    echo "<div class='wa-kpi-info'>";
+    echo "<div class='wa-kpi-label'>Temas Activos</div>";
+    echo "<div class='wa-kpi-value'>" . count($temas) . "</div>";
+    echo "<small class='text-muted'>Campañas registradas</small>";
+    echo "</div>";
+    echo "<div class='wa-kpi-icon wa-icon-blue'><i class='fa fa-folder-open'></i></div>";
+    echo "</div>";
+
+    // KPI 3: Emisores asignados
+    echo "<div class='wa-kpi-card'>";
+    echo "<div class='wa-kpi-info'>";
+    echo "<div class='wa-kpi-label'>Líneas Emisoras</div>";
+    echo "<div class='wa-kpi-value'>" . count($emisores_disponibles) . "</div>";
+    echo "<small class='text-muted'>Disponibles para tu cuenta</small>";
+    echo "</div>";
+    echo "<div class='wa-kpi-icon wa-icon-amber'><i class='fa fa-mobile-phone fa-lg'></i></div>";
+    echo "</div>";
+
+    // KPI 4: Pendientes del tema actual
+    $pendientes_num = ($tema_actual !== null) ? (int)$tema_actual['pendientes'] : 0;
+    $asunto_recortado = ($tema_actual !== null) ? wa_e($tema_actual['asunto']) : 'Sin tema';
+    if (strlen($asunto_recortado) > 22) {
+        $asunto_recortado = substr($asunto_recortado, 0, 20) . '...';
+    }
+    echo "<div class='wa-kpi-card'>";
+    echo "<div class='wa-kpi-info'>";
+    echo "<div class='wa-kpi-label' title='" . ($tema_actual ? wa_e($tema_actual['asunto']) : "") . "'>Tema: " . $asunto_recortado . "</div>";
+    echo "<div class='wa-kpi-value' style='color:#d97706;'>" . $pendientes_num . "</div>";
+    echo "<small class='text-muted'>Mensajes pendientes de envío</small>";
+    echo "</div>";
+    echo "<div class='wa-kpi-icon wa-icon-purple'><i class='fa fa-clock-o'></i></div>";
+    echo "</div>";
+
+    echo "</div>"; // Fin KPI Grid
+
+    if ((int)$nivel === 1 && (!$wa_emisores_habilitado || !$wa_cols_emisor_habilitadas)) {
+        echo "<div class='alert alert-warning d-flex align-items-center mb-4' role='alert' style='border-radius:12px;'>";
+        echo "<i class='fa fa-exclamation-triangle fa-lg me-3'></i>";
+        echo "<div><b>Aviso de Base de Datos:</b> La configuración de teléfonos emisores está incompleta. Verifique la tabla <code>wa_noti_emisores</code> y las columnas <code>id_emisor</code> y <code>emisor_telefono</code> en <code>wa_noti_contactos</code>.</div>";
+        echo "</div>";
+    }
+
+    // 3. NAVEGACIÓN POR PESTAÑAS (SEGMENTED TABS)
+    echo "<div class='wa-nav-tabs'>";
+    echo "<button type='button' class='wa-nav-btn " . ($tab_activo === 'operacion' ? 'active' : '') . "' onclick='waSwitchTab(\"operacion\")'>";
+    echo "<i class='fa fa-comments'></i> Bandeja de Envío <span class='wa-tab-badge'>" . $pendientes_num . "</span>";
+    echo "</button>";
+
+    if ((int)$nivel === 1) {
+        echo "<button type='button' class='wa-nav-btn " . ($tab_activo === 'temas' ? 'active' : '') . "' onclick='waSwitchTab(\"temas\")'>";
+        echo "<i class='fa fa-list-alt'></i> Temas y Carga CSV";
+        echo "</button>";
+
+        if ($wa_emisores_habilitado) {
+            echo "<button type='button' class='wa-nav-btn " . ($tab_activo === 'emisores' ? 'active' : '') . "' onclick='waSwitchTab(\"emisores\")'>";
+            echo "<i class='fa fa-phone'></i> Teléfonos Emisores <span class='wa-tab-badge'>" . count($emisores_admin) . "</span>";
+            echo "</button>";
+        }
+
+        echo "<button type='button' class='wa-nav-btn " . ($tab_activo === 'auditoria' ? 'active' : '') . "' onclick='waSwitchTab(\"auditoria\")'>";
+        echo "<i class='fa fa-history'></i> Auditoría y Reportes";
+        echo "</button>";
+
+        echo "<button type='button' class='wa-nav-btn " . ($tab_activo === 'config' ? 'active' : '') . "' onclick='waSwitchTab(\"config\")'>";
+        echo "<i class='fa fa-cog'></i> Configuración";
+        echo "</button>";
+    }
+    echo "</div>";
+
+    // =========================================================================
+    // PESTAÑA 1: BANDEJA DE ENVÍO (OPERACIÓN)
+    // =========================================================================
+    echo "<div id='tab-operacion' class='wa-tab-pane " . ($tab_activo === 'operacion' ? 'active' : '') . "'>";
+
+    if (count($temas) === 0) {
+        echo "<div class='wa-box text-center p-5'>";
+        echo "<i class='fa fa-folder-open-o fa-3x text-muted mb-3'></i>";
+        echo "<h4>No hay temas o campañas activas</h4>";
+        echo "<p class='text-muted'>Un administrador debe crear un tema e importar la lista de contactos para comenzar.</p>";
+        if ((int)$nivel === 1) {
+            echo "<button type='button' class='wa-btn-primary mx-auto' onclick='waSwitchTab(\"temas\")'><i class='fa fa-plus-circle'></i> Crear Primer Tema</button>";
+        }
+        echo "</div>";
+    } else {
+        // Selector de Temas con pastillas estilizadas
+        echo "<div class='d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2'>";
+        echo "<span class='text-uppercase fw-bold text-muted' style='font-size:12px; letter-spacing:0.5px;'><i class='fa fa-filter'></i> Selecciona una Campaña / Tema:</span>";
+        echo "<span class='text-muted' style='font-size:13px;'>Mostrando datos de: <b>" . wa_e($tema_actual['asunto']) . "</b></span>";
+        echo "</div>";
+
+        echo "<div class='wa-theme-pills'>";
+        foreach ($temas as $t) {
+            $is_active = ((int)$t['id'] === (int)$tema_seleccionado);
+            $pendientes_t = (int)$t['pendientes'];
+            echo "<a class='wa-theme-pill " . ($is_active ? 'active' : '') . "' href='notificaciones_whatsapp.php?tema=" . (int)$t['id'] . "&tab=operacion'>";
+            echo "<i class='fa " . ($is_active ? 'fa-folder-open' : 'fa-folder') . "'></i> " . wa_e($t['asunto']);
+            if ($pendientes_t > 0) {
+                echo "<span class='badge " . ($is_active ? "bg-light text-dark" : "bg-warning text-dark") . "' style='font-size:11px; border-radius:10px;'>" . $pendientes_t . " pend.</span>";
+            } else {
+                echo "<span class='badge " . ($is_active ? "bg-light text-dark" : "bg-secondary") . "' style='font-size:11px; border-radius:10px;'><i class='fa fa-check'></i></span>";
+            }
+            echo "</a>";
+        }
+        echo "</div>";
+
+        if ($tema_actual !== null) {
+            // Sub-estadísticas del tema
+            echo "<div class='wa-substats-grid'>";
+            echo "<div class='wa-substat'><span class='wa-substat-num text-primary'>" . (int)$tema_actual['total'] . "</span><span class='wa-substat-lbl'>Total Contactos</span></div>";
+            echo "<div class='wa-substat'><span class='wa-substat-num text-warning'>" . (int)$tema_actual['pendientes'] . "</span><span class='wa-substat-lbl'>Pendientes</span></div>";
+            echo "<div class='wa-substat'><span class='wa-substat-num text-info'>" . (int)$tema_actual['enviados'] . "</span><span class='wa-substat-lbl'>Enviados</span></div>";
+            echo "<div class='wa-substat'><span class='wa-substat-num text-success'>" . (int)$tema_actual['entregados'] . "</span><span class='wa-substat-lbl'>Entregados</span></div>";
+            echo "<div class='wa-substat'><span class='wa-substat-num text-danger'>" . (int)$tema_actual['rechazados'] . "</span><span class='wa-substat-lbl'>Rechazados</span></div>";
+            echo "<div class='wa-substat'><span class='wa-substat-num text-secondary'>" . (int)$tema_actual['errones'] . "</span><span class='wa-substat-lbl'>Núm. Erróneo</span></div>";
+            echo "</div>";
+
+            // Previsualización de Plantilla de Mensaje
+            echo "<div class='wa-template-banner'>";
+            echo "<div style='font-size:24px; color:#16a34a;'><i class='fa fa-quote-left'></i></div>";
+            echo "<div class='flex-grow-1'>";
+            echo "<div class='d-flex justify-content-between align-items-center flex-wrap gap-2 mb-1'>";
+            echo "<strong style='color:#166534; font-size:13.5px;'>Plantilla de Notificación: " . wa_e($tema_actual['asunto']) . "</strong>";
+            if (trim($tema_actual['imagen_url']) !== '') {
+                echo "<a href='" . wa_e($tema_actual['imagen_url']) . "' target='_blank' class='badge bg-light text-success text-decoration-none border border-success'><i class='fa fa-image'></i> Ver Imagen Adjunta</a>";
+            }
+            echo "</div>";
+            echo "<div class='text-muted' style='font-size:13px; font-style:italic;'>\"" . nl2br(wa_e($tema_actual['mensaje'])) . "\"</div>";
+            echo "<small class='text-muted mt-1 d-block' style='font-size:11.5px;'>Las variables <code>{NOMBRE}</code> y <code>{PAQUETE}</code> se reemplazan automáticamente con los datos de cada ciudadano.</small>";
+            echo "</div>";
+            echo "</div>";
+
+            // Card Principal: Tabla de Contactos
+            echo "<div class='wa-box'>";
+            echo "<div class='wa-box-header'>";
+            echo "<div class='wa-box-title'><i class='fa fa-users text-primary'></i> Destinatarios de la Campaña (" . count($contactos) . " registros cargados)</div>";
+
+            // Buscador en tiempo real
+            echo "<div class='d-flex align-items-center gap-2 flex-grow-1' style='max-width:550px;'>";
+            echo "<div class='input-group input-group-sm'>";
+            echo "<span class='input-group-text bg-white border-end-0'><i class='fa fa-search text-muted'></i></span>";
+            echo "<input type='text' id='waFilterInput' class='form-control border-start-0' placeholder='Buscar por nombre, teléfono o paquete...' onkeyup='waFilterContacts()'>";
+            echo "</div>";
+            echo "<select id='waFilterStatus' class='form-select form-select-sm' style='max-width:170px;' onchange='waFilterContacts()'>";
+            echo "<option value='todos'>Todos los estatus</option>";
+            echo "<option value='pendiente' " . ((int)$tema_actual['pendientes'] > 0 ? "selected" : "") . ">Solo Pendientes</option>";
+            echo "<option value='enviado'>Solo Enviados</option>";
+            echo "<option value='entregado'>Solo Entregados</option>";
+            echo "<option value='rechazado'>Solo Rechazados</option>";
+            echo "<option value='numero_erroneo'>Solo Erróneos</option>";
+            echo "</select>";
+            echo "</div>";
+            echo "</div>";
+
+            if (count($contactos) === 0) {
+                echo "<div class='wa-box-body text-center py-5'>";
+                echo "<i class='fa fa-user-times fa-3x text-muted mb-3'></i>";
+                echo "<h5>No hay contactos registrados en este tema</h5>";
+                echo "<p class='text-muted'>Puedes importar un archivo CSV desde la pestaña de 'Temas y Carga CSV'.</p>";
+                echo "</div>";
+            } else {
+                echo "<div class='table-responsive'>";
+                echo "<table class='table table-hover wa-table' id='waContactsTable'>";
+                echo "<thead><tr>";
+                echo "<th style='width:50px;'>#</th>";
+                echo "<th>Destinatario</th>";
+                echo "<th>Paquete / Petición</th>";
+                echo "<th>Estatus</th>";
+                if ($wa_cols_emisor_habilitadas) {
+                    echo "<th>Línea Emisora</th>";
+                }
+                echo "<th style='min-width:280px;'>Mensaje a Enviar</th>";
+                echo "<th style='min-width:290px; text-align:center;'>Acciones Rápidas</th>";
+                echo "</tr></thead><tbody>";
+
+                foreach ($contactos as $c) {
+                    $estatus = $c['estatus'];
+                    $badge_class = "wa-badge-p";
+                    $badge_icon = "fa-clock-o";
+                    $estatus_label = "Pendiente";
+
+                    if ($estatus === 'enviado') {
+                        $badge_class = "wa-badge-e";
+                        $badge_icon = "fa-paper-plane";
+                        $estatus_label = "Enviado";
+                    } elseif ($estatus === 'entregado') {
+                        $badge_class = "wa-badge-ok";
+                        $badge_icon = "fa-check-circle";
+                        $estatus_label = "Entregado";
+                    } elseif ($estatus === 'rechazado') {
+                        $badge_class = "wa-badge-r";
+                        $badge_icon = "fa-times-circle";
+                        $estatus_label = "Rechazado";
+                    } elseif ($estatus === 'numero_erroneo') {
+                        $badge_class = "wa-badge-x";
+                        $badge_icon = "fa-ban";
+                        $estatus_label = "Núm. Erróneo";
+                    }
+
+                    $mensaje_final = wa_mensaje_personalizado($tema_actual['mensaje'], $c['nombre'], $c['paquete']);
+                    if (trim($tema_actual['imagen_url']) != '') {
+                        $mensaje_final .= "\n\nImagen adjunta: " . trim($tema_actual['imagen_url']);
+                    }
+                    $wa_url = "https://wa.me/" . wa_e($c['telefono']) . "?text=" . urlencode($mensaje_final);
+
+                    echo "<tr class='wa-contact-row' data-status='" . wa_e($estatus) . "' data-search='" . strtolower(wa_e($c['nombre'] . ' ' . $c['telefono'] . ' ' . $c['paquete'])) . "'>";
+                    echo "<td class='text-muted fw-bold'>" . (int)$c['id'] . "</td>";
+
+                    // Destinatario (Nombre + Teléfono)
+                    echo "<td>";
+                    echo "<div class='fw-bold text-dark' style='font-size:14px;'>" . wa_e($c['nombre'] !== '' ? $c['nombre'] : 'SIN NOMBRE') . "</div>";
+                    echo "<div class='text-muted d-flex align-items-center gap-2 mt-1' style='font-size:12.5px;'>";
+                    echo "<i class='fa fa-phone text-success'></i> <span>" . wa_e($c['telefono']) . "</span>";
+                    echo "<button type='button' class='btn btn-xs btn-link text-muted p-0' onclick='waCopyText(\"" . wa_e($c['telefono']) . "\", \"Teléfono copiado\")' title='Copiar número'><i class='fa fa-clone'></i></button>";
+                    echo "</div>";
+                    echo "</td>";
+
+                    // Paquete / Petición
+                    echo "<td>";
+                    if (trim($c['paquete']) !== '') {
+                        echo "<span class='badge bg-light text-dark border px-2 py-1' style='font-size:12px;'><i class='fa fa-archive text-secondary me-1'></i> " . wa_e($c['paquete']) . "</span>";
+                    } else {
+                        echo "<span class='text-muted' style='font-size:12px;'>N/A</span>";
+                    }
+                    echo "</td>";
+
+                    // Estatus
+                    echo "<td>";
+                    echo "<span class='wa-badge " . $badge_class . "'><i class='fa " . $badge_icon . "'></i> " . $estatus_label . "</span>";
+                    echo "</td>";
+
+                    // Emisor (si está habilitado)
+                    if ($wa_cols_emisor_habilitadas) {
+                        $emisor_mostrar = (isset($c['emisor_telefono']) && trim($c['emisor_telefono']) !== '') ? $c['emisor_telefono'] : '<span class="text-muted">Sin emisor</span>';
+                        echo "<td style='font-size:12px;'><i class='fa fa-mobile text-muted me-1'></i> " . $emisor_mostrar . "</td>";
+                    }
+
+                    // Burbuja Mensaje con botón de copia
+                    echo "<td>";
+                    echo "<div class='wa-chat-bubble'>";
+                    echo "<div>" . nl2br(wa_e($mensaje_final)) . "</div>";
+                    echo "<button type='button' class='wa-copy-btn' onclick='waCopyText(" . json_encode($mensaje_final) . ", \"Mensaje copiado al portapapeles\")'>";
+                    echo "<i class='fa fa-copy'></i> Copiar";
+                    echo "</button>";
+                    echo "</div>";
+                    echo "</td>";
+
+                    // Acciones Rápidas
+                    echo "<td style='text-align:center;'>";
+                    echo "<div class='d-flex flex-column gap-2 align-items-center justify-content-center'>";
+
+                    // Botón principal de WhatsApp
+                    if ($enviados_hoy_global < $limite_diario || $estatus !== 'pendiente') {
+                        echo "<a target='_blank' class='wa-btn-wa' href='" . $wa_url . "'>";
+                        echo "<i class='fa fa-whatsapp fa-lg'></i> Abrir WhatsApp";
+                        echo "</a>";
+                    } else {
+                        echo "<span class='badge bg-warning text-dark'><i class='fa fa-ban'></i> Límite diario alcanzado</span>";
+                    }
+
+                    // Formulario para marcar ENVIADO con selector de línea
+                    echo "<form method='POST' action='notificaciones_whatsapp.php?tema=" . (int)$tema_seleccionado . "' class='d-flex align-items-center gap-1 w-100 justify-content-center' style='margin:0;'>";
+                    echo "<input type='hidden' name='accion' value='actualizar_estatus'>";
+                    echo "<input type='hidden' name='id_tema' value='" . (int)$tema_seleccionado . "'>";
+                    echo "<input type='hidden' name='id_contacto' value='" . (int)$c['id'] . "'>";
+                    echo "<input type='hidden' name='nuevo_estatus' value='enviado'>";
+
+                    if ($wa_emisores_habilitado && $wa_cols_emisor_habilitadas && count($emisores_disponibles) > 0) {
+                        echo "<select name='id_emisor' class='form-select form-select-sm' style='max-width:145px; font-size:11px; padding:3px 6px;'>";
+                        echo "<option value='0'>Línea emisora...</option>";
+                        foreach ($emisores_disponibles as $ed) {
+                            $id_emisor_contacto = isset($c['id_emisor']) ? (int)$c['id_emisor'] : 0;
+                            $sel_em = ($id_emisor_contacto === (int)$ed['id']) ? " selected" : "";
+                            echo "<option value='" . (int)$ed['id'] . "'" . $sel_em . ">" . wa_e($ed['alias_emisor']) . "</option>";
+                        }
+                        echo "</select>";
+                    }
+
+                    echo "<button type='submit' class='btn btn-sm btn-outline-primary wa-btn-action' title='Marcar como enviado'>";
+                    echo "<i class='fa fa-paper-plane'></i> Enviado";
+                    echo "</button>";
+                    echo "</form>";
+
+                    // Botones de triaje rápido (Entregado, Rechazado, Número Erróneo)
+                    echo "<div class='btn-group btn-group-sm' role='group'>";
+
+                    // Botón Entregado
+                    echo "<form method='POST' action='notificaciones_whatsapp.php?tema=" . (int)$tema_seleccionado . "' style='display:inline;'>";
+                    echo "<input type='hidden' name='accion' value='actualizar_estatus'>";
+                    echo "<input type='hidden' name='id_tema' value='" . (int)$tema_seleccionado . "'>";
+                    echo "<input type='hidden' name='id_contacto' value='" . (int)$c['id'] . "'>";
+                    echo "<input type='hidden' name='nuevo_estatus' value='entregado'>";
+                    echo "<button type='submit' class='btn btn-outline-success wa-btn-action' title='Marcar como entregado exitosamente'><i class='fa fa-check'></i> OK</button>";
+                    echo "</form>";
+
+                    // Botón Rechazado
+                    echo "<form method='POST' action='notificaciones_whatsapp.php?tema=" . (int)$tema_seleccionado . "' style='display:inline;'>";
+                    echo "<input type='hidden' name='accion' value='actualizar_estatus'>";
+                    echo "<input type='hidden' name='id_tema' value='" . (int)$tema_seleccionado . "'>";
+                    echo "<input type='hidden' name='id_contacto' value='" . (int)$c['id'] . "'>";
+                    echo "<input type='hidden' name='nuevo_estatus' value='rechazado'>";
+                    echo "<button type='submit' class='btn btn-outline-danger wa-btn-action' title='Marcar como rechazado'><i class='fa fa-times'></i> Rechazo</button>";
+                    echo "</form>";
+
+                    // Botón Número Erróneo
+                    echo "<form method='POST' action='notificaciones_whatsapp.php?tema=" . (int)$tema_seleccionado . "' style='display:inline;'>";
+                    echo "<input type='hidden' name='accion' value='actualizar_estatus'>";
+                    echo "<input type='hidden' name='id_tema' value='" . (int)$tema_seleccionado . "'>";
+                    echo "<input type='hidden' name='id_contacto' value='" . (int)$c['id'] . "'>";
+                    echo "<input type='hidden' name='nuevo_estatus' value='numero_erroneo'>";
+                    echo "<button type='submit' class='btn btn-outline-secondary wa-btn-action' title='Bloquear por número telefónico erróneo'><i class='fa fa-ban'></i> Erróneo</button>";
+                    echo "</form>";
+
+                    echo "</div>"; // Fin btn-group
+                    echo "</div>"; // Fin d-flex flex-column
+                    echo "</td>";
+                    echo "</tr>";
+                }
+
+                echo "</tbody></table>";
+                echo "</div>";
+            }
+
+            echo "</div>"; // Fin wa-box
+        }
+    }
+    echo "</div>"; // Fin Pestaña Operación
+
+    // =========================================================================
+    // SECCIONES ADMINISTRATIVAS (NIVEL 1)
+    // =========================================================================
+    if ((int)$nivel === 1) {
+
+        // =====================================================================
+        // PESTAÑA 2: TEMAS Y CARGA MASIVA CSV (LAYOUT SIMÉTRICO EN 2 COLUMNAS)
+        // =====================================================================
+        echo "<div id='tab-temas' class='wa-tab-pane " . ($tab_activo === 'temas' ? 'active' : '') . "'>";
+        echo "<div class='row g-4'>";
+
+        // Columna Izquierda: Crear Nuevo Tema
+        echo "<div class='col-lg-6'>";
+        echo "<div class='wa-box h-100'>";
+        echo "<div class='wa-box-header'>";
+        echo "<div class='wa-box-title'><i class='fa fa-plus-circle text-primary'></i> 1. Crear Nuevo Tema / Campaña</div>";
+        echo "</div>";
+        echo "<div class='wa-box-body'>";
+        echo "<form method='POST' action='notificaciones_whatsapp.php'>";
+        echo "<input type='hidden' name='accion' value='crear_tema'>";
+
+        echo "<div class='mb-3'>";
+        echo "<label class='form-label'>Asunto o Nombre de Campaña <span class='text-danger'>*</span></label>";
+        echo "<div class='input-group'>";
+        echo "<span class='input-group-text'><i class='fa fa-tag text-muted'></i></span>";
+        echo "<input type='text' class='form-control' name='asunto' placeholder='Ej. ENTREGA DE ESCRITURAS 2026' required>";
+        echo "</div>";
+        echo "</div>";
+
+        echo "<div class='mb-3'>";
+        echo "<label class='form-label'>URL de Imagen Informativa (Opcional)</label>";
+        echo "<div class='input-group'>";
+        echo "<span class='input-group-text'><i class='fa fa-image text-muted'></i></span>";
+        echo "<input type='url' class='form-control' name='imagen_url' placeholder='https://servidor.com/aviso.jpg'>";
+        echo "</div>";
+        echo "<small class='text-muted'>Se adjuntará un enlace directo al final del mensaje.</small>";
+        echo "</div>";
+
+        echo "<div class='mb-3'>";
+        echo "<label class='form-label'>Mensaje Base de la Plantilla <span class='text-danger'>*</span></label>";
+        echo "<textarea class='form-control' name='mensaje' id='waMensajeBase' rows='5' required placeholder='Escribe el mensaje institucional...'>Estimado/a {NOMBRE}, le informamos que su solicitud de apoyo {PAQUETE} ya se encuentra disponible para entrega en su Delegación ITAVU correspondiente.</textarea>";
+        echo "<div class='d-flex align-items-center gap-2 mt-2 flex-wrap'>";
+        echo "<span class='text-muted' style='font-size:12px;'>Variables dinámicas disponibles:</span>";
+        echo "<span class='badge bg-light text-dark border cursor-pointer' onclick='waInsertVar(\"{NOMBRE}\")'>+ {NOMBRE}</span>";
+        echo "<span class='badge bg-light text-dark border cursor-pointer' onclick='waInsertVar(\"{PAQUETE}\")'>+ {PAQUETE}</span>";
+        echo "</div>";
+        echo "</div>";
+
+        echo "<button class='wa-btn-primary w-100 justify-content-center' type='submit'><i class='fa fa-save'></i> Registrar Campaña</button>";
+        echo "</form>";
+        echo "</div>";
+        echo "</div>";
+        echo "</div>"; // Fin Columna Izquierda
+
+        // Columna Derecha: Importar Archivo CSV
+        echo "<div class='col-lg-6'>";
+        echo "<div class='wa-box h-100'>";
+        echo "<div class='wa-box-header'>";
+        echo "<div class='wa-box-title'><i class='fa fa-file-excel-o text-success'></i> 2. Importar Destinatarios (CSV)</div>";
+        echo "</div>";
+        echo "<div class='wa-box-body'>";
+        echo "<form method='POST' action='notificaciones_whatsapp.php" . ($tema_seleccionado > 0 ? "?tema=" . $tema_seleccionado : "") . "' enctype='multipart/form-data'>";
+        echo "<input type='hidden' name='accion' value='importar_lista'>";
+
+        echo "<div class='mb-3'>";
+        echo "<label class='form-label'>Tema / Campaña Destino <span class='text-danger'>*</span></label>";
+        echo "<select class='form-select' name='id_tema' required>";
+        echo "<option value=''>-- Seleccionar Campaña --</option>";
+        foreach ($temas as $t) {
+            $sel = ((int)$t['id'] === (int)$tema_seleccionado) ? " selected" : "";
+            echo "<option value='" . (int)$t['id'] . "'" . $sel . ">" . wa_e($t['asunto']) . "</option>";
+        }
+        echo "</select>";
+        echo "</div>";
+
+        echo "<div class='mb-3'>";
+        echo "<label class='form-label'>Seleccionar Archivo CSV (.csv o .txt) <span class='text-danger'>*</span></label>";
+        echo "<input type='file' class='form-control' name='archivo_lista' accept='.csv,.txt' required>";
+        echo "</div>";
+
+        echo "<div class='p-3 mb-3' style='background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px;'>";
+        echo "<strong class='text-dark d-block mb-1' style='font-size:13px;'><i class='fa fa-info-circle text-primary'></i> Estructura Requerida del Archivo:</strong>";
+        echo "<p class='text-muted mb-2' style='font-size:12px;'>El archivo debe contener 3 columnas separadas por comas (,) o punto y coma (;):</p>";
+        echo "<code class='d-block p-2 bg-white border rounded mb-2' style='font-size:12px;'>telefono, nombre, paquete<br>8341234567, Juan Perez, ESCRITURA-2026<br>8997654321, Maria Gomez, PAGO-04</code>";
+        echo "<small class='text-muted' style='font-size:11.5px;'><i class='fa fa-shield text-success'></i> Los números marcados como <b>erróneos</b> en campañas previas se filtran y bloquean automáticamente.</small>";
+        echo "</div>";
+
+        echo "<button class='wa-btn-primary w-100 justify-content-center' type='submit'><i class='fa fa-cloud-upload'></i> Procesar e Importar Contactos</button>";
+        echo "</form>";
+        echo "</div>";
+        echo "</div>";
+        echo "</div>"; // Fin Columna Derecha
+
+        echo "</div>"; // Fin Row
+        echo "</div>"; // Fin Pestaña Temas
+
+        // =====================================================================
+        // PESTAÑA 3: TELÉFONOS EMISORES
+        // =====================================================================
+        if ($wa_emisores_habilitado) {
+            echo "<div id='tab-emisores' class='wa-tab-pane " . ($tab_activo === 'emisores' ? 'active' : '') . "'>";
+
+            // Formulario Simétrico para Registrar Emisor
+            echo "<div class='wa-box mb-4'>";
+            echo "<div class='wa-box-header'>";
+            echo "<div class='wa-box-title'><i class='fa fa-plus-circle text-primary'></i> Registrar Nueva Línea Telefónica Emisora</div>";
+            echo "</div>";
+            echo "<div class='wa-box-body'>";
+            echo "<form method='POST' action='notificaciones_whatsapp.php'>";
+            echo "<input type='hidden' name='accion' value='guardar_emisor'>";
+            echo "<div class='row g-3 align-items-end'>";
+
+            echo "<div class='col-md-3'>";
+            echo "<label class='form-label'>Alias o Identificador <span class='text-danger'>*</span></label>";
+            echo "<input type='text' name='alias_emisor' class='form-control' placeholder='Ej. Celular Ventanilla 1' required>";
+            echo "</div>";
+
+            echo "<div class='col-md-3'>";
+            echo "<label class='form-label'>Número Telefónico <span class='text-danger'>*</span></label>";
+            echo "<input type='text' name='telefono_emisor' class='form-control' placeholder='Ej. 8341234567' required>";
+            echo "</div>";
+
+            echo "<div class='col-md-4'>";
+            echo "<label class='form-label'>Operativo Asignado</label>";
+            echo "<select name='nitavu_asignado' class='form-select'>";
+            echo "<option value='0'>-- Compartido (Disponible para todos) --</option>";
+            $sql_ops = "SELECT p.nitavu, IFNULL(e.nombre,p.nitavu) as nombre FROM aplicaciones_permisos p LEFT JOIN empleados e ON e.nitavu=p.nitavu WHERE p.idapp='" . $id_aplicacion . "' AND p.nivel=2 ORDER BY nombre ASC";
+            $r_ops = $conexion->query($sql_ops);
+            if ($r_ops) {
+                while ($f_op = $r_ops->fetch_assoc()) {
+                    echo "<option value='" . (int)$f_op['nitavu'] . "'>" . wa_e($f_op['nombre']) . " (" . (int)$f_op['nitavu'] . ")</option>";
+                }
+            }
+            echo "</select>";
+            echo "</div>";
+
+            echo "<div class='col-md-2'>";
+            echo "<button class='wa-btn-primary w-100 justify-content-center' type='submit'><i class='fa fa-save'></i> Guardar Línea</button>";
+            echo "</div>";
+
+            echo "</div>";
+            echo "</form>";
+            echo "</div>";
+            echo "</div>";
+
+            // Tabla de Emisores Configurados
+            echo "<div class='wa-box'>";
+            echo "<div class='wa-box-header'>";
+            echo "<div class='wa-box-title'><i class='fa fa-list text-muted'></i> Líneas Registradas (" . count($emisores_admin) . ")</div>";
+            echo "</div>";
+
+            if (count($emisores_admin) === 0) {
+                echo "<div class='wa-box-body text-center py-4 text-muted'>No hay líneas telefónicas configuradas.</div>";
+            } else {
+                echo "<div class='table-responsive'>";
+                echo "<table class='table table-hover wa-table'>";
+                echo "<thead><tr>";
+                echo "<th>ID</th>";
+                echo "<th>Alias de la Línea</th>";
+                echo "<th>Número Celular</th>";
+                echo "<th>Asignación</th>";
+                echo "<th>Estatus</th>";
+                echo "<th style='text-align:center;'>Acciones</th>";
+                echo "</tr></thead><tbody>";
+
+                foreach ($emisores_admin as $ea) {
+                    $asig = ((int)$ea['nitavu_asignado'] === 0) ? '<span class="badge bg-light text-dark border">Compartido</span>' : '<span class="badge bg-light text-primary border">' . wa_e($ea['nombre_asignado']) . '</span>';
+                    $estado_label = ((int)$ea['activo'] === 1) ? '<span class="badge bg-success">Activo</span>' : '<span class="badge bg-secondary">Inactivo</span>';
+                    $nuevo_estado = ((int)$ea['activo'] === 1) ? 0 : 1;
+                    $accion_label = ((int)$ea['activo'] === 1) ? '<i class="fa fa-pause"></i> Desactivar' : '<i class="fa fa-play"></i> Activar';
+                    $btn_class = ((int)$ea['activo'] === 1) ? 'btn-outline-danger' : 'btn-outline-success';
+
+                    echo "<tr>";
+                    echo "<td class='text-muted fw-bold'>" . (int)$ea['id'] . "</td>";
+                    echo "<td class='fw-bold'>" . wa_e($ea['alias_emisor']) . "</td>";
+                    echo "<td><i class='fa fa-phone text-success me-1'></i> " . wa_e($ea['telefono_emisor']) . "</td>";
+                    echo "<td>" . $asig . "</td>";
+                    echo "<td>" . $estado_label . "</td>";
+                    echo "<td style='text-align:center;'>";
+                    echo "<form method='POST' action='notificaciones_whatsapp.php' style='margin:0;'>";
+                    echo "<input type='hidden' name='accion' value='estado_emisor'>";
+                    echo "<input type='hidden' name='id_emisor_admin' value='" . (int)$ea['id'] . "'>";
+                    echo "<input type='hidden' name='nuevo_estado_emisor' value='" . $nuevo_estado . "'>";
+                    echo "<button type='submit' class='btn btn-xs " . $btn_class . "'>" . $accion_label . "</button>";
+                    echo "</form>";
+                    echo "</td>";
+                    echo "</tr>";
+                }
+
+                echo "</tbody></table>";
+                echo "</div>";
+            }
+            echo "</div>";
+            echo "</div>"; // Fin Pestaña Emisores
+        }
+
+        // =====================================================================
+        // PESTAÑA 4: AUDITORÍA Y REPORTES
+        // =====================================================================
+        echo "<div id='tab-auditoria' class='wa-tab-pane " . ($tab_activo === 'auditoria' ? 'active' : '') . "'>";
+
+        // Formulario Simétrico de Filtros
+        echo "<div class='wa-box mb-4'>";
+        echo "<div class='wa-box-header'>";
+        echo "<div class='wa-box-title'><i class='fa fa-filter text-primary'></i> Filtros de Auditoría y Trazabilidad</div>";
+        echo "</div>";
+        echo "<div class='wa-box-body'>";
+        echo "<form method='GET' action='notificaciones_whatsapp.php'>";
+        echo "<input type='hidden' name='tab' value='auditoria'>";
+        if ($tema_seleccionado > 0) {
+            echo "<input type='hidden' name='tema' value='" . (int)$tema_seleccionado . "'>";
+        }
+
+        echo "<div class='row g-3 align-items-end'>";
+
+        echo "<div class='col-md-2'>";
+        echo "<label class='form-label'>Fecha Inicial</label>";
+        echo "<input type='date' class='form-control' name='audit_desde' value='" . wa_e($audit_desde) . "'>";
+        echo "</div>";
+
+        echo "<div class='col-md-2'>";
+        echo "<label class='form-label'>Fecha Final</label>";
+        echo "<input type='date' class='form-control' name='audit_hasta' value='" . wa_e($audit_hasta) . "'>";
+        echo "</div>";
+
+        echo "<div class='col-md-3'>";
+        echo "<label class='form-label'>Campaña / Tema</label>";
+        echo "<select class='form-select' name='audit_tema'>";
+        echo "<option value='0'>-- Todas las campañas --</option>";
+        foreach ($temas as $tt) {
+            $sel_tt = ((int)$audit_tema === (int)$tt['id']) ? " selected" : "";
+            echo "<option value='" . (int)$tt['id'] . "'" . $sel_tt . ">" . wa_e($tt['asunto']) . "</option>";
+        }
+        echo "</select>";
+        echo "</div>";
+
+        echo "<div class='col-md-2'>";
+        echo "<label class='form-label'>Línea Emisora</label>";
+        echo "<select class='form-select' name='audit_emisor'>";
+        echo "<option value='0'>-- Todas las líneas --</option>";
+        foreach ($emisores_admin as $ea2) {
+            $sel_ea2 = ((int)$audit_emisor === (int)$ea2['id']) ? " selected" : "";
+            echo "<option value='" . (int)$ea2['id'] . "'" . $sel_ea2 . ">" . wa_e($ea2['alias_emisor']) . "</option>";
+        }
+        echo "</select>";
+        echo "</div>";
+
+        echo "<div class='col-md-2'>";
+        echo "<label class='form-label'>Operador</label>";
+        echo "<select class='form-select' name='audit_operador'>";
+        echo "<option value='0'>-- Todos --</option>";
+        $sql_ops_all = "SELECT DISTINCT enviado_por as nitavu FROM wa_noti_contactos WHERE fecha_envio IS NOT NULL ORDER BY enviado_por";
+        $r_ops_all = $wa_db->query($sql_ops_all);
+        if ($r_ops_all) {
+            while ($f_ops_all = $r_ops_all->fetch_assoc()) {
+                $f_ops_all['nombre'] = nitavu_nombre((int)$f_ops_all['nitavu']);
+                $sel_oa = ((int)$audit_operador === (int)$f_ops_all['nitavu']) ? " selected" : "";
+                echo "<option value='" . (int)$f_ops_all['nitavu'] . "'" . $sel_oa . ">" . wa_e($f_ops_all['nombre']) . "</option>";
+            }
+        }
+        echo "</select>";
+        echo "</div>";
+
+        echo "<div class='col-md-1'>";
+        echo "<button class='wa-btn-primary w-100 justify-content-center' type='submit' title='Aplicar filtros'><i class='fa fa-search'></i></button>";
+        echo "</div>";
+
+        echo "</div>";
+        echo "</form>";
+        echo "</div>";
+        echo "</div>";
+
+        // Tabla de Resultados de Auditoría
+        echo "<div class='wa-box'>";
+        echo "<div class='wa-box-header'>";
+        echo "<div class='wa-box-title'><i class='fa fa-table text-muted'></i> Registros de Auditoría (" . count($auditoria) . " encontrados, máx. 500)</div>";
+        echo "</div>";
+
+        if (count($auditoria) === 0) {
+            echo "<div class='wa-box-body text-center py-5 text-muted'>";
+            echo "<i class='fa fa-search-minus fa-3x mb-3'></i>";
+            echo "<h5>No se encontraron envíos con los criterios seleccionados</h5>";
+            echo "<p>Intente ampliar el rango de fechas o seleccionar 'Todos' en los filtros.</p>";
+            echo "</div>";
+        } else {
+            echo "<div class='table-responsive'>";
+            echo "<table class='table table-hover wa-table'>";
+            echo "<thead><tr>";
+            echo "<th>Fecha y Hora</th>";
+            echo "<th>Campaña</th>";
+            echo "<th>Destinatario</th>";
+            echo "<th>Teléfono</th>";
+            echo "<th>Paquete</th>";
+            echo "<th>Estatus</th>";
+            echo "<th>Operador</th>";
+            echo "<th>Línea Emisora</th>";
+            echo "</tr></thead><tbody>";
+
+            foreach ($auditoria as $au) {
+                echo "<tr>";
+                echo "<td><span class='badge bg-light text-dark border'><i class='fa fa-clock-o me-1'></i> " . wa_e($au['fecha_envio']) . "</span></td>";
+                echo "<td class='fw-bold'>" . wa_e($au['asunto']) . "</td>";
+                echo "<td>" . wa_e($au['nombre']) . "</td>";
+                echo "<td><i class='fa fa-whatsapp text-success me-1'></i> " . wa_e($au['telefono']) . "</td>";
+                echo "<td>" . wa_e($au['paquete']) . "</td>";
+                echo "<td><span class='badge bg-light text-primary border'>" . wa_e($au['estatus']) . "</span></td>";
+                echo "<td><i class='fa fa-user text-muted me-1'></i> " . wa_e($au['operador'] !== '' ? $au['operador'] : 'ID ' . $au['enviado_por']) . "</td>";
+                echo "<td>" . wa_e($au['emisor_telefono'] !== '' ? $au['emisor_telefono'] : '-') . "</td>";
+                echo "</tr>";
+            }
+
+            echo "</tbody></table>";
+            echo "</div>";
+        }
+        echo "</div>";
+        echo "</div>"; // Fin Pestaña Auditoría
+
+        // =====================================================================
+        // PESTAÑA 5: CONFIGURACIÓN
+        // =====================================================================
+        echo "<div id='tab-config' class='wa-tab-pane " . ($tab_activo === 'config' ? 'active' : '') . "'>";
+        echo "<div class='row justify-content-center'>";
+        echo "<div class='col-md-7'>";
+        echo "<div class='wa-box'>";
+        echo "<div class='wa-box-header'>";
+        echo "<div class='wa-box-title'><i class='fa fa-sliders text-primary'></i> Parámetros y Cuota Diaria de Mensajes</div>";
+        echo "</div>";
+        echo "<div class='wa-box-body'>";
+        echo "<form method='POST' action='notificaciones_whatsapp.php'>";
+        echo "<input type='hidden' name='accion' value='guardar_config'>";
+
+        echo "<div class='mb-4'>";
+        echo "<label class='form-label'>Límite Máximo de Mensajes por Día</label>";
+        echo "<div class='input-group input-group-lg'>";
+        echo "<span class='input-group-text'><i class='fa fa-tachometer text-muted'></i></span>";
+        echo "<input type='number' min='1' max='5000' class='form-control' name='limite_diario' value='" . $limite_diario . "' required>";
+        echo "<span class='input-group-text'>mensajes / día</span>";
+        echo "</div>";
+        echo "<small class='text-muted mt-2 d-block'>";
+        echo "<i class='fa fa-info-circle text-info'></i> Este umbral protege las líneas telefónicas contra restricciones o bloqueos por envío masivo automatizado de WhatsApp. Se recomienda mantenerlo entre 90 y 250 mensajes diarios por número.";
+        echo "</small>";
+        echo "</div>";
+
+        echo "<div class='d-flex justify-content-end'>";
+        echo "<button class='wa-btn-primary' type='submit'><i class='fa fa-check'></i> Guardar Parámetros</button>";
+        echo "</div>";
+
+        echo "</form>";
+        echo "</div>";
+        echo "</div>";
+        echo "</div>";
+        echo "</div>";
+        echo "</div>"; // Fin Pestaña Configuración
+    }
+
+    echo "</div>"; // Fin wa-wrapper
+
+    // =========================================================================
+    // JAVASCRIPT: CAMBIO DE PESTAÑAS, FILTRADO Y ACCIONES
+    // =========================================================================
+    echo "<script>
+    function waSwitchTab(tabName) {
+        document.querySelectorAll('.wa-tab-pane').forEach(function(pane) {
+            pane.classList.remove('active');
+        });
+        document.querySelectorAll('.wa-nav-btn').forEach(function(btn) {
+            btn.classList.remove('active');
+        });
+
+        var targetPane = document.getElementById('tab-' + tabName);
+        if (targetPane) {
+            targetPane.classList.add('active');
+        }
+
+        // Actualizar botón activo
+        var buttons = document.querySelectorAll('.wa-nav-btn');
+        buttons.forEach(function(btn) {
+            if (btn.getAttribute('onclick') && btn.getAttribute('onclick').indexOf(tabName) !== -1) {
+                btn.classList.add('active');
+            }
+        });
+
+        // Guardar estado en URL sin recargar
+        if (history.pushState) {
+            var newurl = window.location.protocol + '//' + window.location.host + window.location.pathname + '?tab=' + tabName;
+            var currentTema = " . (int)$tema_seleccionado . ";
+            if (currentTema > 0) {
+                newurl += '&tema=' + currentTema;
+            }
+            window.history.pushState({path: newurl}, '', newurl);
+        }
+    }
+
+    function waFilterContacts() {
+        var filterVal = document.getElementById('waFilterInput').value.toLowerCase().trim();
+        var statusVal = document.getElementById('waFilterStatus').value;
+        var rows = document.querySelectorAll('.wa-contact-row');
+
+        rows.forEach(function(row) {
+            var searchData = row.getAttribute('data-search') || '';
+            var rowStatus = row.getAttribute('data-status') || '';
+
+            var matchSearch = (filterVal === '' || searchData.indexOf(filterVal) !== -1);
+            var matchStatus = (statusVal === 'todos' || rowStatus === statusVal);
+
+            if (matchSearch && matchStatus) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    function waCopyText(text, successMsg) {
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(text).then(function() {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: successMsg || 'Texto copiado',
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                } else {
+                    alert(successMsg || 'Copiado al portapapeles');
+                }
+            });
+        } else {
+            var dummy = document.createElement('textarea');
+            document.body.appendChild(dummy);
+            dummy.value = text;
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+            alert(successMsg || 'Copiado al portapapeles');
+        }
+    }
+
+    function waInsertVar(varName) {
+        var textarea = document.getElementById('waMensajeBase');
+        if (textarea) {
+            var pos = textarea.selectionStart;
+            var text = textarea.value;
+            textarea.value = text.substring(0, pos) + varName + text.substring(pos);
+            textarea.focus();
+            textarea.selectionStart = pos + varName.length;
+            textarea.selectionEnd = pos + varName.length;
+        }
+    }
+
+    // Inicializar filtro de contactos al cargar
+    document.addEventListener('DOMContentLoaded', function() {
+        if (document.getElementById('waFilterInput')) {
+            waFilterContacts();
+        }
+    });
+    </script>";
+} else {
+    mensaje("ERROR: no tienes acceso a este modulo", "");
+}
+
+include("./lib/body_footer.php");
+?>
