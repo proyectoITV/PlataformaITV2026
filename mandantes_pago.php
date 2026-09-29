@@ -355,7 +355,57 @@ if (sanpedro($id_aplicacion, $nitavu) == TRUE){
     }
 ?>
 
-<div class="cd-wrapper">
+<style>
+#registroPago #formulario #bloqueRangoFechas {
+    width: 100%;
+}
+
+#registroPago #formulario #bloqueRangoFechas .cd-form-grid {
+    width: 100% !important;
+    grid-template-columns: repeat(2, minmax(260px, 1fr)) !important;
+}
+
+#registroPago #formulario .cd-ajuste-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    width: 100%;
+}
+
+#registroPago #formulario .cd-ajuste-row select.cd-form-control {
+    flex: 0 0 110px !important;
+    max-width: 110px !important;
+    width: 110px !important;
+}
+
+#registroPago #formulario .cd-ajuste-row input.cd-form-control {
+    flex: 1 1 auto !important;
+    min-width: 190px !important;
+    width: auto !important;
+}
+
+@media (max-width: 768px) {
+    #registroPago #formulario #bloqueRangoFechas .cd-form-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    #registroPago #formulario .cd-ajuste-row {
+        flex-wrap: nowrap;
+    }
+
+    #registroPago #formulario .cd-ajuste-row select.cd-form-control {
+        flex: 0 0 96px !important;
+        max-width: 96px !important;
+        width: 96px !important;
+    }
+
+    #registroPago #formulario .cd-ajuste-row input.cd-form-control {
+        min-width: 140px !important;
+    }
+}
+</style>
+
+<div class="cd-wrapper" style="max-width:1520px;">
     <!-- Hero Banner institucional -->
     <div class="cd-hero">
         <div>
@@ -517,7 +567,7 @@ if (sanpedro($id_aplicacion, $nitavu) == TRUE){
 
         <!-- FORMULARIO 1: ABONO PRINCIPAL (TIPO 3) -->
         <form name="formulario" id="formulario" style="display:none;" action="" onSubmit="enviarDatos(); return false;">
-            <div class="cd-card-section" style="padding:15px; margin-bottom:15px;">
+            <div class="cd-card-section" id="bloqueRangoFechas" style="padding:15px; margin-bottom:15px; width:100%;">
                 <div style="margin-bottom:10px;">
                     <label class="cd-form-label" style="font-weight:600; cursor:pointer;">
                         <input type="checkbox" id="peri2" name="peri2" value="periodo2" onClick="mostrarFecha2()"> Habilitar Rango de Fechas (Periodo)
@@ -613,7 +663,7 @@ if (sanpedro($id_aplicacion, $nitavu) == TRUE){
             <div class="cd-form-grid">
                 <div class="cd-form-group">
                     <label class="cd-form-label">Enganche ahorro por identificar y traspasar</label>
-                    <div style="display:flex; gap:8px;">
+                    <div class="cd-ajuste-row">
                         <select id="mas_menos2" name="mas_menos2" class="cd-form-control" style="width:90px;">
                             <option value="1">más (+)</option>
                             <option value="2">menos (-)</option>
@@ -624,7 +674,7 @@ if (sanpedro($id_aplicacion, $nitavu) == TRUE){
 
                 <div class="cd-form-group">
                     <label class="cd-form-label">Descuento por nómina</label>
-                    <div style="display:flex; gap:8px;">
+                    <div class="cd-ajuste-row">
                         <select id="mas_menos1" name="mas_menos1" class="cd-form-control" style="width:90px;">
                             <option value="1">más (+)</option>
                             <option value="2">menos (-)</option>
@@ -637,7 +687,7 @@ if (sanpedro($id_aplicacion, $nitavu) == TRUE){
             <div class="cd-form-grid">
                 <div class="cd-form-group">
                     <label class="cd-form-label">Por transferencia</label>
-                    <div style="display:flex; gap:8px;">
+                    <div class="cd-ajuste-row">
                         <select id="mas_menos3" name="mas_menos3" class="cd-form-control" style="width:90px;">
                             <option value="1">más (+)</option>
                             <option value="2">menos (-)</option>
@@ -648,7 +698,7 @@ if (sanpedro($id_aplicacion, $nitavu) == TRUE){
 
                 <div class="cd-form-group">
                     <label class="cd-form-label">Por pagos universales</label>
-                    <div style="display:flex; gap:8px;">
+                    <div class="cd-ajuste-row">
                         <select id="mas_menos4" name="mas_menos4" class="cd-form-control" style="width:90px;">
                             <option value="1">más (+)</option>
                             <option value="2">menos (-)</option>
@@ -661,7 +711,7 @@ if (sanpedro($id_aplicacion, $nitavu) == TRUE){
             <div class="cd-form-grid">
                 <div class="cd-form-group">
                     <label class="cd-form-label">Por concepto de escritura</label>
-                    <div style="display:flex; gap:8px;">
+                    <div class="cd-ajuste-row">
                         <select id="mas_menos5" name="mas_menos5" class="cd-form-control" style="width:90px;">
                             <option value="1">más (+)</option>
                             <option value="2">menos (-)</option>
@@ -672,7 +722,7 @@ if (sanpedro($id_aplicacion, $nitavu) == TRUE){
 
                 <div class="cd-form-group">
                     <label class="cd-form-label">Por cesión de derechos</label>
-                    <div style="display:flex; gap:8px;">
+                    <div class="cd-ajuste-row">
                         <select id="mas_menos6" name="mas_menos6" class="cd-form-control" style="width:90px;">
                             <option value="1">más (+)</option>
                             <option value="2">menos (-)</option>
@@ -685,7 +735,7 @@ if (sanpedro($id_aplicacion, $nitavu) == TRUE){
             <div class="cd-form-grid">
                 <div class="cd-form-group">
                     <label class="cd-form-label">Por pago de derechos</label>
-                    <div style="display:flex; gap:8px;">
+                    <div class="cd-ajuste-row">
                         <select id="mas_menos7" name="mas_menos7" class="cd-form-control" style="width:90px;">
                             <option value="1">más (+)</option>
                             <option value="2">menos (-)</option>
@@ -696,7 +746,7 @@ if (sanpedro($id_aplicacion, $nitavu) == TRUE){
 
                 <div class="cd-form-group">
                     <label class="cd-form-label">Por pago en OXXO</label>
-                    <div style="display:flex; gap:8px;">
+                    <div class="cd-ajuste-row">
                         <select id="mas_menos8" name="mas_menos8" class="cd-form-control" style="width:90px;">
                             <option value="1">más (+)</option>
                             <option value="2">menos (-)</option>
@@ -709,7 +759,7 @@ if (sanpedro($id_aplicacion, $nitavu) == TRUE){
             <div class="cd-form-grid">
                 <div class="cd-form-group">
                     <label class="cd-form-label">Otros Pagos</label>
-                    <div style="display:flex; gap:8px;">
+                    <div class="cd-ajuste-row">
                         <select id="mas_menos9" name="mas_menos9" class="cd-form-control" style="width:90px;">
                             <option value="1">más (+)</option>
                             <option value="2">menos (-)</option>
@@ -789,9 +839,36 @@ if (sanpedro($id_aplicacion, $nitavu) == TRUE){
     <div id="tablaRegistros" style="display:inline-block; width:100%;">
         <?php
         if (isset($idmandante) && isset($idcolonia) && isset($idmunicipio)){
-            $sql_reg = "SELECT * FROM mandantes_abonos WHERE idmandante = ".$idmandante." and idcolonia = ".$idcolonia." and idmunicipio = ".$idmunicipio." and cancelado=0 ORDER BY id DESC";
+            $per_page_validos = array(10, 25, 50);
+            $per_page = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 50;
+            if(!in_array($per_page, $per_page_validos, true)){
+                $per_page = 50;
+            }
+
+            $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+            if($page < 1){
+                $page = 1;
+            }
+
+            $sql_total = "SELECT COUNT(*) AS total FROM mandantes_abonos WHERE idmandante = ".$idmandante." and idcolonia = ".$idcolonia." and idmunicipio = ".$idmunicipio." and cancelado=0";
+            $rc_total = $conexion->query($sql_total);
+            $total_records = 0;
+            if($rc_total){
+                $r_total = $rc_total->fetch_array();
+                $total_records = isset($r_total['total']) ? (int)$r_total['total'] : 0;
+            }
+
+            $total_pages = $total_records > 0 ? (int)ceil($total_records / $per_page) : 1;
+            if($page > $total_pages){
+                $page = $total_pages;
+            }
+
+            $offset = ($page - 1) * $per_page;
+            $sql_reg = "SELECT * FROM mandantes_abonos WHERE idmandante = ".$idmandante." and idcolonia = ".$idcolonia." and idmunicipio = ".$idmunicipio." and cancelado=0 ORDER BY id DESC LIMIT ".$offset.", ".$per_page;
             $rc = $conexion->query($sql_reg);
-            $total_records = $rc ? $rc->num_rows : 0;
+            $desde = $total_records > 0 ? ($offset + 1) : 0;
+            $hasta = $total_records > 0 ? min($offset + $per_page, $total_records) : 0;
+            $base_url = "mandantes_pago.php?idmandante=".$idmandante."&idcolonia=".$idcolonia."&idmunicipio=".$idmunicipio;
             if ($total_records > 0){
         ?>
                 <div class="cd-card-section" style="margin-top:20px;">
@@ -800,6 +877,17 @@ if (sanpedro($id_aplicacion, $nitavu) == TRUE){
                             <i class="fa-solid fa-receipt"></i> Desglose de Pagos a Mandante
                         </h3>
                         <span class="cd-badge cd-badge-info"><?php echo $total_records; ?> Registros</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; padding:12px 16px; border-bottom:1px solid var(--cd-border); background:#fff;">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <label for="jsRegistrosPerPage" style="font-weight:600; color:var(--cd-gray-dark); margin:0;">Registros por página:</label>
+                            <select id="jsRegistrosPerPage" class="cd-form-control" style="width:90px; padding:6px 8px; height:34px;">
+                                <option value="10" <?php echo $per_page === 10 ? 'selected' : ''; ?>>10</option>
+                                <option value="25" <?php echo $per_page === 25 ? 'selected' : ''; ?>>25</option>
+                                <option value="50" <?php echo $per_page === 50 ? 'selected' : ''; ?>>50</option>
+                            </select>
+                        </div>
+                        <div style="font-weight:600; color:var(--cd-gray-dark);">Mostrando <?php echo $desde; ?> a <?php echo $hasta; ?> de <?php echo $total_records; ?></div>
                     </div>
                     <div class="cd-card-body" style="padding:0;">
                         <div class="cd-table-container">
@@ -818,7 +906,7 @@ if (sanpedro($id_aplicacion, $nitavu) == TRUE){
                                         <th style="text-align:right;">Monto Pagado</th>
                                         <th style="text-align:right;">Acumulado</th>
                                         <th style="text-align:right;">Saldo</th>
-                                        <th style="text-align:center; width:190px;">Acciones</th>
+                                        <th style="text-align:center; width:280px; min-width:280px;">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -847,7 +935,7 @@ if (sanpedro($id_aplicacion, $nitavu) == TRUE){
                                     echo "<td style='text-align:right; font-weight:700;'>$".number_format((float)$r['saldo'], 2)."</td>";
 
                                     // Column Acciones
-                                    echo "<td style='text-align:center;'><div class='cd-action-group'>";
+                                    echo "<td style='text-align:center; min-width:280px; white-space:nowrap;'><div class='cd-action-group' style='display:inline-flex; min-width:190px; flex-wrap:nowrap;'>";
 
                                     // Adjuntos button & modal
                                     echo "<a href='#subirAdjuntos1".$vuelta."' rel='MyModal:open' class='cd-icon-btn view' title='Documentos Adjuntos'><i class='fa-solid fa-paperclip'></i></a>";
@@ -938,6 +1026,15 @@ if (sanpedro($id_aplicacion, $nitavu) == TRUE){
                             </table>
                         </div>
                     </div>
+                    <?php if($total_pages > 1){ ?>
+                    <div class="cd-pagination" style="justify-content:flex-end; gap:8px; padding:12px 16px; border-top:1px solid var(--cd-border); background:#fff;">
+                        <a href="<?php echo $base_url; ?>&page=1&per_page=<?php echo $per_page; ?>" class="cd-btn cd-btn-light js-mandantes-pagination" data-page="1" style="padding:6px 10px; height:32px;"><i class="fa-solid fa-angles-left"></i></a>
+                        <a href="<?php echo $base_url; ?>&page=<?php echo max(1, $page - 1); ?>&per_page=<?php echo $per_page; ?>" class="cd-btn cd-btn-light js-mandantes-pagination" data-page="<?php echo max(1, $page - 1); ?>" style="padding:6px 10px; height:32px;"><i class="fa-solid fa-angle-left"></i></a>
+                        <span class="cd-badge cd-badge-info" style="padding:6px 12px;">Página <?php echo $page; ?> de <?php echo $total_pages; ?></span>
+                        <a href="<?php echo $base_url; ?>&page=<?php echo min($total_pages, $page + 1); ?>&per_page=<?php echo $per_page; ?>" class="cd-btn cd-btn-light js-mandantes-pagination" data-page="<?php echo min($total_pages, $page + 1); ?>" style="padding:6px 10px; height:32px;"><i class="fa-solid fa-angle-right"></i></a>
+                        <a href="<?php echo $base_url; ?>&page=<?php echo $total_pages; ?>&per_page=<?php echo $per_page; ?>" class="cd-btn cd-btn-light js-mandantes-pagination" data-page="<?php echo $total_pages; ?>" style="padding:6px 10px; height:32px;"><i class="fa-solid fa-angles-right"></i></a>
+                    </div>
+                    <?php } ?>
                 </div>
         <?php
             }
@@ -955,6 +1052,43 @@ if (sanpedro($id_aplicacion, $nitavu) == TRUE){
             return $("#colonia_select option:selected").val();
         }
         return "";
+    }
+
+    function obtenerRegistrosPorPaginaActual(){
+        var perPage = parseInt($("#jsRegistrosPerPage").val(), 10);
+        if(perPage !== 10 && perPage !== 25 && perPage !== 50){
+            perPage = 50;
+        }
+        return perPage;
+    }
+
+    function cargarTablaRegistrosPaginada(page, perPage){
+        var id = document.getElementById("idmandante").value;
+        var idcolonia = document.getElementById("idcolonia").value;
+        var idmunicipio = document.getElementById("idmunicipio").value;
+        var nitavu = document.getElementById('nitavu').value;
+
+        if(!id || !idcolonia || !idmunicipio){
+            return;
+        }
+
+        if(!page || page < 1){
+            page = 1;
+        }
+
+        if(perPage !== 10 && perPage !== 25 && perPage !== 50){
+            perPage = 50;
+        }
+
+        $.ajax({
+            url: "md_registrosMandante.php",
+            type: "get",
+            data: {id: id, idcolonia: idcolonia, idmunicipio: idmunicipio, nitavu: nitavu, page: page, per_page: perPage },
+            success: function(data){
+                $('#tablaRegistros').html(data+"\n");
+                $('.url1').val(window.location);
+            }
+        });
     }
 
     function inicializarSelect2Filtros(contexto){
@@ -1079,7 +1213,7 @@ if (sanpedro($id_aplicacion, $nitavu) == TRUE){
         $.ajax({
             url: "md_registrosMandante.php",
             type: "get",
-            data: {id: id, idcolonia: idcolonia, idmunicipio: idmunicipio, nitavu: nitavu },
+            data: {id: id, idcolonia: idcolonia, idmunicipio: idmunicipio, nitavu: nitavu, page: 1, per_page: obtenerRegistrosPorPaginaActual() },
             success: function(data){
                 $("#preloader").css({'display':'none'});
                 var formReporte = document.getElementById('reporteMandante');
@@ -1100,6 +1234,18 @@ if (sanpedro($id_aplicacion, $nitavu) == TRUE){
         });
         document.getElementById("idmandante").value = id;
     }
+
+    $(document).on('click', '.js-mandantes-pagination', function(event){
+        event.preventDefault();
+        var page = parseInt($(this).data('page'), 10);
+        var perPage = obtenerRegistrosPorPaginaActual();
+        cargarTablaRegistrosPaginada(page, perPage);
+    });
+
+    $(document).on('change', '#jsRegistrosPerPage', function(){
+        var perPage = obtenerRegistrosPorPaginaActual();
+        cargarTablaRegistrosPaginada(1, perPage);
+    });
 
     function enviarDatos(){
         idmandante = document.getElementById("idmandante").value;

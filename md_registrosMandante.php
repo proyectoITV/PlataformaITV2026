@@ -8,10 +8,39 @@ if(isset($_GET['id']) and isset($_GET['idcolonia']) and isset($_GET['idmunicipio
     $idcolonia = $_GET['idcolonia'];
     $idmunicipio = $_GET['idmunicipio'];
     $nitavu = $_GET['nitavu'];
+
+    $per_page_validos = array(10, 25, 50);
+    $per_page = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 50;
+    if(!in_array($per_page, $per_page_validos, true)){
+        $per_page = 50;
+    }
+
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    if($page < 1){
+        $page = 1;
+    }
     
-    $sql = "SELECT * FROM mandantes_abonos WHERE idmandante = ".$idmandante." and idcolonia = ".$idcolonia." and idmunicipio = ".$idmunicipio." and cancelado = 0 ORDER BY id DESC";
+    $sql_total = "SELECT COUNT(*) AS total FROM mandantes_abonos WHERE idmandante = ".$idmandante." and idcolonia = ".$idcolonia." and idmunicipio = ".$idmunicipio." and cancelado = 0";
+    $rc_total = $conexion -> query($sql_total);
+    $total_rows = 0;
+    if($rc_total){
+        $r_total = $rc_total->fetch_array();
+        $total_rows = isset($r_total['total']) ? (int)$r_total['total'] : 0;
+    }
+
+    $total_pages = $total_rows > 0 ? (int)ceil($total_rows / $per_page) : 1;
+    if($page > $total_pages){
+        $page = $total_pages;
+    }
+
+    $offset = ($page - 1) * $per_page;
+
+    $sql = "SELECT * FROM mandantes_abonos WHERE idmandante = ".$idmandante." and idcolonia = ".$idcolonia." and idmunicipio = ".$idmunicipio." and cancelado = 0 ORDER BY id DESC LIMIT ".$offset.", ".$per_page;
     $rc = $conexion -> query($sql);
-    $total_rows = $rc ? $rc->num_rows : 0;
+
+    $desde = $total_rows > 0 ? ($offset + 1) : 0;
+    $hasta = $total_rows > 0 ? min($offset + $per_page, $total_rows) : 0;
+    $base_url = "mandantes_pago.php?idmandante=".$idmandante."&idcolonia=".$idcolonia."&idmunicipio=".$idmunicipio;
 
     echo "<div id='tablaRegistros' style='width:100%; margin-top:20px;'>";
     if ($total_rows > 0){
@@ -22,6 +51,17 @@ if(isset($_GET['id']) and isset($_GET['idcolonia']) and isset($_GET['idmunicipio
                     <i class="fa-solid fa-receipt"></i> Desglose de Pagos a Mandante
                 </h3>
                 <span class="cd-badge cd-badge-info"><?php echo $total_rows; ?> Registros</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; padding:12px 16px; border-bottom:1px solid var(--cd-border); background:#fff;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <label for="jsRegistrosPerPage" style="font-weight:600; color:var(--cd-gray-dark); margin:0;">Registros por página:</label>
+                    <select id="jsRegistrosPerPage" class="cd-form-control" style="width:90px; padding:6px 8px; height:34px;">
+                        <option value="10" <?php echo $per_page === 10 ? 'selected' : ''; ?>>10</option>
+                        <option value="25" <?php echo $per_page === 25 ? 'selected' : ''; ?>>25</option>
+                        <option value="50" <?php echo $per_page === 50 ? 'selected' : ''; ?>>50</option>
+                    </select>
+                </div>
+                <div style="font-weight:600; color:var(--cd-gray-dark);">Mostrando <?php echo $desde; ?> a <?php echo $hasta; ?> de <?php echo $total_rows; ?></div>
             </div>
             <div class="cd-card-body" style="padding:0;">
                 <div class="cd-table-container">
@@ -39,7 +79,7 @@ if(isset($_GET['id']) and isset($_GET['idcolonia']) and isset($_GET['idmunicipio
                                 <th style="text-align:right;">Monto Pagado</th>
                                 <th style="text-align:right;">Acumulado</th>
                                 <th style="text-align:right;">Saldo</th>
-                                <th style="text-align:center; width:190px;">Acciones</th>
+                                <th style="text-align:center; width:280px; min-width:280px;">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -67,7 +107,7 @@ if(isset($_GET['id']) and isset($_GET['idcolonia']) and isset($_GET['idmunicipio
                             echo "<td style='text-align:right; font-weight:700;'>$".number_format((float)$r['saldo'], 2)."</td>";
 
                             // Column Acciones
-                            echo "<td style='text-align:center;'><div class='cd-action-group'>";
+                            echo "<td style='text-align:center; min-width:280px; white-space:nowrap;'><div class='cd-action-group' style='display:inline-flex; min-width:190px; flex-wrap:nowrap;'>";
 
                             // Adjuntos button & modal
                             echo "<a href='#subirAdjuntos1".$vuelta."' rel='MyModal:open' class='cd-icon-btn view' title='Documentos Adjuntos'><i class='fa-solid fa-paperclip'></i></a>";
@@ -158,6 +198,15 @@ if(isset($_GET['id']) and isset($_GET['idcolonia']) and isset($_GET['idmunicipio
                     </table>
                 </div>
             </div>
+            <?php if($total_pages > 1){ ?>
+            <div class="cd-pagination" style="justify-content:flex-end; gap:8px; padding:12px 16px; border-top:1px solid var(--cd-border); background:#fff;">
+                <a href="<?php echo $base_url; ?>&page=1&per_page=<?php echo $per_page; ?>" class="cd-btn cd-btn-light js-mandantes-pagination" data-page="1" style="padding:6px 10px; height:32px;"><i class="fa-solid fa-angles-left"></i></a>
+                <a href="<?php echo $base_url; ?>&page=<?php echo max(1, $page - 1); ?>&per_page=<?php echo $per_page; ?>" class="cd-btn cd-btn-light js-mandantes-pagination" data-page="<?php echo max(1, $page - 1); ?>" style="padding:6px 10px; height:32px;"><i class="fa-solid fa-angle-left"></i></a>
+                <span class="cd-badge cd-badge-info" style="padding:6px 12px;">Página <?php echo $page; ?> de <?php echo $total_pages; ?></span>
+                <a href="<?php echo $base_url; ?>&page=<?php echo min($total_pages, $page + 1); ?>&per_page=<?php echo $per_page; ?>" class="cd-btn cd-btn-light js-mandantes-pagination" data-page="<?php echo min($total_pages, $page + 1); ?>" style="padding:6px 10px; height:32px;"><i class="fa-solid fa-angle-right"></i></a>
+                <a href="<?php echo $base_url; ?>&page=<?php echo $total_pages; ?>&per_page=<?php echo $per_page; ?>" class="cd-btn cd-btn-light js-mandantes-pagination" data-page="<?php echo $total_pages; ?>" style="padding:6px 10px; height:32px;"><i class="fa-solid fa-angles-right"></i></a>
+            </div>
+            <?php } ?>
         </div>
 <?php
     } else {
