@@ -27,31 +27,27 @@ if ($nivel == 2) {
 
 $groups = [
     1 => [
-        'title' => '1. MARCO NORMATIVO INSTITUCIONAL',
+        'title' => '1.Marco Normativo Institucional',
         'docs' => []
     ],
     2 => [
-        'title' => '2. ALINEACIÓN SUPERIOR',
+        'title' => '2.Alineación Superior',
         'docs' => []
     ],
     3 => [
-        'title' => '3.(SCII) SISTEMA DE CONTROL INTERNO INSTITUCIONAL',
+        'title' => '3.(SCII) Sistema de Control Interno Institucional',
         'docs' => []
     ],
     4 => [
-        'title' => '4. ETICA, CONDUCTA Y PREV',
+        'title' => '4.Etica,Conducta y Prev',
         'docs' => []
     ],
     5 => [
-        'title' => '5.ACTIVIDADES INSTITUCIONALES',
+        'title' => '5.Actividades Institucionales',
         'docs' => []
     ],
     6 => [
-        'title' => '6.UNIDAD DE IGUALDAD DE GÉNERO',
-        'docs' => []
-    ],
-    7 => [
-        'title' => '7. COMITÉ DE COMPRAS',
+        'title' => '6.Unidad de Igualdad de Género',
         'docs' => []
     ]
 

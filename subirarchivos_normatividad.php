@@ -147,11 +147,12 @@ while ($f = $r->fetch_array()) {
   echo "<td>";
   echo "<select name='grupo' form='form-edit-" . $f['IdCi'] . "' class='form-control' style='padding: 2px 5px; height: auto;'>";
   $groupOptions = [
-    1 => '1. MARCO NORMATIVO INSTITUCIONAL',
-    2 => '2. ÉTICA, CONDUCTA Y PREVENCIÓN DE CONFLICTOS DE INTERÉS',
-    3 => '3. ACTIVIDADES INSTITUCIONALES',
-    4 => '4. UNIDAD DE IGUALDAD DE GÉNERO',
-    5 => '5. COMITÉ DE COMPRAS'
+    1 => '1.Marco Normativo Institucional',
+    2 => '2.Alineación Superior',
+    3 => '3.(SCII) Sistema de Control Interno Institucional',
+    4 => '4.Etica,Conducta y Prev',
+    5 => '5.Actividades Institucionales',
+    6 => '6.Unidad de Igualdad de Género'
   ];
   foreach ($groupOptions as $val => $label) {
     $selected = ($f['grupo'] == $val) ? 'selected' : '';
