@@ -28,6 +28,160 @@ $paginacion = 20;
 
 //configuraciones del sistema
 date_default_timezone_set('Mexico/General');
+
+// === CONTROL DE HORARIO DE ACCESO (7:00 AM a 7:00 PM) ===
+$HorarioAccesoActivo  = TRUE;
+$HorarioAccesoInicio  = '07:00:00'; // 7:00 AM
+$HorarioAccesoFin     = '19:00:00'; // 7:00 PM
+$HorarioAccesoExentos = [];         // Opcional: ej. ['1733'] si deseas exceptuar algun empleado
+$GLOBALS['HorarioAccesoActivo']  = $HorarioAccesoActivo;
+$GLOBALS['HorarioAccesoInicio']  = $HorarioAccesoInicio;
+$GLOBALS['HorarioAccesoFin']     = $HorarioAccesoFin;
+$GLOBALS['HorarioAccesoExentos'] = $HorarioAccesoExentos;
+
+// === SEGURIDAD AVANZADA: RATE LIMITING, INACTIVIDAD Y SESION UNICA ===
+$LoginRateLimitActivo   = TRUE;
+$LoginMaxIntentosCuenta = 5;    // Intentos fallidos antes de bloquear temporalmente la cuenta
+$LoginMaxIntentosIP     = 5;    // Intentos fallidos antes de bloquear temporalmente la IP (subir si varias PCs comparten NAT)
+$LoginBloqueoMinutos    = 15;   // Minutos de bloqueo temporal tras exceder intentos fallidos
+$SessionInactividadMin  = 15;   // Minutos sin actividad antes de cerrar sesion automaticamente
+$SesionUnicaActiva      = TRUE; // Solo 1 sesion simultanea por empleado (cierra la anterior al entrar en otro equipo)
+
+$GLOBALS['LoginRateLimitActivo']   = $LoginRateLimitActivo;
+$GLOBALS['LoginMaxIntentosCuenta'] = $LoginMaxIntentosCuenta;
+$GLOBALS['LoginMaxIntentosIP']     = $LoginMaxIntentosIP;
+$GLOBALS['LoginBloqueoMinutos']    = $LoginBloqueoMinutos;
+$GLOBALS['SessionInactividadMin']  = $SessionInactividadMin;
+$GLOBALS['SesionUnicaActiva']      = $SesionUnicaActiva;
+
+require_once(__DIR__ . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'seguridad_avanzada.php');
+
+if (!function_exists('itavu_en_horario_acceso')) {
+	function itavu_en_horario_acceso($nitavu = '') {
+		$activo  = isset($GLOBALS['HorarioAccesoActivo']) ? (bool)$GLOBALS['HorarioAccesoActivo'] : TRUE;
+		$inicio  = isset($GLOBALS['HorarioAccesoInicio']) ? (string)$GLOBALS['HorarioAccesoInicio'] : '07:00:00';
+		$fin     = isset($GLOBALS['HorarioAccesoFin']) ? (string)$GLOBALS['HorarioAccesoFin'] : '19:00:00';
+		$exentos = (isset($GLOBALS['HorarioAccesoExentos']) && is_array($GLOBALS['HorarioAccesoExentos']))
+			? $GLOBALS['HorarioAccesoExentos']
+			: [];
+
+		if (!$activo) {
+			return true;
+		}
+
+		if ($nitavu !== '' && in_array((string)$nitavu, array_map('strval', $exentos), true)) {
+			return true;
+		}
+
+		$horaActual = date('H:i:s');
+		return ($horaActual >= $inicio && $horaActual <= $fin);
+	}
+}
+
+if (!function_exists('itavu_empleado_estado_acceso')) {
+	function itavu_empleado_estado_acceso($conexion, $nitavu) {
+		$resultado = [
+			'existe'             => false,
+			'estado'             => '',
+			'es_baja_permanente' => false,
+			'activo'             => false,
+		];
+
+		if (!$conexion || !($conexion instanceof mysqli) || trim((string)$nitavu) === '') {
+			return $resultado;
+		}
+
+		try {
+			$stmt = $conexion->prepare("SELECT estado FROM empleados WHERE nitavu = ? LIMIT 1");
+			if ($stmt) {
+				$nitavuStr = (string)$nitavu;
+				$stmt->bind_param("s", $nitavuStr);
+				if ($stmt->execute()) {
+					$res = $stmt->get_result();
+					if ($row = $res->fetch_assoc()) {
+						$estadoNorm = trim((string)($row['estado'] ?? ''));
+						$esBajaPerm = (strcasecmp($estadoNorm, 'Baja permanente') === 0);
+						$resultado['existe'] = true;
+						$resultado['estado'] = $estadoNorm;
+						$resultado['es_baja_permanente'] = $esBajaPerm;
+						$resultado['activo'] = ($estadoNorm === '' && !$esBajaPerm);
+					}
+				}
+				$stmt->close();
+			}
+		} catch (\Throwable $e) {
+			// En caso de error de consulta no exponer detalles internos
+		}
+
+		return $resultado;
+	}
+}
+
+if (!function_exists('itavu_nip_max_len')) {
+	function itavu_nip_max_len($conexion) {
+		$maxLen = 20;
+		if (!$conexion || !($conexion instanceof mysqli)) {
+			return $maxLen;
+		}
+		try {
+			$res = $conexion->query("SHOW COLUMNS FROM empleados LIKE 'nip'");
+			if ($res && ($row = $res->fetch_assoc())) {
+				$tipo = strtolower((string)($row['Type'] ?? ''));
+				if (preg_match('/^(?:var)?char\((\d+)\)/', $tipo, $m)) {
+					$len = (int)$m[1];
+					if ($len >= 8) {
+						$maxLen = min($len, 128);
+					}
+				} elseif (strpos($tipo, 'text') !== false) {
+					$maxLen = 64;
+				}
+				$res->free();
+			}
+		} catch (\Throwable $e) {
+			// Conservar limite seguro por defecto
+		}
+		return $maxLen;
+	}
+}
+
+if (!function_exists('itavu_validar_password_segura')) {
+	function itavu_validar_password_segura($password, $nitavu = '', $maxLen = 64) {
+		$password = (string)$password;
+		$errores = [];
+		$len = function_exists('mb_strlen') ? mb_strlen($password, 'UTF-8') : strlen($password);
+
+		if ($len < 8) {
+			$errores[] = 'Debe tener una longitud mínima de 8 caracteres.';
+		}
+		if ($maxLen > 0 && $len > $maxLen) {
+			$errores[] = 'No debe exceder los ' . (int)$maxLen . ' caracteres.';
+		}
+		if (preg_match('/\s/', $password)) {
+			$errores[] = 'No debe contener espacios en blanco.';
+		}
+		if (!preg_match('/[A-Z]/', $password)) {
+			$errores[] = 'Debe incluir al menos 1 letra mayúscula (A-Z).';
+		}
+		if (!preg_match('/[a-z]/', $password)) {
+			$errores[] = 'Debe incluir al menos 1 letra minúscula (a-z).';
+		}
+		if (!preg_match('/[0-9]/', $password)) {
+			$errores[] = 'Debe incluir al menos 1 dígito (0-9).';
+		}
+		if (!preg_match('/[^A-Za-z0-9\s]/', $password)) {
+			$errores[] = 'Debe incluir al menos 1 símbolo (por ejemplo: !, @, #, $, %, &, *, _, -).';
+		}
+		if ($nitavu !== '' && strcasecmp($password, (string)$nitavu) === 0) {
+			$errores[] = 'No puede ser igual a tu número de empleado.';
+		}
+
+		return [
+			'valida'  => empty($errores),
+			'errores' => $errores,
+		];
+	}
+}
+
 $urlsite = 'https://plataformaitavu.tamaulipas.gob.mx';
 global $urlsite;
 $produccion = FALSE;
@@ -154,7 +308,8 @@ $tolerancia = "00:10:00";
 global $fecha, $hora, $tolerancia;
 $API_geo = TRUE; // usar Georeferencia
 $API_msg = TRUE; // usar api de notificacines
-$EXIGIR_geo_ini = FALSE; // no se puede accesar a la plataforma sino se aceptan los permisos de geo
+$EXIGIR_geo_ini = TRUE; // no se puede accesar a la plataforma sino se aceptan los permisos de geo
+$GLOBALS['EXIGIR_geo_ini'] = $EXIGIR_geo_ini;
 $EXIGIR_geo_mod = TRUE; // no se puede utilizar modulos con geo sino se aceptan los permisos de geo
 
 

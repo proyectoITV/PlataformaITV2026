@@ -1,92 +1,118 @@
 <?php
 function PasswordHash_create($IdEmpleado, $Password) {
 	require("config.php");
-    $hash=password_hash($Password, PASSWORD_DEFAULT);
-	
-    $sql = 
-    "
-        UPDATE empleados SET hash = '".$hash."', nip='".$Password."'
-	    WHERE nitavu ='".$IdEmpleado."' AND estado=''
-    ";
-	
-    if ($conexion->query($sql) == TRUE){                   	
-        historia($IdEmpleado,"[NIP] cambio su nip con hash (".$sql.")");
-		return TRUE;
-	} else {
+	$IdEmpleado = (string)$IdEmpleado;
+	$Password = (string)$Password;
+	$hash = password_hash($Password, PASSWORD_DEFAULT);
+
+	try {
+		$tieneHash = false;
+		$resCol = $conexion->query("SHOW COLUMNS FROM empleados LIKE 'hash'");
+		if ($resCol) {
+			$tieneHash = ($resCol->num_rows > 0);
+			$resCol->free();
+		}
+
+		if ($tieneHash) {
+			$stmt = $conexion->prepare("UPDATE empleados SET hash = ?, nip = ? WHERE nitavu = ? AND estado = ''");
+			if (!$stmt) {
+				return FALSE;
+			}
+			$stmt->bind_param("sss", $hash, $Password, $IdEmpleado);
+		} else {
+			$stmt = $conexion->prepare("UPDATE empleados SET nip = ? WHERE nitavu = ? AND estado = ''");
+			if (!$stmt) {
+				return FALSE;
+			}
+			$stmt->bind_param("ss", $Password, $IdEmpleado);
+		}
+
+		$ok = $stmt->execute();
+		$stmt->close();
+
+		if ($ok) {
+			if (function_exists('historia')) {
+				historia($IdEmpleado, "[NIP] Actualizó su contraseña de acceso");
+			}
+			return TRUE;
+		}
+	} catch (\Throwable $e) {
 		return FALSE;
 	}
 
+	return FALSE;
 }
 
 
 function PasswordNIP_update($IdEmpleado, $NIP) {
 	require("config.php");
-    
-	
-    $sql = 
-    "
-        UPDATE empleados SET nip = '".$NIP."'
-	    WHERE nitavu ='".$IdEmpleado."' AND estado=''
-    ";
-	
-    if ($conexion->query($sql) == TRUE){                   	
-        historia($IdEmpleado,"[NIP] acualizo su nip con hash (".$sql.")");
-		return TRUE;
-	} else {
+	$IdEmpleado = (string)$IdEmpleado;
+	$NIP = (string)$NIP;
+
+	try {
+		$stmt = $conexion->prepare("UPDATE empleados SET nip = ? WHERE nitavu = ? AND estado = ''");
+		if (!$stmt) {
+			return FALSE;
+		}
+		$stmt->bind_param("ss", $NIP, $IdEmpleado);
+		$ok = $stmt->execute();
+		$stmt->close();
+
+		if ($ok) {
+			if (function_exists('historia')) {
+				historia($IdEmpleado, "[NIP] Actualizó su contraseña de acceso");
+			}
+			return TRUE;
+		}
+	} catch (\Throwable $e) {
 		return FALSE;
 	}
 
+	return FALSE;
 }
 
 
 function PasswordHash_verify($IdEmpleado, $Password){
 	require("config.php");
-	// $sql = "
-    // UPDATE empleados SET hash ='"."'
-	// WHERE nitavu ='".$IdEmpleado."' AND estado=''";
-	
-    $hash= PasswordHash($IdEmpleado);
-
-    if (password_verify($Password, $hash)) {
-        // echo '¡La contraseña '.$contraseña.' es válida!';
-        return TRUE;
-    } else {
-        // echo 'La contraseña '.$contraseña.' no es válida.';
-        return FALSE;
-    }
-
-
-	
+	$hash = PasswordHash($IdEmpleado);
+	if ($hash === '' || $hash === null) {
+		return FALSE;
+	}
+	return password_verify((string)$Password, (string)$hash);
 }
 
 
 function PasswordNIP_verify($IdEmpleado, $Password){
-require("config.php");
-	$sql = "select * from empleados	WHERE nitavu ='".$IdEmpleado."' AND estado=''";	   
-	$r= $conexion -> query($sql);						
-	if($f = $r -> fetch_array())
-	{
-		if ($f['nip']==$Password){
-            return TRUE;            
-            
-        } else {
-            return FALSE;
-            
-        }
-	} else {
+	require("config.php");
+	$IdEmpleado = (string)$IdEmpleado;
+	$Password = (string)$Password;
+
+	try {
+		$stmt = $conexion->prepare("SELECT nip FROM empleados WHERE nitavu = ? AND estado = '' LIMIT 1");
+		if (!$stmt) {
+			return FALSE;
+		}
+		$stmt->bind_param("s", $IdEmpleado);
+		if ($stmt->execute()) {
+			$r = $stmt->get_result();
+			if ($f = $r->fetch_assoc()) {
+				$stmt->close();
+				return hash_equals((string)$f['nip'], $Password);
+			}
+		}
+		$stmt->close();
+	} catch (\Throwable $e) {
 		return FALSE;
 	}
-	
+	return FALSE;
 }
 
 
 function PasswordCheck($IdEmpleado, $Password){
 require("config.php");
 //Ese paso es temporal para la migracion entre NIP y HASH
-// var_dump($PasswordCrypted);
 if ($PasswordCrypted === TRUE){ //Se valida con Hash
     if (PasswordHash_verify($IdEmpleado, $Password)){
-        
         return TRUE;
     } else {
         return FALSE;
@@ -98,26 +124,32 @@ if ($PasswordCrypted === TRUE){ //Se valida con Hash
         return FALSE;
     }
 }
-
-
 }
 
 
 
 function PasswordHash($IdEmpleado){
 	require("config.php");
-    
-	$sql = "
-    select * from empleados
-	WHERE nitavu ='".$IdEmpleado."' AND estado=''";	
-    
-	$r= $conexion -> query($sql);						
-	if($f = $r -> fetch_array())
-	{
-		return $f['hash'];
-	} else {
+	$IdEmpleado = (string)$IdEmpleado;
+
+	try {
+		$stmt = $conexion->prepare("SELECT hash FROM empleados WHERE nitavu = ? AND estado = '' LIMIT 1");
+		if (!$stmt) {
+			return '';
+		}
+		$stmt->bind_param("s", $IdEmpleado);
+		if ($stmt->execute()) {
+			$r = $stmt->get_result();
+			if ($f = $r->fetch_assoc()) {
+				$stmt->close();
+				return (string)($f['hash'] ?? '');
+			}
+		}
+		$stmt->close();
+	} catch (\Throwable $e) {
 		return '';
 	}
+	return '';
 }
 
 

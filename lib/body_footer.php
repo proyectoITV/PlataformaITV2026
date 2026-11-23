@@ -144,6 +144,80 @@ document.addEventListener('keydown', function(e) {
 });
 </script>
 
+<?php
+if (!empty($HorarioAccesoActivo) && isset($nitavu) && function_exists('itavu_en_horario_acceso')) {
+	$exentos = (isset($HorarioAccesoExentos) && is_array($HorarioAccesoExentos)) ? array_map('strval', $HorarioAccesoExentos) : [];
+	if (!in_array((string)$nitavu, $exentos, true)) {
+		$finTs = strtotime(date('Y-m-d') . ' ' . $HorarioAccesoFin);
+		$restantesMs = max(0, ($finTs - time()) * 1000);
+		$logoutHorarioUrl = file_exists('logout.php') ? 'logout.php?fuera_horario=1' : '../logout.php?fuera_horario=1';
+		echo '<script>
+		(function() {
+			var cierreEn = Date.now() + ' . (int)$restantesMs . ';
+			var urlCierre = ' . json_encode($logoutHorarioUrl) . ';
+			function verificarCierreHorario() {
+				if (Date.now() >= cierreEn) {
+					top.location.replace(urlCierre);
+				}
+			}
+			if (' . (int)$restantesMs . ' <= 0) {
+				top.location.replace(urlCierre);
+			} else {
+				setTimeout(verificarCierreHorario, Math.min(' . (int)$restantesMs . ' + 1000, 2147483000));
+				setInterval(verificarCierreHorario, 60000);
+			}
+		})();
+		</script>';
+	}
+}
+
+// Control automático de cierre por inactividad en cliente (sincronizado con $SessionInactividadMin)
+if (isset($nitavu) && isset($SessionInactividadMin) && (int)$SessionInactividadMin > 0) {
+	$limiteInactMs = (int)$SessionInactividadMin * 60 * 1000;
+	$logoutInactUrl = file_exists('logout.php') ? 'logout.php?inactividad=1' : '../logout.php?inactividad=1';
+	echo '<script>
+	(function() {
+		var limiteMs = ' . $limiteInactMs . ';
+		var avisoMs = Math.max(0, limiteMs - 60000);
+		var urlInact = ' . json_encode($logoutInactUrl) . ';
+		var ultimaActividad = Date.now();
+		var avisoMostrado = false;
+		var ultimoRegistro = 0;
+
+		function registrarActividad() {
+			var ahora = Date.now();
+			if (ahora - ultimoRegistro < 3000) return;
+			ultimoRegistro = ahora;
+			ultimaActividad = ahora;
+			avisoMostrado = false;
+		}
+
+		["mousemove", "mousedown", "keydown", "scroll", "touchstart", "click"].forEach(function(evt) {
+			document.addEventListener(evt, registrarActividad, { passive: true });
+		});
+
+		setInterval(function() {
+			var inactivo = Date.now() - ultimaActividad;
+			if (inactivo >= limiteMs) {
+				top.location.replace(urlInact);
+			} else if (!avisoMostrado && avisoMs > 0 && inactivo >= avisoMs) {
+				avisoMostrado = true;
+				if (typeof $.toast === "function") {
+					$.toast({
+						heading: "Aviso de inactividad",
+						text: "Tu sesión se cerrará automáticamente en 1 minuto si no hay actividad.",
+						showHideTransition: "slide",
+						icon: "warning",
+						hideAfter: 10000
+					});
+				}
+			}
+		}, 15000);
+	})();
+	</script>';
+}
+?>
+
 </body>
 
 </html>
