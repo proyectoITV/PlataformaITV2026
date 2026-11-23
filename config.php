@@ -124,18 +124,24 @@ if (!function_exists('itavu_nip_max_len')) {
 			return $maxLen;
 		}
 		try {
-			$res = $conexion->query("SHOW COLUMNS FROM empleados LIKE 'nip'");
-			if ($res && ($row = $res->fetch_assoc())) {
-				$tipo = strtolower((string)($row['Type'] ?? ''));
-				if (preg_match('/^(?:var)?char\((\d+)\)/', $tipo, $m)) {
-					$len = (int)$m[1];
-					if ($len >= 8) {
-						$maxLen = min($len, 128);
+			$limites = [];
+			foreach (['nip', 'pin'] as $colName) {
+				$res = $conexion->query("SHOW COLUMNS FROM empleados LIKE '" . $colName . "'");
+				if ($res && ($row = $res->fetch_assoc())) {
+					$tipo = strtolower((string)($row['Type'] ?? ''));
+					if (preg_match('/^(?:var)?char\((\d+)\)/', $tipo, $m)) {
+						$len = (int)$m[1];
+						if ($len >= 8) {
+							$limites[] = min($len, 128);
+						}
+					} elseif (strpos($tipo, 'text') !== false) {
+						$limites[] = 64;
 					}
-				} elseif (strpos($tipo, 'text') !== false) {
-					$maxLen = 64;
+					$res->free();
 				}
-				$res->free();
+			}
+			if (!empty($limites)) {
+				$maxLen = min($limites);
 			}
 		} catch (\Throwable $e) {
 			// Conservar limite seguro por defecto

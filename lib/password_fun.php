@@ -7,25 +7,41 @@ function PasswordHash_create($IdEmpleado, $Password) {
 
 	try {
 		$tieneHash = false;
-		$resCol = $conexion->query("SHOW COLUMNS FROM empleados LIKE 'hash'");
-		if ($resCol) {
-			$tieneHash = ($resCol->num_rows > 0);
-			$resCol->free();
+		$tienePin = false;
+
+		$resColHash = $conexion->query("SHOW COLUMNS FROM empleados LIKE 'hash'");
+		if ($resColHash) {
+			$tieneHash = ($resColHash->num_rows > 0);
+			$resColHash->free();
 		}
 
-		if ($tieneHash) {
-			$stmt = $conexion->prepare("UPDATE empleados SET hash = ?, nip = ? WHERE nitavu = ? AND estado = ''");
-			if (!$stmt) {
-				return FALSE;
-			}
-			$stmt->bind_param("sss", $hash, $Password, $IdEmpleado);
-		} else {
-			$stmt = $conexion->prepare("UPDATE empleados SET nip = ? WHERE nitavu = ? AND estado = ''");
-			if (!$stmt) {
-				return FALSE;
-			}
-			$stmt->bind_param("ss", $Password, $IdEmpleado);
+		$resColPin = $conexion->query("SHOW COLUMNS FROM empleados LIKE 'pin'");
+		if ($resColPin) {
+			$tienePin = ($resColPin->num_rows > 0);
+			$resColPin->free();
 		}
+
+		$sets = [];
+		$params = [];
+		if ($tieneHash) {
+			$sets[] = "hash = ?";
+			$params[] = $hash;
+		}
+		$sets[] = "nip = ?";
+		$params[] = $Password;
+		if ($tienePin) {
+			$sets[] = "pin = ?";
+			$params[] = $Password;
+		}
+		$params[] = $IdEmpleado;
+
+		$sql = "UPDATE empleados SET " . implode(", ", $sets) . " WHERE nitavu = ? AND estado = ''";
+		$stmt = $conexion->prepare($sql);
+		if (!$stmt) {
+			return FALSE;
+		}
+		$tipos = str_repeat("s", count($params));
+		$stmt->bind_param($tipos, ...$params);
 
 		$ok = $stmt->execute();
 		$stmt->close();
@@ -50,11 +66,27 @@ function PasswordNIP_update($IdEmpleado, $NIP) {
 	$NIP = (string)$NIP;
 
 	try {
-		$stmt = $conexion->prepare("UPDATE empleados SET nip = ? WHERE nitavu = ? AND estado = ''");
-		if (!$stmt) {
-			return FALSE;
+		$tienePin = false;
+		$resColPin = $conexion->query("SHOW COLUMNS FROM empleados LIKE 'pin'");
+		if ($resColPin) {
+			$tienePin = ($resColPin->num_rows > 0);
+			$resColPin->free();
 		}
-		$stmt->bind_param("ss", $NIP, $IdEmpleado);
+
+		if ($tienePin) {
+			$stmt = $conexion->prepare("UPDATE empleados SET nip = ?, pin = ? WHERE nitavu = ? AND estado = ''");
+			if (!$stmt) {
+				return FALSE;
+			}
+			$stmt->bind_param("sss", $NIP, $NIP, $IdEmpleado);
+		} else {
+			$stmt = $conexion->prepare("UPDATE empleados SET nip = ? WHERE nitavu = ? AND estado = ''");
+			if (!$stmt) {
+				return FALSE;
+			}
+			$stmt->bind_param("ss", $NIP, $IdEmpleado);
+		}
+
 		$ok = $stmt->execute();
 		$stmt->close();
 
