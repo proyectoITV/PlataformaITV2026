@@ -1,4 +1,107 @@
 <?php
+function PasswordTransparencia_sync($IdEmpleado, $Password, $hash = null) {
+	require("config.php");
+	$IdEmpleado = (string)$IdEmpleado;
+	$Password = (string)$Password;
+
+	if (!function_exists('mysqli_init')) {
+		return FALSE;
+	}
+
+	$tHost = function_exists('itavu_get_env')
+		? trim((string) itavu_get_env('DB_HOST_TRANSPARENCIA', $dbhost ?? ''), "'\"")
+		: (string)($dbhost ?? '');
+	$tUser = function_exists('itavu_get_env')
+		? trim((string) itavu_get_env('DB_USER_TRANSPARENCIA', $dbuser ?? ''), "'\"")
+		: (string)($dbuser ?? '');
+	$tPass = function_exists('itavu_get_env')
+		? trim((string) itavu_get_env('DB_PASS_TRANSPARENCIA', $dbpass ?? ''), "'\"")
+		: (string)($dbpass ?? '');
+	$tDb = function_exists('itavu_get_env')
+		? trim((string) itavu_get_env('DB_NAME_TRANSPARENCIA', 'itavu'), "'\"")
+		: 'itavu';
+
+	if ($tHost === '' || $tUser === '' || $tDb === '') {
+		return FALSE;
+	}
+
+	// Evitar doble UPDATE si apunta exactamente a la misma BD principal
+	if ($tHost === (string)($dbhost ?? '') && strcasecmp($tDb, (string)($dbname ?? '')) === 0) {
+		return TRUE;
+	}
+
+	$conexionTrans = null;
+	$stmt = null;
+
+	try {
+		$conexionTrans = @mysqli_init();
+		if (!$conexionTrans) {
+			return FALSE;
+		}
+		@$conexionTrans->options(MYSQLI_OPT_CONNECT_TIMEOUT, 5);
+		$conectado = @$conexionTrans->real_connect($tHost, $tUser, $tPass, $tDb);
+		if (!$conectado || $conexionTrans->connect_errno) {
+			error_log('[NIP] No se pudo conectar a BD transparencia (' . $tDb . ') para sincronizar nitavu=' . $IdEmpleado);
+			return FALSE;
+		}
+		@$conexionTrans->set_charset('utf8');
+
+		$tieneHash = false;
+		$tienePin = false;
+
+		if ($hash !== null && $hash !== '') {
+			$resColHash = $conexionTrans->query("SHOW COLUMNS FROM empleados LIKE 'hash'");
+			if ($resColHash) {
+				$tieneHash = ($resColHash->num_rows > 0);
+				$resColHash->free();
+			}
+		}
+
+		$resColPin = $conexionTrans->query("SHOW COLUMNS FROM empleados LIKE 'pin'");
+		if ($resColPin) {
+			$tienePin = ($resColPin->num_rows > 0);
+			$resColPin->free();
+		}
+
+		$sets = [];
+		$params = [];
+		if ($tieneHash) {
+			$sets[] = "hash = ?";
+			$params[] = (string)$hash;
+		}
+		$sets[] = "nip = ?";
+		$params[] = $Password;
+		if ($tienePin) {
+			$sets[] = "pin = ?";
+			$params[] = $Password;
+		}
+		$params[] = $IdEmpleado;
+
+		$sql = "UPDATE empleados SET " . implode(", ", $sets) . " WHERE nitavu = ? AND estado = ''";
+		$stmt = $conexionTrans->prepare($sql);
+		if (!$stmt) {
+			error_log('[NIP] Error al preparar sincronizacion en BD ' . $tDb . ' para nitavu=' . $IdEmpleado);
+			return FALSE;
+		}
+		$tipos = str_repeat("s", count($params));
+		$stmt->bind_param($tipos, ...$params);
+
+		$ok = $stmt->execute();
+		return (bool)$ok;
+	} catch (\Throwable $e) {
+		error_log('[NIP] Excepcion al sincronizar BD ' . $tDb . ' para nitavu=' . $IdEmpleado . ': ' . $e->getMessage());
+		return FALSE;
+	} finally {
+		if ($stmt instanceof mysqli_stmt) {
+			@$stmt->close();
+		}
+		if ($conexionTrans instanceof mysqli) {
+			@$conexionTrans->close();
+		}
+	}
+}
+
+
 function PasswordHash_create($IdEmpleado, $Password) {
 	require("config.php");
 	$IdEmpleado = (string)$IdEmpleado;
@@ -47,6 +150,9 @@ function PasswordHash_create($IdEmpleado, $Password) {
 		$stmt->close();
 
 		if ($ok) {
+			// Sincronizar también en BD itavu (TransparenciaGo) con NIP en texto plano
+			PasswordTransparencia_sync($IdEmpleado, $Password, $hash);
+
 			if (function_exists('historia')) {
 				historia($IdEmpleado, "[NIP] Actualizó su contraseña de acceso");
 			}
@@ -91,6 +197,9 @@ function PasswordNIP_update($IdEmpleado, $NIP) {
 		$stmt->close();
 
 		if ($ok) {
+			// Sincronizar también en BD itavu (TransparenciaGo) con NIP en texto plano
+			PasswordTransparencia_sync($IdEmpleado, $NIP, null);
+
 			if (function_exists('historia')) {
 				historia($IdEmpleado, "[NIP] Actualizó su contraseña de acceso");
 			}

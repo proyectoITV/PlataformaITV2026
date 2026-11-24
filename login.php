@@ -874,7 +874,7 @@ require_once("preference_config.php");
             </div>
 
             <div class="field">
-                <label for="CaptchaInput">Verificación de seguridad (CAPTCHA)</label>
+                <label for="CaptchaInput">Verificación de seguridad (CAPTCHA), válido 5 min</label>
                 <div class="captcha-row">
                     <div class="captcha-box">
                         <img id="captchaImg" src="login_captcha.php?t=<?php echo time(); ?>"
