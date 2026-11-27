@@ -1041,16 +1041,65 @@ require_once("preference_config.php");
             }).catch(function () { });
         }
 
-        function recargarCaptcha() {
+        var CAPTCHA_TTL_MS = 295000; // 4 min 55 seg (margen de 5 seg antes del vencimiento de 5 min en servidor)
+        var captchaGeneradoEn = Date.now();
+        var captchaAutoTimer = null;
+        var captchaCargando = false;
+
+        function programarAutoRecargaCaptcha() {
+            if (captchaAutoTimer) {
+                clearTimeout(captchaAutoTimer);
+                captchaAutoTimer = null;
+            }
+            var transcurrido = Date.now() - captchaGeneradoEn;
+            var restante = Math.max(1000, CAPTCHA_TTL_MS - transcurrido);
+            captchaAutoTimer = setTimeout(function () {
+                if (!document.hidden) {
+                    recargarCaptcha(true);
+                }
+            }, restante);
+        }
+
+        function verificarExpiracionCaptcha() {
+            if (!document.hidden && !captchaCargando && (Date.now() - captchaGeneradoEn) >= CAPTCHA_TTL_MS) {
+                recargarCaptcha(true);
+            }
+        }
+
+        function recargarCaptcha(esAutomatico) {
             var img = document.getElementById('captchaImg');
             if (img) {
-                img.src = 'login_captcha.php?t=' + Date.now();
+                captchaCargando = true;
+                captchaGeneradoEn = Date.now();
+                img.src = 'login_captcha.php?t=' + captchaGeneradoEn;
             }
             var inp = document.getElementById('CaptchaInput');
             if (inp) {
                 inp.value = '';
             }
+            if (esAutomatico) {
+                $('#wrapCaptcha').css('border-color', '#eee');
+            }
+            programarAutoRecargaCaptcha();
         }
+
+        (function initCaptchaAutoRefresh() {
+            var img = document.getElementById('captchaImg');
+            if (img) {
+                img.addEventListener('load', function () {
+                    captchaCargando = false;
+                    captchaGeneradoEn = Date.now();
+                    programarAutoRecargaCaptcha();
+                });
+                img.addEventListener('error', function () {
+                    captchaCargando = false;
+                    programarAutoRecargaCaptcha();
+                });
+            }
+            document.addEventListener('visibilitychange', verificarExpiracionCaptcha);
+            window.addEventListener('focus', verificarExpiracionCaptcha);
+            programarAutoRecargaCaptcha();
+        })();
 
         function togglePass() {
             var inp = document.getElementById('EmpleadoNIP');
